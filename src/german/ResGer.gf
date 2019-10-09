@@ -537,7 +537,7 @@ resource ResGer = ParamX ** open Prelude in {
       ext : Str ;             -- dass sie kommt
       infExt : Str ;	      -- infinitival complements of inf 
                               -- e.g. ich hoffe [ihr zu helfen] zu versuchen 
-      subjc : Preposition     -- case of subject
+      c1 : Preposition        -- preposition/case of subject
      } ;
 
   VPSlash = VP ** {c2 : Preposition ; 
@@ -617,7 +617,7 @@ resource ResGer = ParamX ** open Prelude in {
     isAux = isAux ; ----
     inf = {s=[]; isAux=True; ctrl=NoC} ; -- default infinitive complement 
     ext,infExt,adj : Str = [] ;          -- (isAux=True => no endcomma)
-    subjc = PrepNom ;
+    c1 = PrepNom ;
     -- Dummy values for subtyping.
     c2 = PrepNom ; 
     objCtrl = False 
@@ -730,7 +730,7 @@ resource ResGer = ParamX ** open Prelude in {
             <vpnn.p1, vpnn.p2, obj ! a ++ vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ; 
           <False,WLight,_  > => -- <prons, np ++ gen|acc, heavy, comp>
             <vpnn.p1, vpnn.p2 ++ obj ! a, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ; 
-          <False,WHeavy,_  > => -- <prons, light, dat ++ np, comp>
+          <False,WHeavy,_  > => -- <prons, light, np ++ acc|gen, comp>
             <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4, vpnn.p5, vpnn.p6> } 
     } ; -- the ordering of objects of v:V3 (and v:V4) is also determined by Slash?V3 (and Slash?V4)
 
@@ -966,9 +966,8 @@ resource ResGer = ParamX ** open Prelude in {
 -- Function that allows the construction of non-nominative subjects.
   mkSubj : NP -> Preposition -> Str * Agr = \np, subjc -> 
     let 
-      sub = subjc ;
-      agr = case sub.c of { NPC Nom => np.a ; _ => Ag Masc Sg P3 } ;
-      subj = appPrepNP sub np
+      agr = case subjc.c of { NPC Nom => np.a ; _ => Ag Masc Sg P3 } ;
+      subj = appPrepNP subjc np
     in <subj , agr> ;
 
 }

@@ -4,7 +4,7 @@ abstract ExtraGerAbs = Extra [
   VPSlash, PassVPSlash, PassAgentVPSlash, CompIQuant, PastPartAP, PastPartAgentAP,
   Temp,Tense,Pol,S,NP,VV,VP,Conj,IAdv,IQuant,IComp,ICompAP,IAdvAdv,Adv,AP,
   Foc,FocObj,FocAdv,FocAP,UseFoc,
-  RNP,ReflRNP,ReflPoss
+  RNP,ReflRNP,ReflPron,ReflPoss
   ] ** {
   flags coding=utf8;
   

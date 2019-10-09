@@ -180,6 +180,8 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
       insertObj (\\a => appPrep vps.c2 
         (\\k => usePrepC k (\c -> rnp.s ! a ! c))) vps ;
 
+    ReflPron = { s = reflPron } ;
+
     ReflPoss num cn = {s = \\a,c => num.s ! cn.g ! c ++ possPron a num.n cn.g c ++ cn.s ! adjfCase Strong c ! num.n ! c} ;
 
 -- implementation of some of the relevant Foc rules from Extra

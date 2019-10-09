@@ -112,13 +112,13 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
           insertInfExtraObj vpi.objs (   -- vps.nn.p5 <- vp's object nps
             insertInfExtraInf embeddedInf vps))) ;
 
--- {- HL 8/19: this slightly modified SlashV2VNP is expensive even with NP.w:Weight 
+-- HL 8/19: this slightly modified SlashV2VNP is expensive even with NP.w:Weight
 
     -- order of embedded objects wrong: 
     -- Lang> p "the woman that you beg me to listen to" | l
     --   the woman that you beg me to listen to
     --   die Frau , der ihr mich zuzuhören bittet
-    -- better: die Frau , der zuzuhören ihr mich bittet 
+    -- better with pied piping: die Frau , der zuzuhören ihr mich bittet
 
     SlashV2VNP v np vp =
       let 

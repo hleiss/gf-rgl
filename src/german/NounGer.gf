@@ -133,7 +133,6 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
 
     DefArt = {
       s = \\_,n,g,c => artDefContr (gennum g n) c ; 
---      sp = \\_,n,g,c  => artDefContr (gennum g n) c ;  ---- deren, denen ...
       sp = \\_,n,g,c  => case <n,c> of {
         <Sg,NPP p> => let sp = prepC c ; gn = gennum g n 
           in sp.s ++ artDef ! gn ! sp.c ;
@@ -141,7 +140,7 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
         <Pl,NPP p> => let sp = prepC c ; gn = gennum g n 
           in sp.s ++ (artDef ! gn ! sp.c + "en") ;
         <Pl,NPC Dat> => "denen" ; -- HL 6/2019
-        <Pl,NPC Gen> => "derer" ; -- HL 6/2019
+        <Pl,NPC Gen> => "deren" ; -- HL 6/2019  also: derer, die ...
         _ => artDefContr (gennum g n) c } ;  -- von den+en
       a, aPl = Weak
       } ;

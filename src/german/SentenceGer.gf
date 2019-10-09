@@ -3,6 +3,9 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
   flags optimize=all_subs ;
 
   lin
+    PredVP np vp = 
+      let subj = mkSubj np vp.c1 
+      in mkClause subj.p1 subj.p2 vp ;
 
 	PredVP np vp = 
 		let subj = mkSubj np vp.subjc 
@@ -34,8 +37,8 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
     } ; 
 
     SlashVP np vp = 
-		let subj = mkSubj np vp.subjc 
-		in mkClause subj.p1 subj.p2 vp ** {c2 = vp.c2} ;
+      let subj = mkSubj np vp.c1
+      in mkClause subj.p1 subj.p2 vp ** {c2 = vp.c2} ;
 
     AdvSlash slash adv = {
       s  = \\m,t,a,b,o => slash.s ! m ! t ! a ! b ! o ++ adv.s ;

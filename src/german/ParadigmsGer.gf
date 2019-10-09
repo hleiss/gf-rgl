@@ -199,7 +199,7 @@ mkN : overload {
 
 -- A couple of common prepositions (the first two always with the dative).
 
-  von_Prep : Prep ; -- von + dative
+  von_Prep : Prep ; -- von + dative, with contraction vom
   zu_Prep  : Prep ; -- zu + dative, with contractions zum, zur
   anDat_Prep : Prep ; -- an + dative, with contraction am
   inDat_Prep : Prep ; -- in + dative, with contraction ins
@@ -358,8 +358,6 @@ mkV2 : overload {
 --
 -- The definitions should not bother the user of the API. So they are
 -- hidden from the document.
-
-
 
   Gender = MorphoGer.Gender ;
   Case = MorphoGer.PCase ;
@@ -589,7 +587,7 @@ mkV2 : overload {
       = \v,c,d -> lin V3 (v ** {c2 = c ; c3 = d}) ;
     } ;
 
-  dirV3 v p = mkV3 v accPrep p ;        -- accPrep sets isPrep=False
+  dirV3 v p = mkV3 v accPrep p ;
   accdatV3 v = mkV3 v datPrep accPrep ; -- to fit to Eng ditransitives (no preposition): 
                                         -- give sb(indir) sth(dir) = geben jmdm(dat) etwas(acc)
   mkVS v = v ** {lock_VS = <>} ;
