@@ -28,27 +28,27 @@ concrete TestLangGer of TestLang =
       (insertObjRefl (predVc v3) ** {c2 = v3.c3}); 
 
     PassV2 v = -- insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass) ;
-      let c = case <v.c2.c, v.c2.isPrep> of {
-            <NPC Acc, False> => NPC Nom ; _ => v.c2.c} -- acc object -> nom; all others: same PCase
+      let c = case <v.c2.c, v.c2.type> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} -- acc object -> nom; all others: same PCase
       in insertObjc (\\_ => v.s ! VPastPart APred) (predV werdenPass) ** { subjc = v.c2 ** {c = c} } ;
 
     PassV2Q v q = 
-      let c = case <v.c2.c, v.c2.isPrep> of {
-            <NPC Acc, False> => NPC Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+      let c = case <v.c2.c, v.c2.type> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
           vp = insertObjc (\\_ => v.s ! VPastPart APred) (predV werdenPass) 
             ** { subjc = v.c2 ** {c = c} } 
       in insertExtrapos (bindComma ++ q.s ! QIndir) vp ;
 
     PassV2S v s = 
-      let c = case <v.c2.c, v.c2.isPrep> of {
-            <NPC Acc, False> => NPC Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+      let c = case <v.c2.c, v.c2.type> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
           vp = insertObjc (\\_ => v.s ! VPastPart APred) (predV werdenPass) 
             ** { subjc = v.c2 ** {c = c} } 
       in insertExtrapos (bindComma ++ conjThat ++ s.s ! Sub) vp ;
 
     PassV2V v vp = 
-      let c = case <v.c2.c, v.c2.isPrep> of {
-            <NPC Acc, False> => NPC Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+      let c = case <v.c2.c, v.c2.type> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
           vp2 = insertObjc (\\_ => v.s ! VPastPart APred) (predV werdenPass) 
             ** { subjc = v.c2 ** {c = c} } 
       in insertExtrapos (bindComma ++ (useInfVP False vp)) vp2 ; -- misses subject agr for vp = ReflVP vps

@@ -7,10 +7,6 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
       let subj = mkSubj np vp.c1 
       in mkClause subj.p1 subj.p2 vp ;
 
-	PredVP np vp = 
-		let subj = mkSubj np vp.subjc 
-		in mkClause subj.p1 subj.p2 vp ;
-
 	{- applies verb's subject case to subject ;
 	   forces 3rd person sg agreement for any non-nom subjects -->
 			"uns graut" "*uns grauen"

@@ -17,8 +17,8 @@ oper
 
 -- For $StructuralGer$.
 
-  mkPrep : Str -> PCase -> Preposition = \s,c -> 
-    {s = s ; s2 = [] ; c = c ; isPrep = True} ;
+  mkPrep : Str -> Case -> Preposition = \s,c -> 
+    {s = s ; s2 = [] ; s3 = table { _ => "" } ; c = c ; type = isPrep} ;
 
   nameNounPhrase : {s : Case => Str} ->  {s : PCase => Str ; a : Agr ; 
                                           -- isLight, isPron : Bool ; 

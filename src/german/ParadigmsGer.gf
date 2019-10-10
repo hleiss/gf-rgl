@@ -48,12 +48,6 @@ oper
   dative     : Case ;
   genitive   : Case ;
 
-  anDat_Case : Case ; -- preposition "an" accusative with contraction "am" --%
-  inAcc_Case : Case ; -- preposition "in" accusative with contraction "ins" --%
-  inDat_Case : Case ; -- preposition "in" dative with contraction "im" --%
-  zuDat_Case : Case ; -- preposition "zu" dative with contractions "zum", "zur" --%
-  vonDat_Case : Case ;
-
 -- To abstract over number names, we define the following.
 
   Number    : Type ; 
@@ -142,9 +136,6 @@ mkN : overload {
     mkPN : N -> PN ; -- use the singular forms of a noun
 
     } ;
-
-
-
 
 
 --2 Adjectives
@@ -360,20 +351,16 @@ mkV2 : overload {
 -- hidden from the document.
 
   Gender = MorphoGer.Gender ;
-  Case = MorphoGer.PCase ;
+--  Case = MorphoGer.PCase ;
+  Case = MorphoGer.Case ;
   Number = MorphoGer.Number ;
   masculine = Masc ;
   feminine  = Fem ;
   neuter = Neutr ;
-  nominative = NPC Nom ;
-  accusative = NPC Acc ;
-  dative = NPC Dat ;
-  genitive = NPC Gen ;
-  anDat_Case = NPP CAnDat ;
-  inAcc_Case = NPP CInAcc ;
-  inDat_Case = NPP CInDat ;
-  zuDat_Case = NPP CZuDat ;
-  vonDat_Case = NPP CVonDat ;
+  nominative = Nom ; -- NPC Nom ;
+  accusative = Acc ;
+  dative = Dat ;
+  genitive = Gen ;
 
   singular = Sg ;
   plural = Pl ;
@@ -505,19 +492,33 @@ mkV2 : overload {
   mkAdv s = {s = s ; lock_Adv = <>} ;
 
   mkPrep = overload {
-    mkPrep : Str -> PCase -> Prep = \s,c -> {s = s ; s2 = [] ; c = c ; isPrep = True ; lock_Prep = <>} ;
-    mkPrep : PCase -> Str -> Prep = \c,s -> {s = [] ; s2 = s ; c = c ; isPrep = True ; lock_Prep = <>} ;
-    mkPrep : Str -> PCase -> Str -> Prep = \s,c,t -> {s = s ; s2 = t ; c = c ; isPrep = True ; lock_Prep = <>}
+    mkPrep : Str -> Case -> Prep = \s,c -> 
+      {s = s ; s2 = [] ; s3 = table {_ => ""} ; 
+       c = c ; type = isPrep ; lock_Prep = <> } ;
+    mkPrep : Case -> Str -> Prep = \c,s ->
+      {s = [] ; s2 = s ; s3 = table {_ => ""} ; 
+       c = c ; type = isPrep ; lock_Prep = <> } ;
+    mkPrep : Str -> Case -> Str -> Prep = \s,c,t ->
+      {s = s ; s2 = t ; s3 = table {_ => ""} ; 
+       c = c ; type = isPrep ; lock_Prep = <> }
     } ;
-  accPrep = {s,s2 = [] ; c = accusative ; isPrep = False ; lock_Prep = <>} ;
-  datPrep = {s,s2 = [] ; c = dative ; isPrep = False ; lock_Prep = <>} ;
-  genPrep = {s,s2 = [] ; c = genitive ; isPrep = False ; lock_Prep = <>} ;
-  --von_Prep = mkPrep "von" dative ;
-  von_Prep = mkPrep [] vonDat_Case ;
-  zu_Prep = mkPrep [] zuDat_Case ;
-  anDat_Prep = mkPrep [] anDat_Case ;
-  inDat_Prep = mkPrep [] inDat_Case ; 
-  inAcc_Prep = mkPrep [] inAcc_Case ; 
+  accPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = accusative ;
+             type = isCase ; lock_Prep = <> } ;
+  datPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = dative ;
+             type = isCase ; lock_Prep = <> } ;
+  genPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = genitive ;
+             type = isCase ; lock_Prep = <> } ;
+
+  anDat_Prep = mk_GPrep "an" "" Dat <"am","an der","am"> ;
+  inDat_Prep = mk_GPrep "in" "" Dat <"im","in der","im"> ;
+  zu_Prep = mk_GPrep "zu" "" Dat <"zum","zur","zum"> ;
+  von_Prep = mk_GPrep "von" "" Dat <"vom","von der","vom"> ;
+  inAcc_Prep = mk_GPrep "in" "" Acc <"in den","in die","ins"> ;
+
+  mk_GPrep : Str -> Str -> Case -> Str * Str * Str -> Prep = \p,q,c,mfn -> 
+    {s = p ; s2 = q ; 
+     s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
+     c = c ; type = isGlued ; lock_Prep = <>} ;
 
 
   mk6V geben gibt gib gab gaebe gegeben = 
@@ -558,7 +559,7 @@ mkV2 : overload {
 
   habenV v = v ** {aux = VHaben} ;
   seinV v = v ** {aux = VSein} ;
-  reflV v c = v ** {aux = VHaben ; vtype = VRefl (prepC c).c} ;
+  reflV v c = v ** {aux = VHaben ; vtype = VRefl c} ;
 
   no_geV v = let vs = v.s in v ** {
     s = table {
@@ -717,7 +718,8 @@ mkV2 : overload {
     mkV2 : Str -> V2 = \s -> dirV2 (regV s) ;
     mkV2 : V -> V2 = dirV2 ;
     mkV2 : V -> Prep -> V2 = prepV2;
-    mkV2 : V -> Case -> V2 = \v,c -> prepV2 v (lin Prep {s,s2 = [] ; c = c ; isPrep = False}) ;
+    mkV2 : V -> Case -> V2 = \v,c -> 
+      prepV2 v (lin Prep {s,s2 = [] ; s3 = table {_ => ""} ; 
+                          c = c ; type = isCase})
     } ;
-
 }

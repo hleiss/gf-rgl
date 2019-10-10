@@ -119,7 +119,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
     --   the woman that you beg me to listen to
     --   die Frau , der ihr mich zuzuhören bittet
     -- better with pied piping: die Frau , der zuzuhören ihr mich bittet
-
+{-
     SlashV2VNP v np vp =
       let 
         vpi = infVP v.isAux vp ;
@@ -129,7 +129,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
         insertInf {s=vpi.p2;isAux=v.isAux;ctrl=v.ctrl} ( -- insertInf vpi.p2
           insertObj vpi.p1 (
             insertObj (\\_ => appPrepNP v.c2 np) vps))) ;
-
+-}
     -- HL: version with infzuVP in tests/german/TestLangGer.gf, too expensive
 
     UseComp comp =

@@ -30,7 +30,7 @@ concrete RelativeGer of Relative = CatGer ** open ResGer in {
       s = \\m,t,a,p,gn => 
           appPrep slash.c2 (\\k => usePrepC k (\c -> rp.s ! gn ! c)) ++ 
           slash.s ! m ! t ! a ! p ! Sub ;
-      c = (prepC slash.c2.c).c
+      c = slash.c2.c -- (prepC slash.c2.c).c
       } ;
 
     FunRP p np rp = {
