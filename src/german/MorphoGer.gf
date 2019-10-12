@@ -24,13 +24,14 @@ oper
                                           -- isLight, isPron : Bool ; 
                                           w : Weight ;
                                           ext,rc : Str} = \name -> heavyNP {
-      s = \\c => usePrepC c (\k -> name.s ! k) ;
+      s = \\c => name.s ! (toCase c) ;
       a = agrP3 Sg 
       } ;
 
   detLikeAdj : Bool -> Number -> Str -> 
-    {s,sp : Gender => PCase => Str ; n : Number ; a : Adjf ; isDef : Bool} = \isDef,n,dies -> 
-      {s,sp = appAdj (regA dies) ! n ; n = n ; a = Weak ; isDef = isDef} ;
+    {s,sp : Gender => PCase => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} = 
+    \isDef,n,dies -> 
+    {s,sp = appAdj (regA dies) ! n ; n = n ; a = Weak ; isDef = isDef ; hasDefArt = False} ;
 
   mkOrd : {s : Degree => AForm => Str} -> {s : AForm => Str} = \a ->
     {s = a.s ! Posit} ;

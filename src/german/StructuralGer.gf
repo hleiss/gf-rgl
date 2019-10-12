@@ -56,7 +56,8 @@ concrete StructuralGer of Structural = CatGer **
   many_Det = detLikeAdj False Pl "viel" ;
   more_CAdv = X.mkCAdv "mehr" "als" ;
   most_Predet = {s = appAdj (regA "meist") ; c = noCase ; a = PAgNone} ;
-  much_Det = {s = \\_,_ => "viel" ; sp = \\_,_ => "vieles" ; n = Sg ; a = Weak ; isDef = False} ;
+  much_Det = {s = \\_,_ => "viel" ; sp = \\_,_ => "vieles" ; 
+              n = Sg ; a = Weak ; isDef = False ; hasDefArt = False} ; -- strong, inflection? vielem
   must_VV = auxVV 
       (mkV 
         "müssen" "muss" "musst" "muss" "müsst" "müss" 
@@ -79,18 +80,18 @@ concrete StructuralGer of Structural = CatGer **
   somebody_NP = nameNounPhrase {s = caselist "jemand" "jemanden" "jemandem" "jemands"} ;
   somePl_Det = detLikeAdj True Pl "einig" ;
   someSg_Det = {
-      s,sp = \\g,c => 
-             usePrepC c (\k -> "ein" + pronEnding ! GSg g ! k) ;  ---- einer,eines
+      s,sp = \\g,c => "ein" + pronEnding ! GSg g ! (toCase c) ;  ---- einer,eines
       n = Sg ;
       a = Strong ;
       hasNum = True ;
       isDef = False ;
+      hasDefArt = False 
       } ;
   something_NP = nameNounPhrase {s = \\_ => "etwas"} ;
   somewhere_Adv = ss "irgendwo" ;
   that_Quant = let 
      jener : Number => Gender => PCase => Str = \\n => (detLikeAdj True n "jen").s in 
-     {s,sp = \\_ => jener ; a,aPl = Weak} ;
+     {s,sp = \\_ => jener ; isDefArt = False ; a,aPl = Weak} ;
 ---b  that_NP = nameNounPhrase {s = caselist "das" "das" "denem" "dessen"} ; ----
   there_Adv = ss "da" | ss "dort" ;
   there7to_Adv = ss "dahin" ;
@@ -100,7 +101,7 @@ concrete StructuralGer of Structural = CatGer **
   they_Pron = mkPronPers "sie" "sie" "ihnen" "ihrer" "ihr" Fem Pl P3 ;
   this_Quant = let 
      dieser : Number => Gender => PCase => Str = \\n => (detLikeAdj True n "dies").s in 
-     {s,sp = \\_ => dieser ; a,aPl = Weak} ;
+     {s,sp = \\_ => dieser ; isDefArt = False ; a,aPl = Weak} ;
 ---b  this_NP = nameNounPhrase {s = caselist "dies" "dies" "diesem" "dieses"} ; ----
 ---b  those_NP = {s = caselist "jene" "jene" "jenen" "jener" ; a = agrP3 Pl} ;
   through_Prep = mkPrep "durch" P.accusative ;
@@ -137,11 +138,11 @@ concrete StructuralGer of Structural = CatGer **
   not_Predet = {s = \\_,_,_ => "nicht" ; c = noCase ; a = PAgNone} ;
   no_Quant = let 
      keiner : Number => Gender => PCase => Str = table {
-       Sg => \\g,c => usePrepC c (\k -> "kein" + pronEnding ! GSg g ! k) ;
+       Sg => \\g,c => "kein" + pronEnding ! GSg g ! (toCase c) ;
        Pl => (detLikeAdj False Pl "kein").s
        }
      in 
-     {s,sp = \\_ => keiner ; a = Strong ; aPl = Weak} ;   ---- sp
+     {s,sp = \\_ => keiner ; a = Strong ; isDefArt = False ; aPl = Weak} ;   ---- sp
   if_then_Conj = {s1 = "wenn" ; s2 = "dann" ; n = Sg ; lock_Conj = <>} ;
   nobody_NP = 
     nameNounPhrase {s = caselist "niemand" "niemanden" "niemandem" "niemands"} ;

@@ -60,9 +60,9 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 
     EmptyRelSlash slash = {
       s = \\m,t,a,p,gn => 
-          appPrep slash.c2 (\\k => usePrepC k (\c -> relPron ! gn ! c)) ++ 
+          appPrep slash.c2 (\\k => relPron ! gn ! (toCase k)) ++ 
           slash.s ! m ! t ! a ! p ! Sub ;
-      c = (prepC slash.c2.c).c
+      c = slash.c2.c
       } ;
 
     PassVPSlash vp = 
@@ -177,8 +177,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     RNP = {s : Agr => Case => Str} ;
   lin
     ReflRNP vps rnp =
-      insertObj (\\a => appPrep vps.c2 
-        (\\k => usePrepC k (\c -> rnp.s ! a ! c))) vps ;
+      insertObj (\\a => appPrep vps.c2 (\\k => rnp.s ! a ! (toCase k))) vps ;
 
     ReflPron = { s = reflPron } ;
 

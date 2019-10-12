@@ -41,18 +41,26 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- Case of $NP$ extended to deal with contractions like "zur", "im".
 
-    PCase = NPC Case | NoDefArt ;     
+    PCase = NPC Case | NoDefArt Case ;     
 
   oper 
     NPNom : PCase = NPC Nom ;
 
-    -- HL: these ought to be removable, once Noun, Verb are adapted
-    prepC : PCase -> {s : Str ; c : Case} = \cp -> case cp of {
-      NPC c      => {s = [] ; c = c} ;
-      NoDefArt   => {s = [] ; c = Nom} -- ?
-      } ;
-    usePrepC : PCase -> (Case -> Str) -> Str = \c,fs -> 
-      let sc = prepC c in sc.s ++ fs sc.c ;
+    toCase : PCase -> Case = \p -> case p of {NPC c => c ; NoDefArt c => c} ;
+
+    {- Remark HL: the original 
+          prepC (NPP CAnDat) = {s="an";c=Dat} 
+     was used to provide the unglued use of "am" = AnDat_Prep etc. as 
+        (usePrepC AnDat_Prep (\k -> pn.s ! k)) = {s="an";..}.s ++ pn.s ! {..}.c
+    Instead, here (appPrep prep np) tests if np uses DefArt, and if so, takes
+    the glued form of prep, else the unglued one: "im schönen Land", "in dem:NP".
+
+    This has somewhat better complexity than the original implementation and 
+    scales to any number of glued prepositions ("aufs", "ums", "hinters"):
+    |Prep| = |Case|*|PrepType| = 4*3 = 12 param values, while the original needs 
+    |Prep| = (|Case|+|gluedPreps|)*|Bool| = (4+5+x)*2 = 18 + 2x param values.
+    This enters |VP| and |VPSlash|, which have fields c1:Prep and c1,c2:Prep.
+    But we need to increase |NP| = |Agr|*|Weight| from 18*3 to 18*4. -}
 
   oper
     mkAgr : {g : Gender ; n : Number ; p : Person} -> Agr = \r ->
@@ -77,14 +85,16 @@ resource ResGer = ParamX ** open Prelude in {
     noCase : {p : Str ; k : PredetCase} = {p = [] ; k = NoCase} ;
 
 -- Pronominal nps are ordered differently, and light nps come before negation in clauses.
--- (To save space, reduce isPron * isLight = 4 values to the following three.) HL 9/19
+-- (To save space, reduce isPron * isLight = 4 values to 3, WPron,WLight,WHeavy.) HL 9/19
   param
-    Weight = WPron | WLight | WHeavy ;  
+    Weight = WPron | WDefArt | WLight | WHeavy ;  
   oper
     isPron : {w : Weight} -> Bool = \np -> 
       case np.w of {WPron => True ; _ => False} ;
     isLight : {w : Weight} -> Bool = \np -> 
       case np.w of {WHeavy => False ; _ => True} ;
+    hasInitialDefArt : {w : Weight} -> Bool = \np -> 
+      case np.w of {WDefArt => True ; _ => False} ;
 
 --2 For $Adjective$
 
@@ -248,12 +258,11 @@ resource ResGer = ParamX ** open Prelude in {
   NP : Type = {
      s : PCase => Str ;
      rc : Str ;  -- die Frage , [rc die ich gestellt habe]
-     ext : Str ; -- die Frage , [sc wo sie schläft] ; die Regel , [vp kein Fleisch zu essen] | [s dass ...]
-     --	 adv : Str ; -- die Frage [a von Max]  -- HL: cannot be extracted
+     ext : Str ; -- die Frage , [sc wo sie schläft] ; 
+                 -- die Regel , [vp kein Fleisch zu essen] | [s dass ...]
      a : Agr ;
-     -- isLight : Bool ;  -- light NPs come before negation in simple clauses (expensive)
-     -- isPron : Bool } ; -- needed to put accPron before datPron
-     w : Weight } ;
+     w : Weight -- isPron,hasDefArt,isLight? order objects and negation, glue preposition
+    } ;
 
   mkN  : (x1,_,_,_,_,x6,x7 : Str) -> Gender -> Noun = 
     \Mann, Mannen, Manne, Mannes, Maenner, Maennern, Mann_, g -> {
@@ -435,11 +444,10 @@ resource ResGer = ParamX ** open Prelude in {
   appPrepNP : Preposition -> NP -> Str = \prep,np ->
     let g = genderAgr np.a ;
         n = numberAgr np.a ;
-        b : Bool = -- substitute for prep=isGlued and np=hasDefArt:
-          (case <prep.type,np.w> of { <isGlued,WLight> => True ; _ => False }) ;
+        b : Bool = case <prep.type,np.w> of { <isGlued,WDefArt> => True ; _ => False } ;
     in case <b,n> of {
-      <True, Sg> => prep.s3 ! g ++ np.s ! NoDefArt ++ bigNP np ++ prep.s2 ;
-      _ => prep.s ++ np.s ! (NPC prep.c) ++ bigNP np ++ prep.s2 
+      <True, Sg> => prep.s3 ! g ++ np.s ! (NoDefArt prep.c) ++ bigNP np ++ prep.s2 ;
+      _ =>               prep.s ++ np.s ! (NPC prep.c) ++ bigNP np ++ prep.s2 
     } ;
 
   bigNP : NP -> Str = \np -> np.ext ++ np.rc ;
@@ -482,7 +490,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   artDefContr : GenNum -> PCase -> Str = \gn,np -> case np of {
     NPC c => artDef ! gn ! c ;
-    NoDefArt => "" 
+    NoDefArt c => "" 
     } ;
 
 
@@ -493,10 +501,10 @@ resource ResGer = ParamX ** open Prelude in {
       ad : GenNum -> Case -> Str = \gn,c -> 
         adj.s ! Posit ! AMod gn c
     in
-    \\n,g,c => usePrepC c (\k -> case n of {
-       Sg => ad (GSg g) k ;
-       _  => ad GPl k
-     }) ;
+    \\n,g,c => case n of {
+      Sg => ad (GSg g) (toCase c) ;
+      _  => ad GPl (toCase c)
+    } ;
 
 -- This auxiliary gives the forms in each degree of adjectives. 
 
@@ -711,12 +719,12 @@ resource ResGer = ParamX ** open Prelude in {
             <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ;
           <False,WPron, _  > => -- <sich ++ ihm|seiner, light, heavy, comp>
             <vpnn.p1 ++ obj ! a, vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ; 
-          <False,WLight,Dat> => -- (assuming v.c2=acc) nonPron: dat < acc|gen  
+          <False,WLight|WDefArt,Dat> => -- (assuming v.c2=acc) nonPron: dat < acc|gen  
                                 -- <prons, dat ++ np, heavy, comp>
             <vpnn.p1, obj ! a ++ vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ;
           <False,WHeavy,Dat> => -- <prons, light, dat ++ np, comp>
             <vpnn.p1, vpnn.p2, obj ! a ++ vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ; 
-          <False,WLight,_  > => -- <prons, np ++ gen|acc, heavy, comp>
+          <False,WLight|WDefArt,_  > => -- <prons, np ++ gen|acc, heavy, comp>
             <vpnn.p1, vpnn.p2 ++ obj ! a, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ; 
           <False,WHeavy,_  > => -- <prons, light, np ++ acc|gen, comp>
             <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4, vpnn.p5, vpnn.p6> } 

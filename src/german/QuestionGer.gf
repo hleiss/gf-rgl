@@ -28,7 +28,7 @@ concrete QuestionGer of Question = CatGer ** open ResGer in {
       s = \\m,t,a,p => 
             let 
               cls = slash.s ! m ! t ! a ! p ;
-              who = appPrep slash.c2 (\\k => usePrepC k (\c -> ip.s ! c)) ;
+              who = appPrep slash.c2 (\\k => ip.s ! (toCase k)) ;
             in table {
               QDir   => who ++ cls ! Inv ;
               QIndir => who ++ cls ! Sub
@@ -60,7 +60,7 @@ concrete QuestionGer of Question = CatGer ** open ResGer in {
       } ;
 
     PrepIP p ip = {
-      s = appPrep p (\\k => usePrepC k (\c -> ip.s ! c)) ;
+      s = appPrep p (\\k => ip.s ! (toCase k)) ;
       } ;
 
     AdvIP ip adv = {

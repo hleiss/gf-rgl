@@ -193,8 +193,8 @@ mkN : overload {
   von_Prep : Prep ; -- von + dative, with contraction vom
   zu_Prep  : Prep ; -- zu + dative, with contractions zum, zur
   anDat_Prep : Prep ; -- an + dative, with contraction am
-  inDat_Prep : Prep ; -- in + dative, with contraction ins
-  inAcc_Prep : Prep ; -- in + accusative, with contraction im
+  inDat_Prep : Prep ; -- in + dative, with contraction im
+  inAcc_Prep : Prep ; -- in + accusative, with contraction ins
 
 --2 Verbs
 
@@ -500,25 +500,28 @@ mkV2 : overload {
        c = c ; type = isPrep ; lock_Prep = <> } ;
     mkPrep : Str -> Case -> Str -> Prep = \s,c,t ->
       {s = s ; s2 = t ; s3 = table {_ => ""} ; 
-       c = c ; type = isPrep ; lock_Prep = <> }
+       c = c ; type = isPrep ; lock_Prep = <> } ;
+    mkPrep : Str -> Str * Str * Str -> Case -> Prep = \p,mfn,c -> 
+      {s = p ; s2 = [] ; 
+       s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
+       c = c ; type = isGlued ; lock_Prep = <>} ;
+    mkPrep : Str -> Str * Str * Str -> Case -> Str -> Prep = \p,mfn,c,q -> 
+      {s = p ; s2 = q ; 
+       s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
+       c = c ; type = isGlued ; lock_Prep = <>} 
     } ;
-  accPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = accusative ;
-             type = isCase ; lock_Prep = <> } ;
-  datPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = dative ;
-             type = isCase ; lock_Prep = <> } ;
-  genPrep = {s,s2 = [] ; s3 = table {_ => ""} ; c = genitive ;
-             type = isCase ; lock_Prep = <> } ;
+  accPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
+             c = accusative ; type = isCase ; lock_Prep = <> } ;
+  datPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
+             c = dative ; type = isCase ; lock_Prep = <> } ;
+  genPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
+             c = genitive ; type = isCase ; lock_Prep = <> } ;
 
-  anDat_Prep = mk_GPrep "an" "" Dat <"am","an der","am"> ;
-  inDat_Prep = mk_GPrep "in" "" Dat <"im","in der","im"> ;
-  zu_Prep = mk_GPrep "zu" "" Dat <"zum","zur","zum"> ;
-  von_Prep = mk_GPrep "von" "" Dat <"vom","von der","vom"> ;
-  inAcc_Prep = mk_GPrep "in" "" Acc <"in den","in die","ins"> ;
-
-  mk_GPrep : Str -> Str -> Case -> Str * Str * Str -> Prep = \p,q,c,mfn -> 
-    {s = p ; s2 = q ; 
-     s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
-     c = c ; type = isGlued ; lock_Prep = <>} ;
+  anDat_Prep = mkPrep "an" <"am","an der","am"> Dat ;
+  inDat_Prep = mkPrep "in" <"im","in der","im"> Dat ;
+  zu_Prep = mkPrep "zu" <"zum","zur","zum"> Dat ;
+  von_Prep = mkPrep "von" <"vom","von der","vom"> Dat ;
+  inAcc_Prep = mkPrep "in" <"in den","in die","ins"> Acc ;
 
 
   mk6V geben gibt gib gab gaebe gegeben = 

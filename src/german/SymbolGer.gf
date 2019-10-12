@@ -11,27 +11,20 @@ lin
   CNIntNP cn i = {
     s = \\c => cn.s ! Weak ! Sg ! Nom ++ i.s ;
     a = agrP3 Sg ;
-    -- isPron = False ;
-    -- isLight = True ; 
     w = WLight ;
-    ext,rc = [] -- added
+    ext,rc = []
     } ;
   CNSymbNP det cn xs = let g = cn.g in {
-    s = \\c => det.s ! g ! c ++ 
-               (let k = (prepC c).c in cn.s !  adjfCase det.a k ! det.n ! k) ++ xs.s ; 
+    s = \\c => det.s ! g ! c ++ cn.s !  adjfCase det.a c ! det.n ! c ++ xs.s ; 
     a = agrP3 det.n ;
-    -- isPron = False ;
-    -- isLight = True ; 
     w = WLight ;
-    ext,rc = [] -- added
+    ext,rc = []
     } ;
   CNNumNP cn i = {
-    s = \\c => artDefContr (GSg cn.g) c ++ cn.s ! Weak ! Sg ! Nom ++ i.s ! Neutr ! (prepC c).c ;
+    s = \\c => artDefContr (GSg cn.g) c ++ cn.s ! Weak ! Sg ! Nom ++ i.s ! Neutr ! c ;
     a = agrP3 Sg ;
-    -- isPron = False ;
-    -- isLight = True ; 
     w = WLight ;
-    ext,rc = [] -- added
+    ext,rc = []
     } ;
 
   SymbS sy = {s = \\_ => sy.s} ;
@@ -41,11 +34,9 @@ lin
 
 
 lincat 
-
   Symb, [Symb] = SS ;
 
 lin
-
   MkSymb s = s ;
 
   BaseSymb = infixSS "und" ;

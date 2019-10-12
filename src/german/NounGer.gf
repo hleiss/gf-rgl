@@ -2,44 +2,46 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
 
   flags optimize=all_subs ;
 
--- Remark: np.isLight makes ResGer.insertObjNP expensive, for ComplSlash, SlashVP
+{- w = WPron: used to enforce pron.acc < pron.dat: ich gebe es ihr nicht
+   w = WDefArt: omit definite article after certain prepositions: an dem Haus => am [] Haus
+   w = WLight/WHeavy: light object nps come before negation, heavy ones afterwards
+   Example: I don't see the man -- ich sehe den Mann nicht vs. 
+            I don't see a man   -- ich sehe nicht einen Mann (=> sehe keinen Mann)
+   HL 6/2019 (but:) sehe (die|einige) Männer nicht
+-}
+-- Remark: np.isLight/w makes ResGer.insertObjNP expensive, for ComplSlash, SlashVP
 
   lin
     DetCN det cn = {
-      s = \\c => det.s ! cn.g ! c ++ 
-                 (let k = (prepC c).c in cn.s ! adjfCase det.a k ! det.n ! k ++ cn.adv) ;
+      s = \\c => det.s ! cn.g ! c ++
+        (let k = toCase c in cn.s ! adjfCase det.a k ! det.n ! k ++ cn.adv) ;
       a = agrgP3 cn.g det.n ;  
-      -- isLight = det.isDef ;  -- ich sehe den Mann nicht vs. ich sehe nicht einen Mann
-      -- isPron = False ;       -- HL 6/2019 (but:) sehe (die|einige) Männer nicht
-                                --                  don't see a|no man = sehe keinen Mann
-      w = case det.isDef of { True => WLight ; _ => WHeavy } ;
+      w = case det.hasDefArt of {
+        True => WDefArt ;
+        _ => case det.isDef of { True => WLight ; _ => WHeavy } } ;
       rc = cn.rc ! det.n ;   
       ext = cn.ext 
       } ;
 
     DetNP det = {
-      s = \\c => det.sp ! Neutr ! c ; -- more genders in ExtraGer -- HL: der+er,den+en ; der drei,den drei+en
+      s = \\c => det.sp ! Neutr ! c ; -- more genders in ExtraGer 
       a = agrP3 det.n ;
-      -- isLight = det.isDef ;
-      -- isPron = False ; -- HL 6/2019: don't apply pronoun switch: ich gebe ihr das  vs. ich gebe es ihr
-      w = case det.isDef of { True => WLight ; _ => WHeavy } ;
+      w = case det.isDef of { -- no pronoun switch: ich gebe ihr das  vs. ich gebe es ihr
+        True => WLight ;      -- not WDefArt: an+dem = "an dem", not "am"
+        _ => WHeavy } ; 
       rc, ext = []
       } ;
 
     UsePN pn = {
-      s = \\c => usePrepC c (\k -> pn.s ! k) ;
+      s = \\c => pn.s ! (toCase c) ;
       a = agrgP3 pn.g Sg ;
---      isLight = True ;  -- means: this is not a heavy NP, but comes before negation
---      isPron = False ;  -- HL 6/2019: to regulate Pron/NonPronNP order 
-      w = WLight ;  
+      w = WLight ;
       rc, ext = []
       } ;
 
     UsePron pron = {
-      s = \\c => usePrepC c (\k -> pron.s ! NPCase k) ;
+      s = \\c => pron.s ! NPCase (toCase c) ;
       a = pron.a ;
-      -- isLight = True ;
-      -- isPron = True ;
       w = WPron ;
       rc, ext = []
       } ;
@@ -50,31 +52,23 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
           let c = case pred.c.k of {NoCase => c0 ; PredCase k => k} in
           pred.s ! numberAgr ag ! genderAgr np.a ! c0 ++ pred.c.p ++ np.s ! c ; 
         a = ag ;
-        -- isLight = False ;
-        -- isPron = False
         w = WHeavy 
         } ;
 
     PPartNP np v2 = np ** {
       s = \\c => np.s ! c ++ embedInCommas (v2.s ! VPastPart APred) ; --- invar part
---      isPron = False
       w = WHeavy 
       } ;
-	{- "eine erfolgreiche Frau, geliebt von vielen,"  but only with v2 not possible in German?
-            HL: PPartNP np vps|vp: "der Autor, heute vergessen" , "der Mond, gerade aufgegangen,"
-         -}
+    -- "eine erfolgreiche Frau, geliebt von vielen,"  but only with v2 not possible in German?
+    -- HL: PPartNP np vps|vp: "der Autor, heute vergessen" , "der Mond, gerade aufgegangen,"
 	
     AdvNP np adv = np ** {
       s = \\c => np.s ! c ++ adv.s ;
-      -- isLight = False ;
-      -- isPron = False
       w = WHeavy 
       } ;
 
     ExtAdvNP np adv = np ** {
       s = \\c => np.s ! c ++ embedInCommas adv.s ;
-      -- isLight = False ;
-      -- isPron = False
       w = WHeavy 
       } ;
 
@@ -83,13 +77,14 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
         n = num.n ;
         a = quant.a
       in {
-        s  = \\g,c => quant.s  ! num.isNum ! n ! g ! c ++ (let k = (prepC c).c in
+        s  = \\g,c => quant.s  ! num.isNum ! n ! g ! c ++ (let k = toCase c in
                         num.s!g!k ++ ord.s ! agrAdj g (adjfCase a k) n k) ;
-        sp = \\g,c => quant.sp ! num.isNum ! n ! g ! c ++ (let k = (prepC c).c in
+        sp = \\g,c => quant.sp ! num.isNum ! n ! g ! c ++ (let k = toCase c in
                         num.s!g!k ++ ord.s ! agrAdj g (adjfCase quant.aPl k) n k) ;
         n = n ;
         a = case n of {Sg => a ; Pl => quant.aPl} ;
         isDef = case <quant.a, quant.aPl> of {<Strong,Strong> => False ; _ => True} ;
+        hasDefArt = quant.isDefArt 
         } ;
 
     DetQuant quant num = 
@@ -97,21 +92,22 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
         n = num.n ;
         a = quant.a
       in {
-        s  = \\g,c => quant.s  ! num.isNum ! n ! g ! c ++ (let k = (prepC c).c in
-                        num.s!g!k) ;
-        sp = \\g,c => quant.sp ! num.isNum ! n ! g ! c ++ (let k = (prepC c).c in
-                        num.s!g!k) ; -- HL: der+er,den+en ; der drei,den drei+en
+        s  = \\g,c => quant.s  ! num.isNum ! n ! g ! c ++ num.s!g!(toCase c) ;
+        sp = \\g,c => quant.sp ! num.isNum ! n ! g ! c ++ num.s!g!(toCase c) ; 
+                      -- HL: der+er,den+en ; der drei,den drei+en
         n = n ;
         a = case n of {Sg => a ; Pl => quant.aPl} ;
         isDef = case <quant.a, quant.aPl> of {<Strong,Strong> => False ; _ => True} ;
+        hasDefArt = quant.isDefArt 
         } ;
 
 
     PossPron p = {
-      s  = \\_,n,g,c => usePrepC c (\k -> p.s ! NPPoss (gennum g n) k) ;
-      sp = \\_,n,g,c => usePrepC c (\k -> p.s ! NPPoss (gennum g n) k) ;
+      s  = \\_,n,g,c => p.s ! NPPoss (gennum g n) (toCase c) ;
+      sp = \\_,n,g,c => p.s ! NPPoss (gennum g n) (toCase c) ;
       a = Strong ;
       aPl = Weak ;
+      isDefArt = False 
       } ;
 
     NumCard n = n ** {isNum = True} ;
@@ -134,41 +130,36 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
     DefArt = {
       s = \\_,n,g,c => artDefContr (gennum g n) c ; 
       sp = \\_,n,g,c  => case <n,c> of {
-        -- <Sg,NPP p> => let sp = prepC c ; gn = gennum g n 
-        --   in sp.s ++ artDef ! gn ! sp.c ;
-        -- <Pl,NPP CInAcc> => let sp = prepC c in sp.s ++ "die" ;
-        -- <Pl,NPP p> => let sp = prepC c ; gn = gennum g n 
-        --   in sp.s ++ (artDef ! gn ! sp.c + "en") ;
         <Pl,NPC Dat> => "denen" ; -- HL 6/2019
         <Pl,NPC Gen> => "deren" ; -- HL 6/2019  also: derer, die ...
         _ => artDefContr (gennum g n) c } ;  -- von den+en
+      isDefArt = True ; -- HL
       a, aPl = Weak
       } ;
 
     IndefArt = {
       s = table {
-        True => \\_,_,c => usePrepC c (\k -> []) ;
+        True => \\_,_,c => [] ;
         False => table {
-          Sg => \\g,c => usePrepC c (\k -> "ein" + pronEnding ! GSg g ! k) ;  
-          Pl => \\_,c => usePrepC c (\k -> [])
+          Sg => \\g,c => "ein" + pronEnding ! GSg g ! (toCase c) ;  
+          Pl => \\_,c => []
           }
         } ; 
       sp = table {
-        True => \\_,_,c => usePrepC c (\k -> []) ;
+        True => \\_,_,c => [] ;
         False => table {
-          Sg => \\g,c => usePrepC c (\k -> (detLikeAdj False Sg "ein").s ! g ! NPC k) ;
-          Pl => \\_,c => usePrepC c (\k -> caselist "einige" "einige" "einigen" "einiger" ! k)
+          Sg => \\g,c => (detLikeAdj False Sg "ein").s ! g ! NPC (toCase c) ;
+          Pl => \\_,c => caselist "einige" "einige" "einigen" "einiger" ! (toCase c)
           }
         } ;
+      isDefArt = False ; -- HL
       a, aPl = Strong 
       } ;
 
     MassNP cn = {
-      s = \\c => usePrepC c (\k -> cn.s ! Strong ! Sg ! k) ++ cn.adv ;
+      s = \\c => cn.s ! Strong ! Sg ! (toCase c) ++ cn.adv ;
       a = agrgP3 cn.g Sg ;
-      -- isLight = True ;  -- ich trinke Bier nicht vs. ich trinke kein Bier
-      -- isPron = False ;
-      w = WLight ;
+      w = WLight ; -- ? ich trinke Bier nicht vs. ich trinke kein Bier
       rc = cn.rc ! Sg ;
       ext = cn.ext
       } ;
@@ -221,7 +212,6 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
     
     RelNP np rs = np ** {
       rc = (np.rc ++ embedInCommas (rs.s ! RGenNum (gennum (genderAgr np.a) (numberAgr np.a)))) ;
-      -- isPron = False 
       w = case isPron np of { True => WLight ; _ => np.w } 
       } ;
 
@@ -233,6 +223,5 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude, ParadigmsG
       s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! NPC c ++ bigNP np } ;
 
     PossNP cn np = cn ** {
---      s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! NPP CVonDat ++ bigNP np } ;
       s = \\a,n,c => cn.s ! a ! n ! c ++ appPrepNP von_Prep np } ;
 }
