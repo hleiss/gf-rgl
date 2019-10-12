@@ -1,0 +1,795 @@
+Complexity of categories (# derived CFG-categories)                           10/2019
+
++ A 1
++ A2 18    = Preposition = Bool * PCase = 2 * (Case + CPrep) = 2*(4+5)
++ ACard 1
++ AP 2
++ CN 3
++ Card 2
++ Cl 1
++ ClSlash 18 = Preposition
++ Comp 1
++ Conj 2
++ DAP 1
++ Definition 1
++ Det 8
++ Dig 2
++ Digit 1
++ Digits 2
++ Document 1
++ FClause 116640  = VP * NP = 2160 * 54
++ Foc 1
++ Hour 1
++ IComp 1
++ IDet 2
++ IP 2
++ IQuant 1
++ Imp 1
++ Inflection 1
++ Language 3
++ ListAP 2
++ ListAdV 1
++ ListAdv 1
++ ListCN 3
++ ListDAP 1
++ ListIAdv 1
++ ListNP 18
++ ListRS 4
++ ListS 1
++ ListVPI 1
++ ListVPS 1
++ Month 3
++ Monthday 54
++ N 3
++ N2 54   = Noun * Preposition = Gender * Preposition = 3 * 18
++ N3 972  = Noun * Preposition * Preposition
++ NP 54   = Agr * Weight = Gender * Number * Person * Weight = 18 * 3
++ Num 4
++ Numeral 2
++ Ord 1
++ PN 3
++ Predet 30 = PrededCase * PredetAgr = (1 + PCase) * (1 + Number) = 10*3
++ Prep 18   = Preposition
++ Pron 18   = Agr 
++ QCl 1
++ QS 1
++ QVP 1
++ Quant 4
++ RCl 4
++ RNP 1
++ RP 7
++ RS 4
++ S 1
++ SSlash 18
++ Subj 1
++ Temp 16
++ Tense 8
++ Text 1
++ Utt 1
++ V 10      = Verb = VAux * VType = 2 * (1 + Case)
++ V2 180    = Verb * Preposition = 10 * 18
++ V2A 180
++ V2Q 180
++ V2S 180
++ V2V 1080  = Verb * Preposition * Bool * Control = 180 * 2 * 3
++ V3 3240   = Verb * Preposition * Preposition = 10 * 18 * 18
++ VA 180
++ VP 2160        = Verb * Bool * Bool * Control * Preposition = 10*2*2*3*18
++ VPSlash 77760  = VP * Preposition * Bool = 2160 * 18 * 2
++ VQ 10
++ VS 10
++ VV 20     = Verb * Bool 
++ Voc 1
+
+Q: Can we reduce Preposition to Bool * Case = 8 values, or 
+   Preposition = {s,s2:Str ; c:Case ; isPrep:BoolOrGlued} = 4*3 = 12 values?
+
+Most complex constructions (according to size of input categories):
+
++ AdVVP 2160 (2160,1)
++ AdVVPSlash 77760 (77760,1)
++ AdvFor 116640 (116640,1)
++ AdvVP 2160 (2160,1)
++ AdvVPSlash 77760 (77760,1)
++ BaseNP 2916 (246,1)
++ ComplSlash 4199040 (2134080,532) : VPSlash -> NP -> VP ;
++ ComplVV 43200 (120,50)
++ ExtAdvVP 2160 (2160,1)
++ FtoCl 116640 (482,482)
++ FunRP 6804 (54,9)
++ GenericCl 2160 (12,12)
++ ImpP3 116640 (648,648)
++ ImpPl1 2160 (4,4)
++ InflectionV2V 1080 (282,282)
++ InflectionV3 3240 (240,240)
++ MkVPS 69120 (2120,2120)
++ PassAgentVPSlash 4199040 (1,1) : VPSlash -> NP -> VP ;
++ PassVPSlash 77760 (1,1)
++ PastPartAP 77760 (1,1)
++ PastPartAgentAP 4199040 (1,1) : VPSlash -> NP -> AP ;
++ PredVP 116640 (1446,1446) : NP -> VP -> Cl ;
++ ProgrVP 2160 (2160,1)
++ ReflRNP 77760 (19440,9)
++ ReflVP 77760 (17280,8)
++ RelVP 15120 (6222,6222)
++ SelfAdVVP 2160 (2160,1)
++ SelfAdvVP 2160 (2160,1)
++ Slash2V3 174960 (9720,135) : V3 -> NP -> VPSlash ;
++ Slash3V3 174960 (9720,135)
+
++ SlashV2V 2332800 (...)  : V2V -> VP -> VPSlash 
+Process gf getötet
+
+Based on mkClause (hence expensive to compile?):
+
+ImpersCl vp
+GenericCl vp
+CleftNP np rs
+CleftAdv ad s
+ExistNP np
+ExistIP ip
+ExistNPAdv np adv
+ExistIPAdv ip adv
+ImpPl1 vp
+ImpP3 np vp
+QuestVP qp vp
+QuestIComp icomp np
+RelVP rp vp
+PredVP np vp
+PredSCVP sc vp
+SlashVP np vp
+SlashVS np vs slash
+
+AdvVPSlash ?
+ComplSlash 3.317.760 (1751040,456)
+PredVP
+RelVP
+SlashV2V 1.843.200 (5760,40)
+SlashV2VNP 3.185.049.600 (2560,40) simplified
+SlashVV 1.228.800 (1920,40)
+VPSlashPrep 30720 (30720,1)
+
+Extra:
+AdvFor adv fcl = fcl ** {a2=adv.s}
+MkVPS
+
+=========== 9.10.19  Mit branch prepDefArtAR :
+
+i -v LangGer.gf
+ignore path /home/leiss/.cabal/share/x86_64-linux-ghc-7.6.3/gf-3.9/lib/./../abstract
+...
++ reading /home/leiss/GF/gf-rgl/src/abstract/Common.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Cat.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Noun.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Verb.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Adjective.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Adverb.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Numeral.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Sentence.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Question.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Relative.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Conjunction.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Phrase.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Text.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Structural.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Idiom.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Tense.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/NumeralTransfer.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Transfer.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Grammar.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Lexicon.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Construction.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Documentation.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/MarkHTML.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Markup.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Lang.gfo
++ reading /home/leiss/GF/gf-rgl/src/prelude/Predef.gfo
++ reading /home/leiss/GF/gf-rgl/src/prelude/Prelude.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/ParamX.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/CommonX.gfo
+- parsing ResGer.gf
+  renaming 
+  type checking 
+  optimizing  Gender ...
+- parsing CatGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization type for ACard, inserting default {s : Str}
+   Warning: no linearization type for DAP, inserting default {s : Str}
+  optimizing  Voc ..
+  generating PMCFG 
++ A 1
++ A2 18
++ ACard 1
++ AP 2
++ CN 3
++ Card 2
++ Cl 1
++ ClSlash 18
++ Comp 1
++ Conj 2
++ DAP 1
++ Det 8
++ Digits 2
++ IComp 1
++ IDet 2
++ IP 2
++ IQuant 1
++ Imp 1
++ N 3
++ N2 54
++ N3 972
++ NP 54
++ Num 4
++ Numeral 2
++ Ord 1
++ PN 3
++ Predet 30
++ Prep 18
++ Pron 18
++ QCl 1
++ QS 1
++ Quant 4
++ RCl 4
++ RP 7
++ RS 4
++ S 1
++ SSlash 18
++ Subj 1
++ Temp 16
++ Tense 8
++ V 10
++ V2 180
++ V2A 180
++ V2Q 180
++ V2S 180
++ V2V 1080
++ V3 3240
++ VA 180
++ VP 2160
++ VPSlash 77760
++ VQ 10
++ VS 10
++ VV 20
+
+- parsing MorphoGer.gf
+  renaming 
+  type checking 
+  optimizing  cardOrd ...
+- parsing NounGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization of AdjDAP
+   Warning: no linearization of CountNP
+   Warning: no linearization of DetDAP
+   Warning: no linearization of PartNP
+   NounGer.gf:134-146:
+     Happened in linearization of DefArt
+      Warning: patterns never reached:
+                 {p1 = Pl; p2 = NPP p}
+  optimizing  Voc ...
+  generating PMCFG 
++ AdNum 2 (2,1)
++ AdjCN 6 (6,6)
++ AdvCN 3 (3,1)
++ AdvNP 54 (18,1)
++ ApposCN 162 (3,1)
++ ComplN2 2916 (27,9)
++ ComplN3 52488 (486,9)
++ DefArt 1 (1,1)
++ DetCN 24 (24,12)
++ DetNP 8 (4,1)
++ DetQuant 16 (12,4)
++ DetQuantOrd 16 (16,16)
++ ExtAdvNP 54 (18,1)
++ IndefArt 1 (1,1)
++ MassNP 3 (3,1)
++ NumCard 2 (2,1)
++ NumDigits 2 (2,1)
++ NumNumeral 2 (2,1)
++ NumPl 1 (1,1)
++ NumSg 1 (1,1)
++ OrdDigits 2 (1,1)
++ OrdNumeral 2 (1,1)
++ OrdNumeralSuperl 2 (1,1)
++ OrdSuperl 1 (1,1)
++ PPartNP 9720 (18,1)
++ PossNP 162 (3,1)
++ PossPron 18 (1,1)
++ PredetNP 1620 (340,60)
++ RelCN 12 (3,3)
++ RelNP 216 (36,4)
++ SentCN 3 (3,1)
++ Use2N3 972 (54,1)
++ Use3N3 972 (54,1)
++ UseN 3 (3,1)
++ UseN2 54 (3,1)
++ UsePN 3 (3,1)
++ UsePron 18 (18,1)
++ reading /home/leiss/GF/gf-rgl/src/prelude/Coordination.gfo
+- parsing VerbGer.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+  generating PMCFG 
++ AdVVP 2160 (2160,1)
++ AdVVPSlash 77760 (77760,1)
++ AdvVP 2160 (2160,1)
++ AdvVPSlash 77760 (77760,1)
++ CompAP 2 (1,1)
++ CompAdv 1 (1,1)
++ CompCN 3 (2,2)
++ CompNP 54 (1,1)
++ ComplSlash 4199040 (2134080,532)
++ ComplVA 360 (10,5)
++ ComplVQ 10 (10,5)
++ ComplVS 10 (10,5)
++ ComplVV 43200 (120,50)
++ ExtAdvVP 2160 (2160,1)
++ PassV2 180 (1,1)
++ ReflVP 77760 (17280,8)
++ Slash2V3 174960 (9720,135)
++ Slash3V3 174960 (9720,135)
++ SlashV2A 360 (180,5)
++ SlashV2Q 180 (180,5)
++ SlashV2S 180 (180,5)
++ SlashV2V 2332800
+Process gf getötet
+
+ComplSlash braucht weniger Speicher als SlashV2V, auch wenn man nur
+VerbGer compiliert
+
+================ mit branch prepDefArtHL
+i -v LangGer.gf
+ignore path /home/leiss/.cabal/share/x86_64-linux-ghc-7.6.3/gf-3.9/lib/./../abstract
+...
++ reading /home/leiss/GF/gf-rgl/src/abstract/Common.gfo
++ reading /home/leiss/GF/gf-rgl/src/abstract/Cat.gfo
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Noun.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Verb.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Adjective.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Adverb.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Numeral.gf
+  renaming 
+  type checking 
+  optimizing  Sub1000000 ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Sentence.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Question.gf
+  renaming 
+  type checking 
+  optimizing  QVP ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Relative.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Conjunction.gf
+  renaming 
+  type checking 
+  optimizing  ListS ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Phrase.gf
+  renaming 
+  type checking 
+  optimizing  VocNP ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Text.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Structural.gf
+  renaming 
+  type checking 
+  optimizing  youSg_Pron ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Idiom.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Tense.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/NumeralTransfer.gf
+  renaming 
+  type checking 
+  optimizing  pot3plus ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Transfer.gf
+  renaming 
+  type checking 
+  optimizing  youSg_Pron ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Grammar.gf
+  renaming 
+  type checking 
+  optimizing  youSg_Pron ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Lexicon.gf
+  renaming 
+  type checking 
+  optimizing  young_A ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Construction.gf
+  renaming 
+  type checking 
+  optimizing  Timeunit ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Documentation.gf
+  renaming 
+  type checking 
+  optimizing  Definition ...
++ reading /home/leiss/GF/gf-rgl/src/abstract/MarkHTML.gfo
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Markup.gf
+  renaming 
+  type checking 
+  optimizing  ul_Mark ...
+- parsing /home/leiss/GF/gf-rgl/src/abstract/Lang.gf
+  renaming 
+  type checking 
+  optimizing  young_A ...
++ reading /home/leiss/GF/gf-rgl/src/prelude/Predef.gfo
++ reading /home/leiss/GF/gf-rgl/src/prelude/Prelude.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/ParamX.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/CommonX.gfo
++ reading ResGer.gfo
++ reading CatGer.gfo
++ reading MorphoGer.gfo
++ reading ParadigmsGer.gfo
+- parsing NounGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization of AdjDAP
+   Warning: no linearization of CountNP
+   Warning: no linearization of DetDAP
+   Warning: no linearization of PartNP
+  optimizing  Voc ...
+
+  generating PMCFG 
++ AdNum 2 (2,1)
++ AdjCN 6 (6,6)
++ AdvCN 3 (3,1)
++ AdvNP 54 (18,1)
++ ApposCN 162 (3,1)
++ ComplN2 2592 (333,7)
++ ComplN3 41472 (5328,7)
++ DefArt 1 (1,1)
++ DetCN 24 (24,12)
++ DetNP 8 (4,1)
++ DetQuant 16 (12,4)
++ DetQuantOrd 16 (16,16)
++ ExtAdvNP 54 (18,1)
++ IndefArt 1 (1,1)
++ MassNP 3 (3,1)
++ NumCard 2 (2,1)
++ NumDigits 2 (2,1)
++ NumNumeral 2 (2,1)
++ NumPl 1 (1,1)
++ NumSg 1 (1,1)
++ OrdDigits 2 (1,1)
++ OrdNumeral 2 (1,1)
++ OrdNumeralSuperl 2 (1,1)
++ OrdSuperl 1 (1,1)
++ PPartNP 8640 (18,1)
++ PossNP 162 (9,3)
++ PossPron 18 (1,1)
++ PredetNP 972 (204,36)
++ RelCN 12 (3,3)
++ RelNP 216 (36,4)
++ SentCN 3 (3,1)
++ Use2N3 768 (48,1)
++ Use3N3 768 (48,1)
++ UseN 3 (3,1)
++ UseN2 48 (3,1)
++ UsePN 3 (3,1)
++ UsePron 18 (18,1)
+
+  write file NounGer.gfo
++ reading /home/leiss/GF/gf-rgl/src/prelude/Coordination.gfo
+- parsing VerbGer.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
+  generating PMCFG 
++ AdVVP 1920 (1920,1)
++ AdVVPSlash 61440 (61440,1)
++ AdvVP 1920 (1920,1)
++ AdvVPSlash 61440 (61440,1)
++ CompAP 2 (1,1)
++ CompAdv 1 (1,1)
++ CompCN 3 (2,2)
++ CompNP 54 (1,1)
++ ComplSlash 3317760 (2845440,319)
++ ComplVA 320 (10,5)
++ ComplVQ 10 (10,5)
++ ComplVS 10 (10,5)
++ ComplVV 38400 (120,50)
++ ExtAdvVP 1920 (1920,1)
++ PassV2 160 (1,1)
++ ReflVP 61440 (15360,8)
++ Slash2V3 138240 (128064,117)
++ Slash3V3 138240 (128064,117)
++ SlashV2A 320 (160,5)
++ SlashV2Q 160 (160,5)
++ SlashV2S 160 (160,5)
++ SlashV2V 1843200
+Process gf getötet
+
+ComplSlash braucht mehr Productionen als mit branch prepDefArtAR
+(2.850.000 statt 2.130.000), aber auch die Slash2V3, Slash3V3 
+(138240 (128064,117) statt 174960 (9720,135))!
+
+Man kann Preposition weiter verkleinern (type = isCase|isPrep|isGlued), was zu 
+|Preposition| = 4 * 3 = 12 statt 4 * 4 =16 Werten führt. Das ergibt
+
++ ComplSlash 1.866.240 (1.494.720,259)
++ Slash2V3 77760 (57480,75)
++ SlashV2V 1.036.800 (4320,40)
++ SlashV2VNP 1.343.692.800
+
+Da man für richtige Implementierung der isGlued-Präpositionen noch 
+|NP| = |Agr|*|Weight| von 18*3 auf 18*4 erhöhen muß, wird's etwas
+schlechter (genauer s.u.)
+
+HL + ComplSlash 2.488.320 (1.935.360,295)  
+AR + ComplSlash 4.199.040 (2.134.080,532)
+HL + Slash2V3 103.680 (75.840,120)
+AR + Slash2V3 174.960 (9.720,135) <= larger args, less productions !
+HL + SlashV2V 1.036.800 (4.320,40)
+AR + SlashV2V 2.332.800 ... gf killed
+Dann aber: HL + PredVP 103680 (29610,2736) ... gf killed
+
+Aber die obere Schranke der Argumentgröße allein ist nicht das Problem
+-- eher die vielen Fallunterscheidungen (in insertObjNP und mkClause)
+
+> i -v -no-pmcfg TestLangGer.gf
+ignore path /home/leiss/.cabal/share/x86_64-linux-ghc-7.6.3/gf-3.9/lib/./../../src/abstract
+  ...
+- parsing /home/leiss/GF/gf-rgl/src/german/QuestionGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization of AddAdvQVP
+   Warning: no linearization of AdvQVP
+   Warning: no linearization of ComplSlashIP
+   Warning: no linearization type for QVP, inserting default {s : Str}
+   Warning: no linearization of QuestQVP
+  optimizing  Voc ...
++ reading /home/leiss/GF/gf-rgl/src/german/RelativeGer.gfo
+- parsing /home/leiss/GF/gf-rgl/src/german/ConjunctionGer.gf
+  optimizing  bigCN ...
+- parsing /home/leiss/GF/gf-rgl/src/german/PhraseGer.gf
+  renaming 
+  type checking 
+  optimizing  VocNP ...
+- parsing /home/leiss/GF/gf-rgl/src/common/TextX.gf
+  renaming 
+  type checking 
+  optimizing  Voc ...
++ reading /home/leiss/GF/gf-rgl/src/german/IdiomGer.gfo
++ reading /home/leiss/GF/gf-rgl/src/german/MakeStructuralGer.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/ConstructX.gfo
++ reading /home/leiss/GF/gf-rgl/src/german/IrregGerAbs.gfo
++ reading /home/leiss/GF/gf-rgl/src/german/IrregGer.gfo
++ reading /home/leiss/GF/gf-rgl/src/german/StructuralGer.gfo
++ reading /home/leiss/GF/gf-rgl/src/common/TenseX.gfo
++ reading /home/leiss/GF/gf-rgl/src/german/TenseGer.gfo
+- parsing /home/leiss/GF/gf-rgl/src/german/GrammarGer.gf
+  renaming 
+  type checking 
+  optimizing  youSg_Pron ...
++ reading /home/leiss/GF/gf-rgl/src/german/LexiconGer.gfo
+- parsing TestLexiconGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization of versprechen_dat_V2V
+  optimizing  mkV4 ...
+- parsing TestLangGer.gf
+  renaming 
+  type checking 
+   Warning: no linearization of ComplSlashSlash
+   Warning: no linearization of Pass2V4
+   Warning: no linearization of PassVPSlash
+   Warning: no linearization of PastPartAP
+   Warning: no linearization of Slash2V4
+   Warning: no linearization of Slash3V4
+   Warning: no linearization of Slash4V4
+   Warning: no linearization type for VPSlashSlash, inserting default {s : Str}
+  optimizing  young_A ...
+linking ... 
++ A 1
++ A2 12
++ ACard 1
++ AP 2
++ AdAP 2 (2,1)
++ AdAdv 1 (1,1)
++ AdNum 2 (2,1)
++ AdVVP 1440 (1440,1)
++ AdVVPSlash 34560 (34560,1)
++ AdjCN 6 (6,6)
++ AdjOrd 1 (1,1)
++ AdnCAdv 1 (1,1)
++ AdvCN 3 (3,1)
++ AdvIAdv 1 (1,1)
++ AdvIP 2 (2,1)
++ AdvNP 72 (18,1)
++ AdvS 1 (1,1)
++ AdvSlash 12 (12,1)
++ AdvVP 1440 (1440,1)
++ AdvVPSlash 34560 (34560,1)
++ ApposCN 216 (3,1)
++ BaseAP 4 (3,1)
++ BaseAdv 1 (1,1)
++ BaseCN 9 (3,1)
++ BaseNP 5184 (246,1)
++ BaseRS 16 (4,1)
++ BaseS 1 (1,1)
++ CAdvAP 144 (1,1)
++ CN 3
++ Card 2
++ Cl 1
++ ClSlash 12
++ CleftAdv 1 (1,1)
++ CleftNP 288 (16,16)
++ Comp 1
++ CompAP 2 (1,1)
++ CompAdv 1 (1,1)
++ CompCN 3 (2,2)
++ CompIAdv 1 (1,1)
++ CompIP 2 (1,1)
++ CompNP 72 (1,1)
++ ComparA 72 (1,1)
++ ComparAdvAdj 72 (1,1)
++ ComparAdvAdjS 1 (1,1)
++ ComplA2 864 (556,20)
++ ComplN2 2592 (2520,16)
++ ComplN3 31104 (30240,16)
++ ComplSlash 2488320 (1935360,295)
++ ComplVA 240 (10,5)
++ ComplVQ 10 (10,5)
++ ComplVS 10 (10,5)
++ ComplVV 28800 (120,50)
++ Conj 2
++ ConjAP 4 (2,1)
++ ConjAdv 2 (1,1)
++ ConjCN 6 (3,1)
++ ConjNP 36 (30,1)
++ ConjRS 8 (4,1)
++ ConjS 2 (1,1)
++ ConsAP 4 (3,1)
++ ConsAdv 1 (1,1)
++ ConsCN 9 (3,1)
++ ConsNP 1296 (246,1)
++ ConsRS 16 (4,1)
++ ConsS 1 (1,1)
++ DAP 1
++ DefArt 1 (1,1)
++ Det 16
++ DetCN 48 (36,12)
++ DetNP 16 (4,1)
++ DetQuant 32 (24,4)
++ DetQuantOrd 32 (32,16)
++ Digits 2
++ EmbedQS 1 (1,1)
++ EmbedS 1 (1,1)
++ EmbedVP 1440 (1,1)
++ ExistIP 2 (1,1)
++ ExistIPAdv 2 (1,1)
++ ExistNP 72 (1,1)
++ ExistNPAdv 72 (1,1)
++ ExtAdvNP 72 (18,1)
++ ExtAdvS 1 (1,1)
++ ExtAdvVP 1440 (1440,1)
++ FunRP 6048 (48,8)
++ GenericCl 1440 (12,12)
++ IComp 1
++ IDet 2
++ IP 2
++ IQuant 1
++ IdRP 1 (1,1)
++ IdetCN 6 (6,6)
++ IdetIP 2 (2,1)
++ IdetQuant 4 (2,2)
++ Imp 1
++ ImpP3 103680 (3456,432)
++ ImpPl1 1440 (4,4)
++ ImpVP 1440 (1,1)
++ ImpersCl 1440 (12,12)
++ IndefArt 1 (1,1)
++ ListAP 2
++ ListAdV 1
++ ListAdv 1
++ ListCN 3
++ ListDAP 1
++ ListIAdv 1
++ ListNP 18
++ ListRS 4
++ ListS 1
++ MassNP 3 (3,1)
++ N 3
++ N2 36
++ N3 432
++ NP 72
++ NoPConj 1 (1,1)
++ NoVoc 1 (1,1)
++ Num 4
++ NumCard 2 (2,1)
++ NumDigits 2 (2,1)
++ NumNumeral 2 (2,1)
++ NumPl 1 (1,1)
++ NumSg 1 (1,1)
++ Numeral 2
++ Ord 1
++ OrdDigits 2 (1,1)
++ OrdNumeral 2 (1,1)
++ OrdNumeralSuperl 2 (1,1)
++ OrdSuperl 1 (1,1)
++ PConjConj 2 (1,1)
++ PN 3
++ PPartNP 8640 (18,1)
++ Pass2V3 103680 (632,24)
++ Pass3V3 103680 (632,24)
++ PassV2 120 (1,1)
++ PassV2Q 120 (1,1)
++ PassV2S 120 (1,1)
++ PassV2V 1036800 (1,1)
++ PhrUtt 1 (1,1)
++ PositA 1 (1,1)
++ PositAdAAdj 1 (1,1)
++ PositAdvAdj 1 (1,1)
++ PossNP 216 (9,3)
++ PossPron 18 (1,1)
++ PredSCVP 1440 (12,12)
++ PredVP 103680 (29610,2736)
++ Predet 27
++ PredetNP 1944 (306,54)
++ Prep 12
++ PrepIP 24 (8,8)
++ PrepNP 864 (840,16)
++ ProgrVP 1440 (1440,1)
++ Pron 18
++ QCl 1
++ QS 1
++ QVP 1
++ Quant 8
++ QuestCl 1 (1,1)
++ QuestIAdv 1 (1,1)
++ QuestIComp 72 (783,783)
++ QuestSlash 24 (8,8)
++ QuestVP 2880 (24,24)
++ RCl 4
++ RP 7
++ RS 4
++ ReflA2 12 (9,9)
++ ReflVP 34560 (11520,8)
++ ReflVPSlash 1440 (960,40)
++ RelCN 12 (3,3)
++ RelCl 1 (1,1)
++ RelNP 288 (54,4)
++ RelS 4 (1,1)
++ RelSlash 84 (8,8)
++ RelVP 10080 (6222,6222)
++ S 1
++ SSlash 12
++ SSubjS 1 (1,1)
++ SelfAdVVP 1440 (1440,1)
++ SelfAdvVP 1440 (1440,1)
++ SelfNP 72 (72,1)
++ SentAP 2 (1,1)
++ SentCN 3 (3,1)
++ Slash2V3 103680 (75840,120)
++ Slash3V3 103680 (75840,120)
++ SlashPrep 12 (12,1)
++ SlashV2A 240 (120,5)
++ SlashV2Q 120 (120,5)
++ SlashV2S 120 (120,5)
++ SlashV2V 1036800 (4320,40)
++ SlashV2Vneg 1036800 (4320,40)
++ SlashV2a 120 (120,5)
++ SlashVP 2488320
+Process gf getötet
