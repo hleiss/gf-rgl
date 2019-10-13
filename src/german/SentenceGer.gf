@@ -31,7 +31,7 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
 --        verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ! pol ++ obj ++ vp.a2 ++ inf ++ vp.ext
         verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ++ negation ! pol ++ obj ++ vp.a2 ++ inf ++ vp.ext
     } ; 
-
+-- skip to save compile time:
     SlashVP np vp = 
       let subj = mkSubj np vp.c1
       in mkClause subj.p1 subj.p2 vp ** {c2 = vp.c2} ;

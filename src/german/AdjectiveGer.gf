@@ -37,8 +37,8 @@ concrete AdjectiveGer of Adjective = CatGer ** open ResGer, Prelude in {
 -- $SuperlA$ belongs to determiner syntax in $Noun$.
 
     ComplA2 a np = 
-      let CExt = case a.c2.type of {
-	    isCase => <appPrepNP a.c2 np, []> ;
+      let CExt = case a.c2.isPrep of {
+	    False => <appPrepNP a.c2 np, []> ;
 	    _ => <[], appPrepNP a.c2 np> } 
       in {
         s = a.s ! Posit ;
@@ -50,8 +50,8 @@ concrete AdjectiveGer of Adjective = CatGer ** open ResGer, Prelude in {
     ReflA2 a = 
       let 
 	compl = appPrep a.c2 (\\k => reflPron ! agrP3 Sg ! (toCase k)) ;
-	CExt = case a.c2.type of
-	  { isCase => <compl, []> ;
+	CExt = case a.c2.isPrep of
+	  { False => <compl, []> ;
 	    _ => <[], compl> }
       in {
         s = a.s ! Posit ;

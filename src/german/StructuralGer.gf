@@ -5,7 +5,7 @@ concrete StructuralGer of Structural = CatGer **
 
   flags optimize=all ;
     coding=utf8 ;
-
+    
   lin
 
   above_Prep = mkPrep "über" P.dative ;

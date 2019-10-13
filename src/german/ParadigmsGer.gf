@@ -421,7 +421,7 @@ mkV2 : overload {
       <_,_ + ("n" | "s"), Fem> =>                                   -- IX,X 
         mk6N hund hund hund hund hunde hunde g ;
       <_,_ + ("n" | "s"), Neutr> =>                                 --- not mentioned; Konto-Kontos
-        mk6N hund hund hund hund hunde hunde g ;
+        mk6N hund hund hund (genitS True hund) hunde hunde g ;      -- ? genitS III, HL 10/19 Auge
       _ => regN hund ** {g = g}
     } ;
    
@@ -493,29 +493,30 @@ mkV2 : overload {
 
   mkPrep = overload {
     mkPrep : Str -> Case -> Prep = \s,c -> 
-      {s = s ; s2 = [] ; s3 = table {_ => ""} ; 
-       c = c ; type = isPrep ; lock_Prep = <> } ;
+      {s = s ; s2 = [] ; s3 = table {g => s ++ (artDef ! (GSg g) ! c)} ; 
+       c = c ; isPrep = True ; lock_Prep = <> } ;
     mkPrep : Case -> Str -> Prep = \c,s ->
-      {s = [] ; s2 = s ; s3 = table {_ => ""} ; 
-       c = c ; type = isPrep ; lock_Prep = <> } ;
+      {s = [] ; s2 = s ; s3 = table {g => artDef!(GSg g)!c} ; 
+       c = c ; isPrep = True ; lock_Prep = <> } ;
     mkPrep : Str -> Case -> Str -> Prep = \s,c,t ->
-      {s = s ; s2 = t ; s3 = table {_ => ""} ; 
-       c = c ; type = isPrep ; lock_Prep = <> } ;
+      {s = s ; s2 = t ; s3 = table {g => s ++ artDef!(GSg g)!c} ; 
+       c = c ; isPrep = True ; lock_Prep = <> } ;
+    -- for prep+DefArtSg an+dem = am etc:
     mkPrep : Str -> Str * Str * Str -> Case -> Prep = \p,mfn,c -> 
       {s = p ; s2 = [] ; 
        s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
-       c = c ; type = isGlued ; lock_Prep = <>} ;
+       c = c ; isPrep = True ; lock_Prep = <>} ;
     mkPrep : Str -> Str * Str * Str -> Case -> Str -> Prep = \p,mfn,c,q -> 
       {s = p ; s2 = q ; 
        s3 = table {Masc => mfn.p1 ; Fem => mfn.p2 ; Neutr => mfn.p3} ; 
-       c = c ; type = isGlued ; lock_Prep = <>} 
+       c = c ; isPrep = True ; lock_Prep = <>} 
     } ;
   accPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
-             c = accusative ; type = isCase ; lock_Prep = <> } ;
+             c = accusative ; isPrep = False ; lock_Prep = <> } ;
   datPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
-             c = dative ; type = isCase ; lock_Prep = <> } ;
+             c = dative ; isPrep = False ; lock_Prep = <> } ;
   genPrep = {s,s2 = [] ; s3 = table {_ => ""} ;
-             c = genitive ; type = isCase ; lock_Prep = <> } ;
+             c = genitive ; isPrep = False ; lock_Prep = <> } ;
 
   anDat_Prep = mkPrep "an" <"am","an der","am"> Dat ;
   inDat_Prep = mkPrep "in" <"im","in der","im"> Dat ;
@@ -723,6 +724,6 @@ mkV2 : overload {
     mkV2 : V -> Prep -> V2 = prepV2;
     mkV2 : V -> Case -> V2 = \v,c -> 
       prepV2 v (lin Prep {s,s2 = [] ; s3 = table {_ => ""} ; 
-                          c = c ; type = isCase})
+                          c = c ; isPrep = False})
     } ;
 }

@@ -1,7 +1,7 @@
 abstract TestNoun = 
   Lexicon, -- !
   Noun, 
---  Verb, 
+    Verb, 
   Adjective,
   Adverb,
   Numeral,

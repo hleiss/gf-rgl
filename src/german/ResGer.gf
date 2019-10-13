@@ -418,33 +418,29 @@ resource ResGer = ParamX ** open Prelude in {
 -- Prepositions for complements indicate the complement case; they may be glued
 -- with definite article in the singular, e.g. zu+der = zur, zu+dem = zum
 
-  param 
-    PrepType = isCase | isPrep | isGlued ;
-
   oper
     Preposition : Type = 
       {s : Str ; s2 : Str ; -- preposition ; postposition
-       s3 : Gender => Str ; -- glued with DefArt,Sg: zum,zur,zum
-       c : Case ; type : PrepType
+       s3 : Gender => Str ; -- glued with DefArt,Sg: zum,zur,zum, unglued: s ++ DefArt,Sg g c
+       c : Case ; isPrep : Bool
       } ;
 
   -- HL 7/19: German has very few circumpositions: um (Gen) Willen, von (Adv) an|ab|aus
   -- ? bis (Adv) hin|her. So maybe we should skip s2 (and save readings with empty preps).
 
   PrepNom : Preposition = 
-    {s,s2 = "" ; s3 = \\g => "" ; c = Nom ; type = isCase} ; 
+    {s,s2 = "" ; s3 = \\g => "" ; c = Nom ; isPrep = False} ; 
 
 -- To apply a preposition to a complement.
 
   appPrep : Preposition -> (PCase => Str) -> Str = \prep,arg ->
-    case prep.type of {
-      isGlued => "(?" ++ prep.s ++ arg ! (NPC prep.c) ++ prep.s2 ++ "?)" ; -- TODO
-      _ => prep.s ++ arg ! (NPC prep.c) ++ prep.s2 } ; 
+    prep.s ++ arg ! (NPC prep.c) ++ prep.s2 ; 
 
   appPrepNP : Preposition -> NP -> Str = \prep,np ->
     let g = genderAgr np.a ;
         n = numberAgr np.a ;
-        b : Bool = case <prep.type,np.w> of { <isGlued,WDefArt> => True ; _ => False } ;
+--        b : Bool = case <prep.type,np.w> of { <isGlued,WDefArt> => True ; _ => False } ;
+        b : Bool = case <prep.isPrep,np.w> of { <True,WDefArt> => True ; _ => False } ;
     in case <b,n> of {
       <True, Sg> => prep.s3 ! g ++ np.s ! (NoDefArt prep.c) ++ bigNP np ++ prep.s2 ;
       _ =>               prep.s ++ np.s ! (NPC prep.c) ++ bigNP np ++ prep.s2 
@@ -704,15 +700,14 @@ resource ResGer = ParamX ** open Prelude in {
     insertObj obj vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl } ;
 
   insertObjNP : NP -> Preposition -> VPSlash -> VPSlash = \np,prep,vp ->
-    let c = prep.c ; -- case prep.c of {NPC cc => cc ; _ => Nom} ;
+    let c = prep.c ;
         obj : Agr => Str = \\_ => appPrepNP prep np ;
     in vp ** {
       nn = \\a => -- HL 11/6/19: rough objNP order (p5,p6 = splitInfExt):
         -- vfin < accPron < refl < (gen|dat)Pron < lightNP < neg < heavyNP|PP < vinf|comp
         let vpnn = vp.nn ! a ;
-            isprep : Bool = case prep.type of {isCase => False ; _ => True}
-        in    -- expensive:  
-        case <isprep, np.w, c> of { 
+        in    -- expensive:  2*4*4 = 32 cases
+        case <prep.isPrep, np.w, c> of {
           <True, _,_> =>       -- <prons, light, heavy++pp, compl,_,_>
             <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4, vpnn.p5, vpnn.p6> ;
           <False,WPron, Acc> => -- <ihn ++ sich, light, heavy, comp, _,_>
@@ -732,16 +727,14 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertObjRefl : VPSlash -> VPSlash = \vp -> -- HL 6/2019, to order reflPron < neg < prep+reflPron
     let prep = vp.c2 ;
-        -- b = notB prep.isPrep ;
-        t = prep.type ;
-        c = prep.c ; -- case prep.c of {NPC cc => cc ; _ => Nom} ;
+        c = prep.c ;
         obj : Agr => Str = \\a => prep.s ++ reflPron ! a ! c ;
     in vp ** {
       nn = \\a =>
         let vpnn = vp.nn ! a in
-        case t of {
-          isCase => <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ;
-          _ => <vpnn.p1, obj ! a ++ vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> }
+        case prep.isPrep of {
+          False => <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> ;
+          True  => <vpnn.p1, obj ! a ++ vpnn.p2, vpnn.p3, vpnn.p4, vpnn.p5, vpnn.p6> }
     } ;
 
   insertAdV : Str -> VP -> VP = \adv,vp -> vp ** { -- not used in RGL, so VP.a1 can be skipped
