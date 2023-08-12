@@ -37,7 +37,8 @@ resource ResEng = ParamX ** open Prelude in {
 -- for "himself"/"herself"/"itself".
 
   param
-    Agr = AgP1 Number | AgP2 Number | AgP3Sg Gender | AgP3Pl Gender ;
+    Agr = AgP1 Number | AgP2 Number | AgP3Sg Gender | AgP3Pl Gender
+        | AgP3SgGen ;  -- for generic reflexive|possessive oneself|one's  HL 8/2023
 
   param
     Gender = Neutr | Masc | Fem ;
@@ -108,6 +109,7 @@ param
     fromAgr : Agr -> {n : Number ; p : Person ; g : Gender} = \a -> case a of {
       AgP1 n => {n = n ; p = P1 ; g = Masc} ;
       AgP2 n => {n = n ; p = P2 ; g = Masc} ;
+      AgP3SgGen => {n = Sg ; p = P3 ; g = Masc} ; -- HL
       AgP3Pl g => {n = Pl ; p = P3 ; g = g} ;
       AgP3Sg g => {n = Sg ; p = P3 ; g = g}
       } ;
@@ -551,6 +553,7 @@ param
   agrVerb : Str -> Str -> Agr -> Str = \has,have,agr ->
     case agr of {
       AgP3Sg _ => has ;
+      AgP3SgGen => has ; -- HL
       _        => have
       } ;
 
@@ -602,6 +605,7 @@ param
     AgP3Sg Masc  => "himself" ;
     AgP3Sg Fem   => "herself" ;
     AgP3Sg Neutr => "itself" ;
+    AgP3SgGen    => "oneself" ; -- HL
     AgP1 Pl      => "ourselves" ;
     AgP2 Pl      => "yourselves" ;
     AgP3Pl _     => "themselves"
@@ -613,6 +617,7 @@ param
     AgP3Sg Masc  => "his" ;
     AgP3Sg Fem   => "her" ;
     AgP3Sg Neutr => "its" ;
+    AgP3SgGen    => "one's" ; -- HL 8/2023
     AgP1 Pl      => "our" ;
     AgP2 Pl      => "your" ;
     AgP3Pl _     => "their"

@@ -483,9 +483,12 @@ lin AnaphPron np =
         AgP3Sg Masc  => he_Pron ;
         AgP3Sg Fem   => she_Pron ;
         AgP3Sg Neutr => it_Pron ;
+        AgP3SgGen    => it_Pron ; -- youSg_Pron? Generic "one" (no pronoun, only subject) HL
         AgP3Pl Masc  => they_Pron ;
         AgP3Pl Fem   => theyFem_Pron ;
         AgP3Pl Neutr => theyNeutr_Pron
     } ;
 
+  linref
+    RNP = \rnp -> rnp.s ! AgP3SgGen ;
 }

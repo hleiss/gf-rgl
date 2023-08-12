@@ -1,15 +1,16 @@
 --# -path=.:../abstract:../common:prelude
 
 concrete GrammarGer of Grammar = 
-  NounGer, 
-  VerbGer, 
+  NounGer,
+--  VerbGer,
+  VerbGer - [SlashV2VNP], 
   AdjectiveGer,
   AdverbGer,
   NumeralGer,
   SentenceGer,
   QuestionGer,
   RelativeGer,
-  ConjunctionGer,
+--  ConjunctionGer,
   PhraseGer,
   TextX - [Tense,Temp],
   IdiomGer,

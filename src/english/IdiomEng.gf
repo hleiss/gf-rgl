@@ -4,7 +4,8 @@ concrete IdiomEng of Idiom = CatEng ** open Prelude, ResEng in {
 
   lin
     ImpersCl vp = mkClause "it" (agrP3 Sg) vp ;
-    GenericCl vp = mkClause "one" (agrP3 Sg) vp ;
+    -- GenericCl vp = mkClause "one" (agrP3 Sg) vp ; -- gives "itself", "its"
+    GenericCl vp = mkClause "one" AgP3SgGen vp ; -- gives "oneself", "one's" , HL 8/2023
 
     CleftNP np rs = mkClause "it" (agrP3 Sg)
       (insertObj (\\_ => rs.s ! np.a)

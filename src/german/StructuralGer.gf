@@ -139,7 +139,7 @@ concrete StructuralGer of Structural = CatGer **
   with_Prep = mkPrep "mit" P.dative ;
   youSg_Pron = mkPronPers "du" "dich" "dir" "deiner" "dein" Fem Sg P2 ;
   youPl_Pron = mkPronPers "ihr" "euch" "euch" "eurer" "euer" Fem Pl P2 ; ---- poss
-  youPol_Pron = mkPronPers "Sie" "Sie" "Ihnen" "Ihrer" "Ihr" Fem Pl P3 ;
+  youPol_Pron = mkPronPers "Sie" "Sie" "Ihnen" "Ihrer" "Ihr" Fem Pl P3 ** {a = AgPlPol} ;
   yes_Utt = ss "ja" ;
 
   not_Predet = {s = \\_,_,_ => "nicht" ; c = noCase ; a = PAgNone} ;

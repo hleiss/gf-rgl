@@ -2,7 +2,7 @@
 
 --1 German Lexical Paradigms
 --
--- Aarne Ranta, Harald Hammarström and Björn Bringert2003--2007
+-- Aarne Ranta, Harald Hammarström and Björn Bringert 2003--2007
 --
 -- This is an API for the user of the resource grammar 
 -- for adding lexical items. It gives functions for forming
@@ -310,12 +310,12 @@ mkV2 : overload {
 -- Three-place (ditransitive) verbs need two prepositions, of which
 -- the first one or both can be absent.
 
-  accdatV3 : V -> V3 ;                  -- geben + dat(c2) + acc(c3) (Eng: no prepositions)
-  dirV3    : V -> Prep -> V3 ;          -- senden + acc + nach (preposition on second arg)
+  accdatV3 : V -> V3 ;                    -- geben + dat(c2) + acc(c3) (Eng: give sb sth)
+  dirV3    : V -> Prep -> V3 ;            -- senden + acc(c2) + an(c3)
 
   mkV3 : overload {
     mkV3     : V ->                 V3 ;  -- geben + dat(c3) + acc(c2) (Eng: give sth to-sb)
-    mkV3     : V -> Prep -> Prep -> V3 ;  -- sprechen + mit + über
+    mkV3     : V -> Prep -> Prep -> V3 ;  -- sprechen + mit(c2) + über(c3)
     } ;
 
 --3 Other complement patterns
@@ -326,39 +326,39 @@ mkV2 : overload {
   mkV0  : V -> V0 ; --%
   mkVS  : V -> VS ;
 
-  mkV2V : overload { -- with zu; object-control
-    mkV2V : V -> V2V ;
-    mkV2V : V -> Prep -> V2V ;
+  mkV2V : overload {
+    mkV2V : V -> V2V ;          -- object-control verb (zu-inf),  e.g. bitte jmdn, sich auszuruhen
+    mkV2V : V -> Prep -> V2V ;  -- object-control verb with prep, e.g. appelliere an jmdn, zu schweigen
     } ;
   auxV2V : overload { -- without zu
-    auxV2V : V -> V2V ;
+    auxV2V : V -> V2V ;         -- object-control auxiliary, e.g. lasse jmdn sich ausruhen
     auxV2V : V -> Prep -> V2V ;
     } ;
-  subjV2V : V2V -> V2V ; -- force subject-control
+  subjV2V : V2V -> V2V ; -- force subject-control, e.g. verspreche jmdm, mich auszuruhen
 
   mkV2A : overload {
-    mkV2A : V -> V2A ; 
+    mkV2A : V -> V2A ;          -- e.g. male etwas blau
     mkV2A : V -> Prep -> V2A ;
     } ;
   mkV2S : overload {
-    mkV2S : V -> V2S ;
-    mkV2S : V -> Prep -> V2S ;
+    mkV2S : V -> V2S ;          -- e.g. antworte jmdm, dass S
+    mkV2S : V -> Prep -> V2S ;  -- e.g. berichte an jmdn, dass S
     } ;
   mkV2Q : overload {
-    mkV2Q : V -> V2Q ;
+    mkV2Q : V -> V2Q ;          -- e.g. frage jmdn, ob S
     mkV2Q : V -> Prep -> V2Q ;
     } ;
 
 
-  mkVV  : V -> VV ;  -- with zu
-  auxVV : V -> VV ;  -- without zu
+  mkVV  : V -> VV ;  -- with zu,    e.g. versuche, zu schlafen
+  auxVV : V -> VV ;  -- without zu, e.g. will schlafen
 
   mkVA : overload {
-    mkVA : V -> VA ;
+    mkVA : V -> VA ;          -- e.g. bleibe gesund
     mkVA : V -> Prep -> VA ;
     } ;
     
-  mkVQ  : V -> VQ ;
+  mkVQ  : V -> VQ ;  -- e.g. frage mich, ob S
 
 
   mkAS  : A -> AS ; --%

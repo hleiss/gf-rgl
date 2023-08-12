@@ -21,15 +21,20 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
       s = \\pol,n => 
         let 
           ps = case n of {
-            ImpF _ True => <P3,"Sie",True> ; -- setzen Sie sich
-            _ => <P2,[],False>
-            } ;
-          agr  = Ag Fem (numImp n) ps.p1 ; --- g does not matter
-          verb = vps.s ! False ! agr ! VPImperat ps.p3 ;
+            ImpF _ True => <P3,"Sie",True> ; -- setzen Sie sich Ihren Hut auf
+            _ => <P2,[],False>               -- but: nimm [ihren | deinen | *Ihren] Hut
+            } ;                              -- vp should be reflexive, ComplRSlash
+          vagr = VAg (numImp n) ps.p1 ;
+          verb = vps.s ! False ! vagr ! VPImperat ps.p3 ;
+          agr = case <numImp n, ps.p1, ps.p3> of {
+                  <_, P3,True>  => AgPlPol ;  -- sich | Ihr-
+                  <Sg,P2,False> => AgSgP2 ;   -- dich | dein-
+                  <Pl,P2,False> => AgPl P2 ;  -- euch | euer-
+                  _ => AgSgP1 -- default, does not occur
+                  } ;
           inf  = vp.inf.inpl.p2 ++ verb.inf ;  -- HL .s/.inpl.p2
           obj  = (vp.nn ! agr).p2 ++ (vp.nn ! agr).p3 ++ (vp.nn ! agr).p4
         in
---        verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ! pol ++ obj ++ vp.a2 ++ inf ++ vp.ext
         verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ++ negation ! pol ++ obj ++ vp.a2 ++ inf ++ vp.ext
     } ; 
 
