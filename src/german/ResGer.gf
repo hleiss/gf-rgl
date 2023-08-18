@@ -984,7 +984,7 @@ resource ResGer = ParamX ** open Prelude in {
     -- vpi.p1 ! agrP3 Sg ++ vpi.p3 ++ vpi.p2 ++ vpi.p4 ;
     let vpi = infVP isAux Simul Pos vp ; -- HL 3/2022
         -- agr : Agr = (Ag Masc Sg P3) ;
-        agr : Agr = AgSgP3 Masc ;
+        agr : Agr = AgSgP3Gen ;          -- HL 17.8.2023
         glue : (Agr => Str)*Str -> Str =  \i -> i.p1!agr ++ i.p2
     in
        glue (embedInf vpi.inpl <vpi.objs, vpi.pred>) ++ vpi.extr!agr ++ vp.ext ;

@@ -123,8 +123,8 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
    -- expensive: + SlashV2VNP 503.884.800 (2880,540), reaches memory limit with SlashVV
    -- does not work for nested uses: the nn-levels are confused  HL 3/22
 
-   SlashV2VNP v np vp =   -- bitte ihn, zu kaufen | lasse ihn kaufen   HL 3/22
-      insertObjNP np v.c2 (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl}) ;
+   -- SlashV2VNP v np vp =   -- bitte ihn, zu kaufen | lasse ihn kaufen   HL 3/22
+   --    insertObjNP np v.c2 (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl}) ;
 
 
     UseComp comp =

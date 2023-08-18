@@ -2,24 +2,69 @@
 
 -- HL 7/2023: Extend Lang (minus Coordination, Markup,..) by reflexive predicates
 
-concrete ReflGer of Refl =
-  -- GrammarGer, -- omits SlashV2VNP
-  --CatGer,
-  NounGer,VerbGer-[SlashV2VNP],AdjectiveGer,AdverbGer,SentenceGer,StructuralGer,
-  -- RelativeGer,
-  ExtraGer-[AdvRAP,AdvRNP,ReflA2RNP,ReflRNP],
+concrete ReflGer of ReflAbs =
+  GrammarGer, -- VerbGer omits SlashV2VNP
+  -- -- ExtraGer-[AdvRAP,AdvRNP,ReflA2RNP,ReflRNP],
+  -- ExtendGer[NP,Conj,Predet,Num,CN,VP,Cl,Tense, -- on which the following depend:
+  --           RNP,RNPList,Base_nr_RNP, Base_rn_RNP, Base_rr_RNP,ConjRNP,
+  --           ReflPron,ReflPoss,PredetRNP],
   LexiconGer,ReflLexiconGer
   ** open ResGer, Prelude in {
 
+  --- Copied from ExtendGer, but why can't these be imported from ExtendGer[...] ??? ---
+  -- because RNP uses Case, NP uses PCase ??
+
   lincat
-    RAP = {s : Agr => AForm => Str ; isPre : Bool ; c: Agr => Str * Str ; ext : Str} ; 
-    -- stolz auf sich (selbst) ; größer als sein (eigener) Bruder  -- ext : Agr => Str ?
+    RNP = {s : Agr => Case => Str ; rc,ext : Str ; isPron : Bool} ;
+    RNPList = {s1,s2 : Agr => Case => Str} ;
+
+  linref
+    RNP = \rnp -> rnp.s ! AgSgP3Gen ! Nom ++ rnp.ext ++ rnp.rc ;
+
+  lin
+    ReflRNP vps rnp =
+      insertObjReflNP rnp vps ;
+
+    ReflPron = {            -- personal pronoun, with "sich" in P3 Sg
+      s = ResGer.reflPron ; rc,ext = [] ; isPron = True } ;
+
+    ReflPoss num cn =
+      {s = \\a,c => let adjf = case num.n of {Sg => Strong ; Pl => Weak} -- Duden 477, HL 5/2022
+         in possPron a num.n cn.g c ++ num.s ! cn.g ! c -- HL 5/2022: meine wenigstens 3 cn,
+            ++ cn.s ! adjfCase adjf c ! num.n ! c       --       not: wenigstens 3 meine cn
+            ++ cn.adv ;
+       ext = cn.ext ; rc = cn.rc ! num.n ;
+       isPron = False} ;
+
+    -- We might define ReflPoss by the stronger reflPossPron below, using "eigen(er)"
+    -- to distinguish possessive pronoun from reflexive possessive pronoun:
+    --   du kennst meine Fehler vs. ich kenne meine eigenen Fehler
+    --   er|sie|es kennt seine|ihre Fehler  vs. er|sie|es kennt seine|ihre|seine eigenen Fehler
+
+    PredetRNP pred rnp = rnp ** {                        -- HL 5/2022
+      s = \\a,c => let n : Number = case pred.a of {PAg n => n ; _ => numberAgr a} ;
+                       g : Gender = genderAgr a ;
+                       d = case pred.c.k of {NoCase => c ; PredCase k => (prepC k).c} ;
+        in case rnp.isPron of {
+          True => pred.s ! Pl ! Masc ! (NPC c) ++ "von" ++ rnp.s ! a ! Dat ;
+          _ => pred.s ! n ! genderAgr a ! (NPC c) ++ pred.c.p ++ rnp.s ! a ! d} ;
+      ext = rnp.ext ; rc = rnp.rc ;
+      isPron = False} ;
+      -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir
+
+  --- new material for reflecxive predicates ---
+
+  lincat
+    RAP = {s : Agr => AForm => Str ; isPre : Bool ;
+           c: Agr => Str * Str ;     -- (stolz auf) sich (selbst)
+           ext : Agr => Str} ;       -- (größer als) sein (eigener) Bruder
+
     RAdv = {s : Agr => Str} ;  -- in one's (own) house
     RCN  = {
       s : Agr => Adjf => Number => Case => Str ;
-      rc : Number => Str ; -- Frage , [rc die ich gestellt habe]   -- ? Agr => ...
-      ext : Str ;          -- Frage , [sc wo sie schläft]          -- ? Agr => ...
       adv : Str ;          -- Haus    [adv auf dem Hügel]          -- ? Agr => ...
+      rc : Number => Str ; -- Frage , [rc die ich gestellt habe]   -- ? Agr => ...
+      ext : Agr => Str ;   -- älterer Mann [als Johann]
       g : Gender
       } ;
     -- in ExtraGer: RNP = {s : Agr => Case => Str ; rc,ext : Str ; isPron : Bool} ;
@@ -35,20 +80,19 @@ concrete ReflGer of Refl =
       in { s = \\agr => a.s ! Posit ;
            isPre = True ;
            c = obj ;
-           ext = rnp.ext ++ rnp.rc
+           ext = \\agr => rnp.ext ++ rnp.rc
       } ;
     ComparRA a rnp = {
-      s = \\agr,af => a.s ! Compar ! af ++ conjThan ++ rnp.s ! agr ! Nom ++ rnp.rc ;
+      s = \\agr,af => a.s ! Compar ! af ;
       isPre = True ;
       c = \\agr => <[],[]> ;
-      ext = rnp.ext
+      ext = \\agr => conjThan ++ rnp.s ! agr ! Nom ++ rnp.rc ++ rnp.ext
       } ;
     CAdvRAP ad ap rnp = {
-      s = \\agr,af => ad.s ++ ap.c.p1 ++ ap.s ! af ++ ap.c.p2
-                   ++ ad.p ++ rnp.s ! agr ! Nom ++ rnp.ext ++ rnp.rc ;
+      s = \\agr,af => ad.s ++ ap.c.p1 ++ ap.s ! af ++ ap.c.p2 ;
       isPre = False ;
       c = \\agr => <[],[]> ;
-      ext = ap.ext 
+      ext = \\agr => ap.ext ++ ad.p ++ rnp.s ! agr ! Nom ++ rnp.ext ++ rnp.rc
       } ;
       
     PrepRNP p rnp = {s = \\agr => appPrepC p (rnp.s ! agr)} ;
@@ -57,7 +101,8 @@ concrete ReflGer of Refl =
       s = \\agr,_,n,c => n2.s ! n ! c ++ appPrepC n2.c2 (rnp.s ! agr) ;
       g = n2.g ;
       rc = \\_ => [] ;
-      ext, adv = [] } ;
+      ext = \\agr => [] ;
+      adv = [] } ;
     PossRNP cn rnp = {
       s = \\agr,a,n,c => case rnp.isPron of {
               -- True => cn.s ! a ! n ! c ++ "von" ++ reflPron ! agr ! Dat; 
@@ -66,31 +111,45 @@ concrete ReflGer of Refl =
                          in eigen ! (AMod (gennum cn.g n) c) ++ cn.s ! a ! n ! c ;
                  False => cn.s ! a ! n ! c ++ rnp.s ! agr ! Gen }
           ++ rnp.ext ++ rnp.rc ;
-      g = cn.g ; rc = cn.rc ; ext = cn.ext ; adv = cn.adv } ;
+      g = cn.g ; rc = cn.rc ; ext = \\agr => cn.ext ; adv = cn.adv } ;
+    AdjRCN rap cn =
+      let g = cn.g in {
+        s = \\agr,a,n,c => preOrPost rap.isPre
+                 ((rap.c ! agr).p1 ++ (rap.c ! agr).p2
+                   ++ rap.s ! agr ! agrAdj g a n c)
+                 (cn.s ! a ! n ! c) ;
+        ext = \\agr => cn.ext ++ rap.ext ! agr ;
+        rc = cn.rc ;
+        adv = cn.adv ;
+        g = cn.g
+        } ;
 
-    -- ExtraGer: ReflPoss num cn : RNP 
+
+    -- ExtendGer: ReflPoss num cn : RNP
     DetRCN det cn = {
-      s = \\agr,c => det.s ! cn.g ! NPC c ++ 
-                     cn.s ! agr ! (adjfCase det.a c) ! det.n ! c ++ cn.adv ;
+      s = \\agr,c => det.s ! cn.g ! (NPC c) ++
+                     cn.s ! agr ! (adjfCase det.a c) ! det.n ! c ++ cn.adv
+                     ++ cn.ext ! agr ;
       isPron = False ;
-      rc = cn.rc ! det.n ;   
-      ext = cn.ext 
+      rc = cn.rc ! det.n ;
+      ext = []
       } ;
 
     -- Reflexive complements of copula verbs
-    
+    -- (skips RCom.ext:Agr => Str: (weil man) s:älter (ist) ext:als seine Kinder)
     CompRAP rap = {
-      s = \\agr => (rap.c!agr).p1 ++ rap.s ! agr ! APred ++ (rap.c!agr).p2 ;
-      ext = rap.ext
+      s = \\agr => (rap.c!agr).p1 ++ rap.s ! agr ! APred ++ (rap.c!agr).p2
+                   ++ "als" ++ rap.ext ! agr ;
+      ext = []
       } ;
     CompRAdv radv = {s = \\agr => radv.s!agr ; ext = []} ;
     CompRCN rcn = {
         s = \\a => case numberAgr a of {
             Sg => "ein" + pronEnding ! GSg rcn.g ! Nom
-                   ++ rcn.s ! a ! Strong ! Sg ! Nom ++ rcn.rc ! Sg ;
-            Pl => rcn.s ! a ! Strong ! Pl ! Nom ++ rcn.rc ! Pl
-            } ;
-        ext = rcn.adv ++ rcn.ext
+                   ++ rcn.s ! a ! Strong ! Sg ! Nom ++ rcn.adv ++ rcn.rc ! Sg ;
+            Pl => rcn.s ! a ! Strong ! Pl ! Nom ++ rcn.adv ++ rcn.rc ! Pl
+            } ++ rcn.ext ! a ;  -- älter als sein Bruder hier (sein)
+        ext = []
       } ;
     CompRNP rnp = {s = \\a => rnp.s ! a ! Nom ++ rnp.rc ; ext = rnp.ext} ;
 
@@ -102,7 +161,7 @@ concrete ReflGer of Refl =
     ComplRSlash vps rnp =  -- ? = ReflRNP vps rnp = insertObjReflNP rnp vps ?
       let vp = case vps.objCtrl of { True => objAgr {a=agrP3 Sg} vps ; _  => vps } -- ad hoc
                ** { c2 = vps.c2 ; objCtrl = vps.objCtrl } 
-      in insertObjRNP rnp vps.c2 vp ;
+      in insertObjRNP (rnp ** {lock_RNP=<>}) vps.c2 vp ;
 
     -- VP and Cl with reflexive adverb
     -- expensive: + ComplSlashRAdv 388800 (374400,560)
@@ -119,12 +178,34 @@ concrete ReflGer of Refl =
     -- GenericCl vp = mkClause "man" (agrP3 Sg) vp ;
     -- avoid a pronoun that would not be a correct object in German:
     -- one_Pron = mkPronPers "man" "einen" "einem" "seiner" "sein" Masc Sg P3
-    --            ** { a = AgSgP3Gen } ;  -- special agreement for mkClause agr vp
+    --            ** { a = AgSgP3Gen } ; -- special agreement for mkClause str agr vp
     
   linref
-    RAP = \ap -> (ap.c!agrP3 Sg).p1 ++ ap.s ! agrP3 Sg ! APred ++ (ap.c!agrP3 Sg).p2 ++ ap.ext ;
-    RAdv = \adv -> adv.s ! agrP3 Sg ;
-    RCN  = \rcn -> rcn.s ! agrP3 Sg ! Weak ! Sg ! Nom ++ rcn.adv ++ rcn.ext ++ rcn.rc ! Pl ;
+    RAP = \ap -> (ap.c! AgSgP3Gen).p1 ++ ap.s ! AgSgP3Gen ! APred ++ (ap.c!AgSgP3Gen).p2 ++ ap.ext ! AgSgP3Gen ;
+    RAdv = \adv -> adv.s ! AgSgP3Gen ;
+    RCN  = \rcn -> rcn.s ! AgSgP3Gen ! Weak ! Sg ! Nom ++ rcn.adv
+                   ++ rcn.ext ! AgSgP3Gen ++ rcn.rc ! Pl ;
+    -- VP,VPSlash in CatGer: changed via using AgSgP3GFen in ResGer.infVP
+    -- Comp: added to CatGer, to avoid conflict
+
+  oper
+    insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
+      \rnp,vp -> insertObjRNP rnp vp.c2 vp ;
+
+    insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
+      \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
+      let -- prep = vp.c2 ;
+          c = case prep.c of { NPC cc => cc ; _ => Acc } ; -- put rnp.ext ++ rnp.rc to vp.ext ?
+          obj : Agr => Str = \\a => prep.s ++ rnp.s ! a ! c ++ rnp.ext ++ rnp.rc
+      in vp ** {
+        nn = \\a =>
+          let vpnn = vp.nn ! a in
+          case <prep.isPrep, rnp.isPron, c> of {           -- consider non-pron rnp as light, add to vpnn.p2
+            <False,True,Acc> => <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4> ; -- pronoun switch:
+            <False,True,_>   => <vpnn.p1 ++ obj ! a, vpnn.p2, vpnn.p3, vpnn.p4> ; -- accPron < pron
+            <False,False,_>  => <vpnn.p1, vpnn.p2 ++ obj ! a, vpnn.p3, vpnn.p4> ; -- < non-pron nominal
+            <True,_,_>       => <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4> } --   or prepositional
+      } ;
 
 
 {- examples (depending on linrefs): ReflPredicates>
@@ -243,11 +324,11 @@ p -cat=GVP "eigene Biere zu trinken"
 GenericVP (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant IndefArt NumPl) (PossRNP (UseN beer_N) ReflPron)))
 GenericVP (ReflRNP (SlashV2a drink_V2) (DetRCN (DetQuant IndefArt NumPl) (PossRNP (UseN beer_N) ReflPron)))
 
-l GenericVP (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumPl) (PossRNP (UseN beer_N) ReflPron)))
+l (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumPl) (PossRNP (UseN beer_N) ReflPron)))
 die eigene Biere zu trinken
 
 2 msec
-ReflPredicates> l GenericVP (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN beer_N) ReflPron)))
+Refl> l (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN beer_N) ReflPron)))
 das eigenes Bier zu trinken
 
 -}

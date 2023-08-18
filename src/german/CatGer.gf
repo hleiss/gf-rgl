@@ -130,4 +130,5 @@ concrete CatGer of Cat =
     V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ;
 
     Conj = \c -> c.s1 ++ c.s2 ;
+    Comp = \c -> c.s ! AgSgP3Gen ++ c.ext ;  -- HL
 }

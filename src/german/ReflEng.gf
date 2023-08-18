@@ -1,16 +1,18 @@
 --# -path=.:../abstract:../common:../api:../prelude:../english
 
-concrete ReflEng of Refl =
+concrete ReflEng of ReflAbs =
   GrammarEng,
   -- CatEng,NounEng,AdjectiveEng,StructuralEng,VerbEng-[SlashV2VNP],SentenceEng,
-  ExtendEng[RNP,RNPList,Base_nr_RNP, Base_rn_RNP, Base_rr_RNP,ConjRNP,
+  ExtendEng[NP,Conj,Predet,Num,CN,VP,Cl,Tense, -- on which the following depend:
+            RNP,RNPList,Base_nr_RNP, Base_rn_RNP, Base_rr_RNP,ConjRNP,
             ReflPron,ReflPoss,PredetRNP],
-            -- omitted ReflRNP = ComplRSlash?, AdvRNP, AdvRVP, AdvRAP, ReflA2RNP
+            -- omitted ReflRNP = ComplRSlash, AdvRNP, AdvRVP, AdvRAP, ReflA2RNP
   LexiconEng,ReflLexiconEng
   ** open ResEng, Prelude, (P = ParadigmsEng)
   in {
 
-  -- Part COPIED from ExtendEng: 
+  -- Part extracted from ExtendEng (except for those omitted above)
+
   -- lincat
   --   RNP     = {s : Agr => Str} ;
   --   RNPList = {s1,s2 : Agr => Str} ;
@@ -105,13 +107,20 @@ concrete ReflEng of Refl =
 
     ComplRSlash vps rnp = insertObjPre (\\a => vps.c2 ++ rnp.s ! a) vps ; -- = ExtendEng.ReflRNP vp np ;
 
+    ComplSlashRAdv vps np radv = -- ad hoc, wrong adv position
+       insertAdV (radv.s ! np.a) (insertObj (\\a => vps.c2 ++ np.s ! NPAcc) vps) ;
+
+    PredVPRAdv np vp radv =      -- ad hoc
+      mkClause (np.s ! npNom) np.a (AdvVP vp (ss (radv.s ! np.a))) ;
+
     -- GenericCl vp = mkClause "one" AgP3SgGen vp ; -- to get "oneself", "one's" 
-                                                    -- corrected in IdiomGer                                             
+                                                    -- corrected in IdiomEng
 
   linref
---    RAP = \ap -> ap.s ! AgP3Sg Masc ;
+    RAP = \ap -> ap.s ! AgP3SgGen ;
     RAdv = \adv -> adv.s ! AgP3SgGen ;
     RCN  = \rcn -> rcn.s ! AgP3SgGen ! Sg ! Nom ;
 --    RNP = \rnp -> rnp.s ! AgP3SgGen ;  -- conflicted with ExtendEng, moved there
-
+--    VP = \vp -> "to"++ infVP VVAux vp False Simul CPos (AgP3SgGen Sg) ;
+--    VP = \s -> predV {s = \\_ => s; p = ""; isRefl = False} ;
 }
