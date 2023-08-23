@@ -1,5 +1,5 @@
 concrete ReflLexiconEng of ReflLexicon = CatEng **
-  open ParadigmsEng, Prelude in {
+  open (R=ResEng), ParadigmsEng, Prelude in {
 
   -- for testing
   lin
@@ -18,4 +18,12 @@ concrete ReflLexiconEng of ReflLexicon = CatEng **
     son_N = mkN "son" "sons" ;
 
     im_Prep = mkPrep "in" ;
+
+    advise_V2V = defaultV2V (regV "advise") ;     -- typ=VVInf
+    promise_V2V = defaultV2V (regV "promise") ;   -- typ=VVInf
+    surrender_V2 = mkV2 (regV "surrender") (mkPrep "to") ;
+
+oper
+  defaultV2V : V -> V2V = \v -> lin V2V (dirV2 v ** {c3=[] ; typ = R.VVInf }) ;
+
 }

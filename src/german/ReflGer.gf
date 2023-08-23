@@ -96,6 +96,9 @@ concrete ReflGer of ReflAbs =
       } ;
       
     PrepRNP p rnp = {s = \\agr => appPrepC p (rnp.s ! agr)} ;
+    ComparRAdvAdj cadv a np = {
+      s = \\agr => cadv.s ++ a.s ! Posit ! APred ++ cadv.p ++ np.s ! agr ! Nom
+      } ;
 
     ComplRN2 n2 rnp = {
       s = \\agr,_,n,c => n2.s ! n ! c ++ appPrepC n2.c2 (rnp.s ! agr) ;
@@ -115,8 +118,7 @@ concrete ReflGer of ReflAbs =
     AdjRCN rap cn =
       let g = cn.g in {
         s = \\agr,a,n,c => preOrPost rap.isPre
-                 ((rap.c ! agr).p1 ++ (rap.c ! agr).p2
-                   ++ rap.s ! agr ! agrAdj g a n c)
+                 ((rap.c ! agr).p1 ++ (rap.c ! agr).p2 ++ rap.s ! agr ! agrAdj g a n c)
                  (cn.s ! a ! n ! c) ;
         ext = \\agr => cn.ext ++ rap.ext ! agr ;
         rc = cn.rc ;
@@ -162,6 +164,7 @@ concrete ReflGer of ReflAbs =
       let vp = case vps.objCtrl of { True => objAgr {a=agrP3 Sg} vps ; _  => vps } -- ad hoc
                ** { c2 = vps.c2 ; objCtrl = vps.objCtrl } 
       in insertObjRNP (rnp ** {lock_RNP=<>}) vps.c2 vp ;
+    -- todo: ComplRVA : VA -> RAP -> VP ; -- es blauer als sein Haus malen
 
     -- VP and Cl with reflexive adverb
     -- expensive: + ComplSlashRAdv 388800 (374400,560)
@@ -327,7 +330,7 @@ GenericVP (ReflRNP (SlashV2a drink_V2) (DetRCN (DetQuant IndefArt NumPl) (PossRN
 l (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumPl) (PossRNP (UseN beer_N) ReflPron)))
 die eigene Biere zu trinken
 
-2 msec
+-- wrong Adjf
 Refl> l (ComplRSlash (SlashV2a drink_V2) (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN beer_N) ReflPron)))
 das eigenes Bier zu trinken
 

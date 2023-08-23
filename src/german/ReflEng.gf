@@ -2,7 +2,6 @@
 
 concrete ReflEng of ReflAbs =
   GrammarEng,
-  -- CatEng,NounEng,AdjectiveEng,StructuralEng,VerbEng-[SlashV2VNP],SentenceEng,
   ExtendEng[NP,Conj,Predet,Num,CN,VP,Cl,Tense, -- on which the following depend:
             RNP,RNPList,Base_nr_RNP, Base_rn_RNP, Base_rr_RNP,ConjRNP,
             ReflPron,ReflPoss,PredetRNP],
@@ -63,8 +62,11 @@ concrete ReflEng of ReflAbs =
       isPre = False
       } ;
 
-    -- RAdv: generalizes Extend. AdvRNP : np prep rnp to AdvNP np radv
+    -- RAdv: generalizes Extend.AdvRNP : np prep rnp to AdvNP np radv
     PrepRNP p rnp = {s = \\agr => preOrPost p.isPre p.s (rnp.s ! agr) } ;
+    ComparRAdvAdj cadv a rnp = {
+      s = \\agr => cadv.s ! Pos ++ a.s ! AAdv ++ cadv.p ++ rnp.s ! agr 
+      } ;
 
     -- RCN:
     ComplRN2 n2 rnp = {s = \\agr,n,c => n2.s ! n ! Nom ++ n2.c2 ++ rnp.s ! agr ; g = n2.g} ;
@@ -78,6 +80,10 @@ concrete ReflEng of ReflAbs =
               --            in eigen ! (AMod (gennum cn.g n) c) ++ cn.s ! a ! n ! c ;
               --    False => cn.s ! a ! n ! c ++ rnp.s ! agr ! Gen } ;
       g = cn.g } ;
+    AdjRCN ap cn = {
+      s = \\agr,n,c => (cn.s ! n ! c) ++ (ap.s ! agr) ; -- man older than oneself
+      g = cn.g
+      } ;
 
     -- RNP
     DetRCN det rcn = {
@@ -103,9 +109,10 @@ concrete ReflEng of ReflAbs =
       insertObjc (\\agr => v.c2 ++ rnp.s ! agr)
                     (predVc v ** {c2 = v.c3 ; gapInMiddle = False}) ;
     SlashR3V3 v np =
-      insertObjc (\\agr => v.c3 ++ np.s ! agr) (predVc v) ; ----
+      insertObjc (\\agr => v.c3 ++ np.s ! agr) (predVc v) ;
 
     ComplRSlash vps rnp = insertObjPre (\\a => vps.c2 ++ rnp.s ! a) vps ; -- = ExtendEng.ReflRNP vp np ;
+    -- todo: ComplRVA : VA -> RAP -> VP ; -- es blauer als sein Haus malen
 
     ComplSlashRAdv vps np radv = -- ad hoc, wrong adv position
        insertAdV (radv.s ! np.a) (insertObj (\\a => vps.c2 ++ np.s ! NPAcc) vps) ;

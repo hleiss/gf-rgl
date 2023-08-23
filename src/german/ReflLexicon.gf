@@ -19,4 +19,9 @@ abstract ReflLexicon = Cat ** {
     son_N : N ;
 
     im_Prep : Prep ;
+
+    advise_V2V : V2V ;  -- object control verb
+    promise_V2V : V2V ; -- subject control verb
+    surrender_V2 : V2 ;
+
 }

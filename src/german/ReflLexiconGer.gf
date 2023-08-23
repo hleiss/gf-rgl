@@ -20,4 +20,16 @@ concrete ReflLexiconGer of ReflLexicon =
     room_N = mkN "Zimmer" "Zimmer" neuter ;
 
     im_Prep = mkPrep "in" dative ;
+
+    -- object control verb
+    advise_V2V = mkV2V (irregV "raten" "rät" "riet" "riete" "geraten") datPrep ;
+    -- subject control verb:
+    promise_V2V = subjV2V (mkV2V (irregV "versprechen" "verspricht"
+                                         "versprach" "verspräche" "versprochen") datPrep) ;
+    surrender_V2 = reflV2 (irregV "ergeben" "ergibt" "ergab" "ergäbe" "ergeben") accusative datPrep ;
+
+oper
+  reflV2 : V -> Case -> Prep -> V2 ; -- reflexive, with case and prep-object
+  reflV2 v c p = prepV2 (reflV v c) p ;
+
 }
