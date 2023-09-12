@@ -1,15 +1,14 @@
 --# -path=.:../abstract:../common:../api:../prelude:../english
 
-concrete ReflEng of ReflAbs =
-  GrammarEng,
+concrete ReflEng of Refl =
+  GrammarEng - [UttVP, EmbedVP, PredSCVP, part_Prep, possess_Prep, DetNP],
   ExtendEng[NP,Conj,Predet,Num,CN,VP,Cl,Tense, -- on which the following depend:
-            RNP,RNPList,Base_nr_RNP, Base_rn_RNP, Base_rr_RNP,ConjRNP,
+            RNP,RNPList,Base_nr_RNP, Base_rn_RNP,Base_rr_RNP,ConjRNP,
             ReflPron,ReflPoss,PredetRNP],
-            -- omitted ReflRNP = ComplRSlash, AdvRNP, AdvRVP, AdvRAP, ReflA2RNP
+            -- omitted now definable ReflRNP, AdvRNP, AdvRVP, AdvRAP, ReflA2RNP
   LexiconEng,ReflLexiconEng
   ** open ResEng, Prelude, (P = ParadigmsEng)
   in {
-
   -- Part extracted from ExtendEng (except for those omitted above)
 
   -- lincat
@@ -70,6 +69,8 @@ concrete ReflEng of ReflAbs =
 
     -- RCN:
     ComplRN2 n2 rnp = {s = \\agr,n,c => n2.s ! n ! Nom ++ n2.c2 ++ rnp.s ! agr ; g = n2.g} ;
+    ComplRN3 n3 rnp np =
+      {s = \\agr,n,c => n3.s ! n ! Nom ++ n3.c2 ++ rnp.s ! agr ++ n3.c3 ++ np.s ! agr ; g = n2.g} ;
     PossRNP cn rnp = {
       s = \\agr,n,c =>
               cn.s ! n ! c ++ "of" ++ rnp.s ! agr ;
@@ -112,7 +113,9 @@ concrete ReflEng of ReflAbs =
       insertObjc (\\agr => v.c3 ++ np.s ! agr) (predVc v) ;
 
     ComplRSlash vps rnp = insertObjPre (\\a => vps.c2 ++ rnp.s ! a) vps ; -- = ExtendEng.ReflRNP vp np ;
-    -- todo: ComplRVA : VA -> RAP -> VP ; -- es blauer als sein Haus malen
+
+
+    ComplRVA v rap = insertObj rap.s (predV v) ; -- to become older than one's father
 
     ComplSlashRAdv vps np radv = -- ad hoc, wrong adv position
        insertAdV (radv.s ! np.a) (insertObj (\\a => vps.c2 ++ np.s ! NPAcc) vps) ;
@@ -120,14 +123,27 @@ concrete ReflEng of ReflAbs =
     PredVPRAdv np vp radv =      -- ad hoc
       mkClause (np.s ! npNom) np.a (AdvVP vp (ss (radv.s ! np.a))) ;
 
-    -- GenericCl vp = mkClause "one" AgP3SgGen vp ; -- to get "oneself", "one's" 
-                                                    -- corrected in IdiomEng
+    -- Some uses of (agrP3 Sg) have to be replaced by AgP3SgGen to get
+    -- "oneself", "one's" instead of "itself", "its":
+
+    -- GenericCl vp = mkClause "one" AgP3SgGen vp ; -- corrected in IdiomEng
+    EmbedVP vp = {s = infVP VVInf vp False Simul CPos AgP3SgGen} ;
+    PredSCVP sc vp = mkClause sc.s AgP3SgGen vp ;
 
   linref
     RAP = \ap -> ap.s ! AgP3SgGen ;
     RAdv = \adv -> adv.s ! AgP3SgGen ;
     RCN  = \rcn -> rcn.s ! AgP3SgGen ! Sg ! Nom ;
 --    RNP = \rnp -> rnp.s ! AgP3SgGen ;  -- conflicted with ExtendEng, moved there
---    VP = \vp -> "to"++ infVP VVAux vp False Simul CPos (AgP3SgGen Sg) ;
---    VP = \s -> predV {s = \\_ => s; p = ""; isRefl = False} ;
+--  To parse reflexive predicates, I changed (agrP3 Sg) to AgP3SgGen twice in CatEng.gf
+--    VP = \vp -> infVP VVAux vp False Simul CPos AgP3SgGen ;
+--    VPSlash = \vp -> infVP VVAux vp False Simul CPos AgP3SgGen ++ vp.c2 ;
+
+  lin
+    UttVP vp      = {s = "to" ++ infVP VVAux vp False Simul CPos AgP3SgGen} ;
+    UttVPSlash vp = {s = "to" ++ infVP VVAux vp False Simul CPos AgP3SgGen ++ vp.c2} ;
+    UttRAdv radv  = {s = radv.s ! AgP3SgGen} ;
+    UttRAP rap    = {s = rap.s ! AgP3SgGen} ;
+    UttRCN rcn    = {s = rcn.s ! AgP3SgGen ! Sg ! Nom} ;
+    UttRNP rnp    = {s = rnp.s ! AgP3SgGen} ;
 }

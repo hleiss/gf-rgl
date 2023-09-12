@@ -137,12 +137,10 @@ concrete CatEng of Cat = CommonX - [Pol,CAdv] ** open ResEng, Prelude in {
     SSlash = \ss -> ss.s ++ ss.c2 ;
     ClSlash = \cls -> cls.s ! Pres ! Simul ! CPos ! oDir ++ cls.c2 ;
 
---    VP = \vp -> infVP VVAux vp False Simul CPos (agrP3 Sg) ;
---    VPSlash = \vps -> infVP VVAux vps False Simul CPos (agrP3 Sg) ++ vps.c2;
-
-    VP = \vp -> "to" ++ infVP VVAux vp False Simul CPos AgP3SgGen ; -- HL 13/8/2023
-    VPSlash = \vps -> "to" ++ infVP VVAux vps False Simul CPos AgP3SgGen ++ vps.c2; -- HL
-    Comp = \cmp -> cmp.s ! AgP3SgGen ;                                      -- HL
+    -- VP = \vp -> infVP VVAux vp False Simul CPos (agrP3 Sg) ;
+    -- VPSlash = \vps -> infVP VVAux vps False Simul CPos (agrP3 Sg) ++ vps.c2;
+    VP = \vp -> infVP VVAux vp False Simul CPos AgP3SgGen ;         -- HL 8/2023
+    VPSlash = \vps -> infVP VVAux vps False Simul CPos AgP3SgGen ++ vps.c2;
 
     Conj = \conj -> conj.s1 ++ conj.s2 ;
 

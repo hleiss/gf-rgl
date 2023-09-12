@@ -167,7 +167,7 @@ mkN : overload {
 
 -- To extract the number of a noun phrase
 
-    ifPluralNP : NP -> Bool
+    ifPluralNP : CatGer.NP -> Bool
       = \np -> case (numberAgr np.a) of {Sg => False ; Pl => True} ;
 
 

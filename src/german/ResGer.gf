@@ -47,6 +47,7 @@ resource ResGer = ParamX ** open Prelude in {
     Agr = AgSgP1 | AgSgP2 | AgSgP3 Gender | AgSgP3Gen
           | AgPl Person | AgPlPol ;   -- still too complex (using PCase)
 
+
 -- Case of $NP$ extended to deal with contractions like "zur", "im".
 
     PCase = NPC Case | NPP CPrep ;
@@ -255,11 +256,19 @@ resource ResGer = ParamX ** open Prelude in {
         _ => VInf False --# notpresent
         } ;
 
-    conjAgr : Agr -> Agr -> OldAgr = \a,b -> mkAgr {
+    conjOldAgr : Agr -> Agr -> OldAgr = \a,b -> mkAgr {
       g = Neutr ; ----
       n = conjNumber (numberAgr a) (numberAgr b) ;
       p = conjPerson (personAgr a) (personAgr b)
       } ;
+
+    conjAgr : Agr -> Agr -> Agr = \a,b ->
+      let n : Number = conjNumber (numberAgr a) (numberAgr b) ;
+          p : Person = conjPerson (personAgr a) (personAgr b)
+      in case <n,p> of {<Pl,p> => AgPl p ;
+                        <Sg,P3> => AgSgP3 Neutr ;
+                        <Sg,P1> => AgSgP1 ;
+                        <Sg,P2> => AgSgP2 } ;
 
 --    agr2vagr : Agr -> VAgr = \r -> case r of {Ag _ n p => VAg n p} ;
 
@@ -1035,13 +1044,13 @@ resource ResGer = ParamX ** open Prelude in {
  
     } ;
 
-  reflPron : Agr => Case => Str = table {
+  reflPron : Agr => Case => Str = table { -- with persPron nominative
     AgSgP1 => caselist "ich" "mich" "mir"  "meiner" ;
     AgSgP2 => caselist "du"  "dich" "dir"  "deiner" ;
     AgSgP3 Masc => caselist "er" "sich" "sich" "seiner" ;
     AgSgP3 Fem  => caselist "sie" "sich" "sich" "ihrer" ;
     AgSgP3 Neutr => caselist "es" "sich" "sich" "seiner" ;
-    AgSgP3Gen => caselist "man" "sich" "sich" "aller" ;   -- aller? HL 8/2023
+    AgSgP3Gen => caselist "man" "sich" "sich" "seiner" ;
     AgPl P1 => caselist "wir" "uns"  "uns"  "unser" ;
     AgPl P2 => caselist "ihr" "euch" "euch" "euer" ;
     AgPl P3 => caselist "sie" "sich" "sich" "ihrer" ;
@@ -1084,10 +1093,10 @@ resource ResGer = ParamX ** open Prelude in {
     <AgPl P3,Sg,Neutr> => caselist "ihr"  "ihr"   "ihrem"  "ihres" ! c ;
     <AgPl P3,Pl,_>     => caselist "ihre" "ihre"  "ihren"  "ihrer" ! c ;
 
-    <AgSgP3Gen          ,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
-    <AgSgP3Gen          ,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
-    <AgSgP3Gen          ,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
-    <AgSgP3Gen          ,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
+    <AgSgP3Gen,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
+    <AgSgP3Gen,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
+    <AgSgP3Gen,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
+    <AgSgP3Gen,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
 
     <AgPlPol,Sg,Masc>  => caselist "Ihr"  "Ihren" "Ihrem"  "Ihres" ! c ;
     <AgPlPol,Sg,Fem>   => caselist "Ihre" "Ihre"  "Ihrer"  "Ihrer" ! c ;

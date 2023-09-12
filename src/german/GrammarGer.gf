@@ -3,14 +3,14 @@
 concrete GrammarGer of Grammar = 
   NounGer,
 --  VerbGer,
-  VerbGer - [SlashV2VNP], 
+  VerbGer - [SlashV2VNP], -- HL
   AdjectiveGer,
   AdverbGer,
   NumeralGer,
   SentenceGer,
   QuestionGer,
   RelativeGer,
---  ConjunctionGer,
+  ConjunctionGer,
   PhraseGer,
   TextX - [Tense,Temp],
   IdiomGer,

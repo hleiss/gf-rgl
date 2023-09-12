@@ -1,0 +1,65 @@
+-- Example trees for regression tests of Refl
+
+-- reflexive adjective phrases
+
+ComplRA2 proud_A2 ReflPron
+ComplRA2 proud_A2 (ReflPoss NumPl (UseN child_N))
+
+ComparRA old_A ReflPron
+ComparRA old_A (ReflPoss NumPl (UseN child_N))
+
+-- Reflexive adverbs
+
+PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))
+PrepRNP in_Prep (DetRCN (DetQuant DefArt NumSg)
+                        (PossRNP (UseN house_N) (ReflPoss NumSg (UseN sister_N))))
+CAdvRAP less_CAdv (ReflA2 proud_A2) (ReflPoss NumPl (UseN child_N))
+
+-- Reflexive common nouns
+
+ComplRN2 father_N2 ReflPron
+ComplRN2 mother_N2 (ReflPoss NumPl (UseN2 brother_N2))
+ComplRN2 father_N2 (DetRCN someSg_Det (ComplRN2 father_N2 ReflPron))
+ComplRN2 (Use2N3 distance_N3) (ReflPoss NumSg (UseN house_N))
+ComplRN2 (Use3N3 distance_N3) (ReflPoss NumSg (UseN house_N))
+ComplRN2 (ComplN3 distance_N3 (UsePron we_Pron)) (ReflPoss NumSg (UseN house_N))
+
+PossRNP (UseN room_N) ReflPron
+PossRNP (UseN room_N) (ReflPoss NumPl (UseN friend_N))
+
+AdjRCN (ComplRA2 proud_A2 ReflPron) (UseN man_N)
+AdjRCN (ComparRA old_A (ReflPoss NumPl (UseN child_N))) (UseN person_N)
+
+-- Reflexive noun phrases
+
+DetRCN many_Det (AdjRCN (ComparRA old_A ReflPron) (UseN man_N))
+-- viele älteren Männer als man [selbst]
+
+-- Reflexive infinitives
+
+UseComp (CompRNP (ReflPoss NumSg (UseN boss_N)))
+UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N)))))
+
+ComplSlashRAdv (SlashV2a find_V2) (UsePron she_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
+ComplSlashRAdv (SlashV2a find_V2) (UsePron he_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
+
+ComplRSlash (SlashR3V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N))
+ComplRSlash (SlashR2V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N))
+
+-- Sentences with generic reflexive predicate
+
+PredVPRAdv (UsePron she_Pron) (UseV live_V) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
+
+UseCl (TTAnt TPast ASimul) PPos (GenericCl (ComplVV want_VV (UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N))))))))
+
+PredSCVP (EmbedVP (ComplRSlash (SlashV2a love_V2) ReflPron)) (UseComp (CompCN (UseN duty_N)))
+PredSCVP (EmbedVP (ComplRSlash (SlashV2a love_V2) (ReflPoss NumSg (UseN wife_N)))) (UseComp (CompCN (UseN duty_N)))
+
+-- with object-control and subject-control verb
+
+UttVPSlash (SlashV2V advise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N))))
+PredVP (UsePron we_Pron) (ComplSlash (SlashV2V advise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N)))) (UsePron she_Pron))
+
+UttVPSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N))))
+PredVP (UsePron we_Pron) (ComplSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N)))) (UsePron she_Pron))
+

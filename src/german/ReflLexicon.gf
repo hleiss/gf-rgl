@@ -10,13 +10,17 @@ abstract ReflLexicon = Cat ** {
 
     best_N : N ;
     duty_N : N ;
+    dispute_N2 : N2 ;
+    family_N : N ;
     hero_N : N ;
     home_N : N ;
     niece_N : N ;
     office_N : N ;
+    parent_N : N ;
     relation_N2 : N2 ;
     room_N : N ;
     son_N : N ;
+    youth_N : N ;
 
     im_Prep : Prep ;
 
