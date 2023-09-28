@@ -24,7 +24,7 @@ concrete ReflLexiconGer of ReflLexicon =
     son_N = mkN "Sohn" "Söhne" masculine ;
     youth_N = mkN "Jugend" feminine ;
 
-    im_Prep = mkPrep "in" dative ;
+    into_Prep = inAcc_Prep ;
 
     -- object control verb
     advise_V2V = mkV2V (irregV "raten" "rät" "riet" "riete" "geraten") datPrep ;

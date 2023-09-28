@@ -1,17 +1,11 @@
 -- usage: gf> eh Refl.gfs
+? echo "empty the environment ..."
+e
 ? echo "loading ReflEng.gf, ReflGer.gf ..."
 i ReflEng.gf ReflGer.gf
 ? echo "linearizing Refl.trees ..."
---rf -file="Refl.trees" -lines -tree | l -lang="ReflGer,ReflEng" -treebank
+rf -file="Refl.trees" -lines -tree | l -lang="ReflGer,ReflEng" -treebank
 rf -file="Refl.trees" -lines -tree | l -lang="ReflGer,ReflEng" -treebank | wf -file="Refl.lin.tmp" 
-? echo "diff Refl.lin.out Refl.lin.tmp"
-? diff Refl.lin.out Refl.lin.tmp
+? echo "diff Refl.lin.gold Refl.lin.tmp"
+? diff Refl.lin.gold Refl.lin.tmp
 ? echo "Linerasing trees done"
-
-? echo "Parsing from ReflTest.eng ... "
-rf -file="ReflTest.eng" -lines | p -lang=Eng -cat=Phr | ? grep -v DetNP
-? echo "Parsing from ReflTest.eng done"
-
-? echo "Parsing from ReflTest.ger ... "
-rf -file="ReflTest.ger" -lines | p -lang=Ger -cat=Utt | ? grep -v DetNP
-? echo "Parsing from ReflTest.ger done"

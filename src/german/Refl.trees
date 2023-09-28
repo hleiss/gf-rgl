@@ -13,6 +13,11 @@ ComparRA old_A (ReflPoss NumPl (UseN child_N))
 PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))
 PrepRNP in_Prep (DetRCN (DetQuant DefArt NumSg)
                         (PossRNP (UseN house_N) (ReflPoss NumSg (UseN sister_N))))
+PrepRNP in_Prep (DetRCN (DetQuant DefArt NumPl)
+                        (PossRNP (UseN house_N) (ReflPoss NumSg (UseN sister_N))))
+PrepRNP into_Prep (ReflPoss NumSg (UseN house_N))
+PrepRNP into_Prep (DetRCN (DetQuant DefArt NumSg)
+                        (PossRNP (UseN house_N) (ReflPoss NumSg (UseN sister_N))))
 CAdvRAP less_CAdv (ReflA2 proud_A2) (ReflPoss NumPl (UseN child_N))
 
 -- Reflexive common nouns
@@ -35,16 +40,16 @@ AdjRCN (ComparRA old_A (ReflPoss NumPl (UseN child_N))) (UseN person_N)
 DetRCN many_Det (AdjRCN (ComparRA old_A ReflPron) (UseN man_N))
 -- viele älteren Männer als man [selbst]
 
--- Reflexive infinitives
+-- Reflexive infinitives (add UttVP to get to-infinitive)
 
-UseComp (CompRNP (ReflPoss NumSg (UseN boss_N)))
-UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N)))))
+UttVP (UseComp (CompRNP (ReflPoss NumSg (UseN boss_N))))
+UttVP (UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N))))))
 
-ComplSlashRAdv (SlashV2a find_V2) (UsePron she_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
-ComplSlashRAdv (SlashV2a find_V2) (UsePron he_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
+UttVP (ComplSlashRAdv (SlashV2a find_V2) (UsePron she_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))))
+UttVP (ComplSlashRAdv (SlashV2a find_V2) (UsePron he_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))))
 
-ComplRSlash (SlashR3V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N))
-ComplRSlash (SlashR2V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N))
+UttVP (ComplRSlash (SlashR3V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N)))
+UttVP (ComplRSlash (SlashR2V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N)))
 
 -- Sentences with generic reflexive predicate
 
@@ -63,3 +68,11 @@ PredVP (UsePron we_Pron) (ComplSlash (SlashV2V advise_V2V (ComplRSlash (SlashV2a
 UttVPSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N))))
 PredVP (UsePron we_Pron) (ComplSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N)))) (UsePron she_Pron))
 
+-- Imperatives from generic reflexive predicats (the real test)
+
+UttImpSg PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+UttImpPol PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+UttImpPl PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+UttImpSg PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
+UttImpPol PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
+UttImpPl PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))

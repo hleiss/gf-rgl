@@ -1,0 +1,114 @@
+Refl: ComplRA2 proud_A2 ReflPron
+ReflGer: stolz auf sich
+ReflEng: proud of oneself
+Refl: ComplRA2 proud_A2 (ReflPoss NumPl (UseN child_N))
+ReflGer: stolz auf seine Kinder
+ReflEng: proud of one's children
+Refl: ComparRA old_A ReflPron
+ReflGer: älter als man
+ReflEng: older than oneself
+Refl: ComparRA old_A (ReflPoss NumPl (UseN child_N))
+ReflGer: älter als seine Kinder
+ReflEng: older than one's children
+Refl: PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))
+ReflGer: in seinem Haus
+ReflEng: in one's house
+Refl: PrepRNP into_Prep (ReflPoss NumSg (UseN house_N))
+ReflGer: in sein Haus
+ReflEng: into one's house
+Refl: CAdvRAP less_CAdv (ReflA2 proud_A2) (ReflPoss NumPl (UseN child_N))
+ReflGer: weniger stolz auf sich als seine Kinder
+ReflEng: less proud of oneself than one's children
+Refl: ComplRN2 father_N2 ReflPron
+ReflGer: Vater von sich
+ReflEng: father of oneself
+Refl: ComplRN2 mother_N2 (ReflPoss NumPl (UseN2 brother_N2))
+ReflGer: Mutter von seinen Brüdern
+ReflEng: mother of one's brothers
+Refl: ComplRN2 father_N2 (DetRCN someSg_Det (ComplRN2 father_N2 ReflPron))
+ReflGer: Vater von einem Vater von sich
+ReflEng: father of some father of oneself
+Refl: ComplRN2 (Use2N3 distance_N3) (ReflPoss NumSg (UseN house_N))
+ReflGer: Entfernung von seinem Haus
+ReflEng: distance from one's house
+Refl: ComplRN2 (Use3N3 distance_N3) (ReflPoss NumSg (UseN house_N))
+ReflGer: Entfernung zu seinem Haus
+ReflEng: distance to one's house
+Refl: ComplRN2 (ComplN3 distance_N3 (UsePron we_Pron)) (ReflPoss NumSg (UseN house_N))
+ReflGer: Entfernung von uns zu seinem Haus
+ReflEng: distance from us to one's house
+Refl: PossRNP (UseN room_N) ReflPron
+ReflGer: eigenes Zimmer
+ReflEng: room of oneself
+Refl: PossRNP (UseN room_N) (ReflPoss NumPl (UseN friend_N))
+ReflGer: Zimmer seiner Freunde
+ReflEng: room of one's friends
+Refl: AdjRCN (ComplRA2 proud_A2 ReflPron) (UseN man_N)
+ReflGer: auf sich stolze Mann
+ReflEng: man proud of oneself
+Refl: AdjRCN (ComparRA old_A (ReflPoss NumPl (UseN child_N))) (UseN person_N)
+ReflGer: ältere Person als seine Kinder
+ReflEng: person older than one's children
+Refl: DetRCN many_Det (AdjRCN (ComparRA old_A ReflPron) (UseN man_N))
+ReflGer: viele älteren Männer als man [selbst]
+ReflEng: many men older than oneself
+Refl: UttVP (UseComp (CompRNP (ReflPoss NumSg (UseN boss_N))))
+ReflGer: sein Chef zu sein
+ReflEng: to be one's boss
+Refl: UttVP (UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N))))))
+ReflGer: der Held seiner Kinder zu sein
+ReflEng: to be the hero of one's children
+Refl: UttVP (ComplSlashRAdv (SlashV2a find_V2) (UsePron she_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))))
+ReflGer: sie in ihrem Haus zu finden
+ReflEng: to in her house find her
+Refl: UttVP (ComplSlashRAdv (SlashV2a find_V2) (UsePron he_Pron) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N))))
+ReflGer: ihn in seinem Haus zu finden
+ReflEng: to in his house find him
+Refl: UttVP (ComplRSlash (SlashR3V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N)))
+ReflGer: über sein Kind mit seiner Ehefrau zu reden
+ReflEng: to talk to one's wife about one's child
+Refl: UttVP (ComplRSlash (SlashR2V3 talk_V3 (ReflPoss NumSg (UseN child_N))) (ReflPoss NumSg (UseN wife_N)))
+ReflGer: mit seinem Kind über seine Ehefrau zu reden
+ReflEng: to talk about one's wife to one's child
+Refl: PredVPRAdv (UsePron she_Pron) (UseV live_V) (PrepRNP in_Prep (ReflPoss NumSg (UseN house_N)))
+ReflGer: sie lebt in ihrem Haus
+ReflEng: she lives in her house
+Refl: UseCl (TTAnt TPast ASimul) PPos (GenericCl (ComplVV want_VV (UseComp (CompRNP (DetRCN (DetQuant DefArt NumSg) (PossRNP (UseN hero_N) (ReflPoss NumPl (UseN child_N))))))))
+ReflGer: man wollte der Held seiner Kinder sein
+ReflEng: one wanted to be the hero of one's children
+Refl: PredSCVP (EmbedVP (ComplRSlash (SlashV2a love_V2) ReflPron)) (UseComp (CompCN (UseN duty_N)))
+ReflGer: sich zu lieben ist eine Pflicht
+ReflEng: to love oneself is a duty
+Refl: PredSCVP (EmbedVP (ComplRSlash (SlashV2a love_V2) (ReflPoss NumSg (UseN wife_N)))) (UseComp (CompCN (UseN duty_N)))
+ReflGer: seine Ehefrau zu lieben ist eine Pflicht
+ReflEng: to love one's wife is a duty
+Refl: UttVPSlash (SlashV2V advise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N))))
+ReflGer: zu raten , seinen Wagen zu waschen
+ReflEng: to advise to wash one's car
+Refl: PredVP (UsePron we_Pron) (ComplSlash (SlashV2V advise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N)))) (UsePron she_Pron))
+ReflGer: wir raten ihr , ihren Wagen zu waschen
+ReflEng: we advise her to wash her car
+Refl: UttVPSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N))))
+ReflGer: zu versprechen , seinen Wagen zu waschen
+ReflEng: to promise to wash one's car
+Refl: PredVP (UsePron we_Pron) (ComplSlash (SlashV2V promise_V2V (ComplRSlash (SlashV2a wash_V2) (ReflPoss NumSg (UseN car_N)))) (UsePron she_Pron))
+ReflGer: wir versprechen ihr , unseren Wagen zu waschen
+ReflEng: we promise her to wash her car [Bug: our car; Eng.promise is not subject-control]
+Refl: UttImpSg PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+ReflGer: liebe deine Ehefrau und dich
+ReflEng: love your wife and yourself
+Refl: UttImpPol PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+ReflGer: lieben Sie Ihre Ehefrau und sich
+ReflEng: love your wife and yourself
+Refl: UttImpPl PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Base_rr_RNP (ReflPoss NumSg (UseN wife_N)) ReflPron))))
+ReflGer: liebt eure Ehefrau und euch
+ReflEng: love your wife and yourselves
+Refl: UttImpSg PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
+ReflGer: sei nicht klüger als sein Bruder [Bug: als dein Bruder]
+ReflEng: don't be cleverer than your brother
+Refl: UttImpPol PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
+ReflGer: seien Sie nicht klüger als sein Bruder [Bug: als Ihr Bruder]
+ReflEng: don't be cleverer than your brother
+Refl: UttImpPl PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
+ReflGer: seid nicht klüger als sein Bruder [Bug: als euer Bruder]
+ReflEng: don't be cleverer than your brother

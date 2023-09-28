@@ -22,7 +22,7 @@ abstract ReflLexicon = Cat ** {
     son_N : N ;
     youth_N : N ;
 
-    im_Prep : Prep ;
+    into_Prep : Prep ;  -- in contrast to in_Prep
 
     advise_V2V : V2V ;  -- object control verb
     promise_V2V : V2V ; -- subject control verb

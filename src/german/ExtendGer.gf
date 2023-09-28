@@ -46,7 +46,7 @@ lin
 
     PredVPS np vpi = 
       let
-        subj = np.s ! NPC Nom ++ bigNP np ;
+        subj = np.s ! False ! Nom ++ bigNP np ;
         agr  = np.a ;
       in {
         s = \\o => 
@@ -117,21 +117,21 @@ lin
     ConjVPS = conjunctDistrTable2 Order Agr ;
     
     UseDAP det = {
-      s = \\c => det.sp ! Neutr ! c ;
+      s = \\b,c => det.sp ! Neutr ! c ;
       a = agrP3 det.n ;
       w = case det.isDef of { True => WLight ; _ => WHeavy } ;
       rc, ext = []
       } ;
 
     UseDAPMasc det = {
-      s = \\c => det.sp ! Masc ! c ;
+      s = \\b,c => det.sp ! Masc ! c ;
       a = agrP3 det.n ;
       w = WLight ;
       rc, ext = []
       } ;
 
     UseDAPFem det = {
-      s = \\c => det.sp ! Fem ! c ;
+      s = \\b,c => det.sp ! Fem ! c ;
       a = agrP3 det.n ;
       w = WLight ;
       rc, ext = []
@@ -140,7 +140,7 @@ lin
 lin
   CardCNCard card cn = {
     s = \\g,c =>
-      (Grammar.DetCN (Grammar.DetQuant Grammar.IndefArt (Grammar.NumCard card)) cn).s ! NPC c ;
+      (Grammar.DetCN (Grammar.DetQuant Grammar.IndefArt (Grammar.NumCard card)) cn).s ! False ! c ;
     n = Pl
     } ;
 
@@ -168,7 +168,7 @@ lin PastPartAgentAP vp np =
       in {
       s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3
                   ++ vp.a2 ++ agent ++ vp.adj ++ vp.inf.inpl.p2
-                  ++ vp.c2.s                         -- junk if not TV
+                  ++ vp.c2.s ! GPl                     -- junk if not TV
                   ++ vp.ext ++ (vp.inf.extr ! a) ++ vp.s.s ! VPastPart af ;
       isPre = True ;
       c = <[],[]> ;
@@ -195,13 +195,13 @@ lin CompoundN a x =
     RNPList = {s1,s2 : Agr => Case => Str} ;
 
   linref
-    RNP = \rnp -> rnp.s ! AgSgP3 Masc ! (NPC Acc) ++ rnp.ext ++ rnp.rc ;
+    RNP = \rnp -> rnp.s ! AgSgP3 Masc ! Acc ++ rnp.ext ++ rnp.rc ;
 
   lin
     ReflRNP vps rnp =
       insertObjReflNP rnp vps ;
 
-    ReflPron = {            -- personal pronoun, with "sich" in P3 Sg
+    ReflPron = { -- with personal pronoun nominative
       s = ResGer.reflPron ; rc,ext = [] ; isPron = True } ;
 
     -- We might define ReflPron by the stronger reflPronSelf below, using "selbst"
@@ -217,7 +217,7 @@ lin CompoundN a x =
             ++ cn.adv ;
        ext = cn.ext ; rc = cn.rc ! num.n ;
        isPron = False} ;
-{-
+
     -- We might define ReflPoss by the stronger reflPossPron below, using "eigen(er)"
     -- to distinguish possessive pronoun from reflexive possessive pronoun:
     --   du kennst meine Fehler vs. ich kenne meine eigenen Fehler
@@ -228,19 +228,19 @@ lin CompoundN a x =
                        g : Gender = genderAgr a ;
                        d = case pred.c.k of {NoCase => c ; PredCase k => (prepC k).c} ;
         in case rnp.isPron of {
-          True => pred.s ! Pl ! Masc ! (NPC c) ++ "von" ++ rnp.s ! a ! Dat ;
-          _ => pred.s ! n ! genderAgr a ! (NPC c) ++ pred.c.p ++ rnp.s ! a ! d} ;
+          True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! Dat ;
+          _ => pred.s ! n ! genderAgr a ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
       ext = rnp.ext ; rc = rnp.rc ;
       isPron = False} ;
       -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir
-
+{-
     AdvRNP np prep rnp = {s = \\a,c => np.s ! c
                             ++ appPrep prep (rnp.s ! a) ++ rnp.ext ++ rnp.rc ;
                           ext = np.ext ; rc = np.rc ; isPron = False} ;
 
     AdvRAP ap prep rnp =
       let                                         -- ? adv ++ ap.s ! af
-        adv = appPrep prep (rnp.s ! agrP3 Sg) ;  -- bug: fixed agreement
+        adv = appPrep prep (rnp.s ! agrP3 Sg) ;   -- bug: fixed agreement
       in ap ** { s = \\af => ap.s ! af ++ adv } ; -- e.g. unknown in one's youth
 
     ReflA2RNP adj rnp = -- would need AP.c : Agr => Str*Str, not AP.c : Str*Str
@@ -270,11 +270,11 @@ lin CompoundN a x =
       ** {isPron = False ; ext,rc = []} ;
 
     Base_rr_RNP x y = twoTable2 Agr Case x y ;
-    Base_nr_RNP x y = twoTable2 Agr Case {s = \\_,c => x.s ! c ++ x.ext ++ x.rc} y ;
-    Base_rn_RNP x y = twoTable2 Agr Case x {s = \\_,c => y.s ! c ++ y.ext ++ y.rc} ;
+    Base_nr_RNP x y = twoTable2 Agr Case {s = \\_,c => x.s ! False ! c ++ x.ext ++ x.rc} y ;
+    Base_rn_RNP x y = twoTable2 Agr Case x {s = \\_,c => y.s ! False ! c ++ y.ext ++ y.rc} ;
 
     Cons_rr_RNP x xs = consrTable2 Agr Case comma x xs ;
-    Cons_nr_RNP x xs = consrTable2 Agr Case comma {s = \\_,c => x.s ! (NPC c) ++ x.ext ++ x.rc} xs ;
+    Cons_nr_RNP x xs = consrTable2 Agr Case comma {s = \\_,c => x.s ! False ! c ++ x.ext ++ x.rc} xs ;
 {-
   oper
 --    reflPronSelf : Agr => Case => Str = \\a => \\c => reflPron ! a ! c ++ "selbst" ;

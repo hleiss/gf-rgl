@@ -21,7 +21,7 @@ concrete ReflLexiconEng of ReflLexicon = CatEng **
     son_N = mkN "son" "sons" ;
     youth_N = mkN "youth" "youths";
 
-    im_Prep = mkPrep "in" ;
+    into_Prep = mkPrep "into" ;
 
     advise_V2V = defaultV2V (regV "advise") ;     -- typ=VVInf
     promise_V2V = defaultV2V (regV "promise") ;   -- typ=VVInf

@@ -2,8 +2,7 @@
 
 concrete GrammarGer of Grammar = 
   NounGer,
---  VerbGer,
-  VerbGer - [SlashV2VNP], -- HL
+  VerbGer,
   AdjectiveGer,
   AdverbGer,
   NumeralGer,

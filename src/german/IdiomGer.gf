@@ -10,7 +10,7 @@ concrete IdiomGer of Idiom = CatGer **
 
     CleftNP np rs = mkClause "es" (agrP3 Sg) 
       (insertExtrapos (rs.s ! RGenNum (gennum (genderAgr np.a) (numberAgr np.a))) ----
-        (insertObj (\\_ => np.s ! NPC rs.c ++ bigNP np) (predV MorphoGer.sein_V))) ;
+        (insertObj (\\_ => np.s ! False ! rs.c ++ bigNP np) (predV MorphoGer.sein_V))) ;
 
     CleftAdv ad s = mkClause "es" (agrP3 Sg) 
       (insertExtrapos (conjThat ++ s.s ! Sub)
@@ -19,7 +19,7 @@ concrete IdiomGer of Idiom = CatGer **
 
     ExistNP np = 
       mkClause "es" (agrP3 Sg) 
-        (insertObj (\\_ => appPrep geben.c2 np.s ++ bigNP np) 
+        (insertObj (\\_ => appPrep geben.c2 (np.s ! False) ++ bigNP np)
           (predV geben)) ;
 
     ExistIP ip = {
@@ -36,7 +36,7 @@ concrete IdiomGer of Idiom = CatGer **
 
     ExistNPAdv np adv= 
       mkClause "es" (agrP3 Sg) 
-        (insertAdv adv.s (insertObj (\\_ => appPrep geben.c2 np.s ++ bigNP np) 
+        (insertAdv adv.s (insertObj (\\_ => appPrep geben.c2 (np.s ! False) ++ bigNP np)
           (predV geben))) ;
 
     ExistIPAdv ip adv = {
@@ -60,14 +60,14 @@ concrete IdiomGer of Idiom = CatGer **
       } ;
 
     ImpP3 np vp = {
-      s = (mkClause ((mkSubj np vp.c1).p1) np.a vp).s !
+      s = (mkClause ((mkSubject np vp.c1).s) np.a vp).s !
                            MConjunct ! Pres ! Simul ! Pos ! Inv 
       } ;
 
   SelfAdvVP vp = insertAdv "selbst" vp ;
   SelfAdVVP vp = insertAdv "selbst" vp ;
   SelfNP np = np ** {
-      s = \\c => np.s ! c ++ "selbst" ++ bigNP np ;
+      s = \\b,c => np.s ! b ! c ++ "selbst" ++ bigNP np ;
       isPron = False ;
       } ;
 

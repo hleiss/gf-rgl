@@ -63,10 +63,10 @@ abstract Refl =
     -- In Eng, sentence adverbs VP.ad:Agr => Str depend on the subject's agreement,
     -- in Ger and several other languages, VP.a2:Str doesn't. Maybe it should. 
 
-    -- Hence, can only add radv:RAdv into Ger.VPSlash.a2:Str, if we simultaneously add
-    -- a nominal object they depend on, i.e. insert the string radv.s ! np.a into VPSlash.a2:
-    -- e.g. "to visit someone in his house". How far do we want to control such dependencies
-    -- of adverbs from nominal objects via possessives???
+    -- Hence, we can only add radv:RAdv into Ger.VPSlash.a2:Str, if we simultaneously add
+    -- a nominal object radv depends on, i.e. insert the string radv.s ! np.a into VPSlash.a2:
+    -- e.g. "to visit someone in his house". If at all, how far do we want to control such
+    -- dependencies of adverbs from nominal objects via possessives???
     
     ComplSlashRAdv : VPSlash -> NP -> RAdv -> VP ;     -- RNP has no agreement RNP.a (yet)
 

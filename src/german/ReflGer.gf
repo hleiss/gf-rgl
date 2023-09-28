@@ -1,29 +1,30 @@
 --# -path=.:../abstract:../common:../api:../prelude
 
--- HL 7/2023: Extend Lang (minus Markup,..) by reflexive predicates
+-- HL 7/2023: Extend Lang by generic reflexive predicates e.g. "to love oneself and one's family"
 
 concrete ReflGer of Refl =
-  GrammarGer - [UttVP], -- VerbGer omits SlashV2VNP (at least with the former Prep+DefArt-glueing)
-  -- -- ExtraGer-[AdvRAP,AdvRNP,ReflA2RNP,ReflRNP],
+  GrammarGer - [UttVP], -- redefine UttVP below
   -- ExtendGer[NP,Conj,Predet,Num,CN,VP,Cl,Tense, -- on which the following depend:
   --           RNP,RNPList,Base_nr_RNP, Base_rn_RNP,Base_rr_RNP,ConjRNP,
+  --           Cons_nr_RNP, Cons_rr_RNP,
   --           ReflPron,ReflPoss,PredetRNP],
-  LexiconGer,ReflLexiconGer
+  -- Q: Why does this import not work? Because of types of NP,...,Tense?
+  LexiconGer,
+  ReflLexiconGer
   ** open ResGer, Prelude, Coordination in {
 
-  -- All rnp:RNP except ReflPron can and should be given an agreement rnp.a,
-  -- which is needed in combination with object-control verbs:
+  -- All rnp:RNP (except ReflPron.a = AgSgP3Gen?) can and should be given an agreement
+  -- rnp.a, which is needed in combination with object-control verbs:
   --   to advise (one's brother|sister):RNP to help (him|her)self:ReflPron!rnp.a
 
-  -- Part copied from ExtendGer, but why can't these be imported from ExtendGer[...] ??? ---
-  -- because RNP uses Case, NP uses PCase ??
+  -- Part copied rather than imported from ExtendGer:
 
   lincat
-    RNP = {s : Agr => Case => Str ; rc,ext : Str ; isPron : Bool} ;
+    RNP = {s : Agr => Case => Str ; rc,ext : Str ; isPron : Bool} ; -- missing: a:Agr
     RNPList = {s1,s2 : Agr => Case => Str} ;
 
   linref
-    RNP = \rnp -> rnp.s ! AgSgP3Gen ! Nom ++ rnp.ext ++ rnp.rc ;
+    RNP = \rnp -> rnp.s ! AgSgP3Gen ! Acc ++ rnp.ext ++ rnp.rc ;
 
   lin
     -- ReflRNP vps rnp = insertObjReflNP rnp vps ;  -- now ComplRSlash below
@@ -47,10 +48,10 @@ concrete ReflGer of Refl =
     PredetRNP pred rnp = rnp ** {                        -- HL 5/2022
       s = \\a,c => let n : Number = case pred.a of {PAg n => n ; _ => numberAgr a} ;
                        g : Gender = genderAgr a ;
-                       d = case pred.c.k of {NoCase => c ; PredCase k => (prepC k).c} ;
+                       d = case pred.c.k of {NoCase => c ; PredCase k => k} ;
         in case rnp.isPron of {
-          True => pred.s ! Pl ! Masc ! (NPC c) ++ "von" ++ rnp.s ! a ! Dat ;
-          _ => pred.s ! n ! genderAgr a ! (NPC c) ++ pred.c.p ++ rnp.s ! a ! d} ;
+          True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! Dat ;
+          _ => pred.s ! n ! genderAgr a ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
       ext = rnp.ext ; rc = rnp.rc ;
       isPron = False} ;
       -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir
@@ -59,14 +60,13 @@ concrete ReflGer of Refl =
       ** {isPron = False ; ext,rc = []} ;
 
     Base_rr_RNP x y = twoTable2 Agr Case x y ;
-    Base_nr_RNP x y = twoTable2 Agr Case {s = \\_,c => x.s ! (NPC c) ++ x.ext ++ x.rc} y ;
-    Base_rn_RNP x y = twoTable2 Agr Case x {s = \\_,c => y.s ! (NPC c) ++ y.ext ++ y.rc} ;
+    Base_nr_RNP x y = twoTable2 Agr Case {s = \\_,c => x.s ! False ! c ++ x.ext ++ x.rc} y ;
+    Base_rn_RNP x y = twoTable2 Agr Case x {s = \\_,c => y.s ! False ! c ++ y.ext ++ y.rc} ;
 
     Cons_rr_RNP x xs = consrTable2 Agr Case comma x xs ;
-    Cons_nr_RNP x xs = consrTable2 Agr Case comma {s = \\_,c => x.s ! (NPC c) ++ x.ext ++ x.rc} xs ;
+    Cons_nr_RNP x xs = consrTable2 Agr Case comma {s = \\_,c => x.s ! False ! c ++ x.ext ++ x.rc} xs ;
 
-
-  --- new material for reflexive predicates ---
+  --- Part with new material for reflexive predicates:
 
   lincat
     RAP = {s : AForm => Str ; isPre : Bool ;
@@ -81,16 +81,15 @@ concrete ReflGer of Refl =
       ext : Agr => Str ;   -- älterer Mann [als Johann]
       g : Gender
       } ;
-    -- in ExtraGer: RNP = {s : Agr => Case => Str ; rc,ext : Str ; isPron : Bool} ;
-    -- fehlt: a:Agr, mit ReflPron.a = AgSgP3Gen, und sonst abhängig von det? (one's car).a = Ag Fem Sg P3
+    -- would need a category RComp with type {... ; ext : Agr => Str}, see CompRAP
 
   lin
-    -- Construcions of reflexive AP, Adv, CN and NP (Todo: check position of rnp.rc+ext)
+    -- Constructions of reflexive AP, Adv, CN and NP (Todo: check position of rnp.rc+ext)
     
     ComplRA2 a rnp = 
       let obj : Agr => Str * Str = case a.c2.isPrep of {
-			False => \\agr => <appPrepC a.c2 (rnp.s!agr), []> ;
-			True  => \\agr => <[], appPrepC a.c2 (rnp.s!agr)> } 
+			isCase => \\agr => <appPrep a.c2 (rnp.s!agr), []> ;
+			_      => \\agr => <[], appPrep a.c2 (rnp.s!agr)> }
       in { s = a.s ! Posit ;
            isPre = True ;
            c = obj ;
@@ -109,20 +108,20 @@ concrete ReflGer of Refl =
       ext = \\agr => ap.ext ++ ad.p ++ rnp.s ! agr ! Nom ++ rnp.ext ++ rnp.rc
       } ;
       
-    PrepRNP p rnp = {s = \\agr => appPrepC p (rnp.s ! agr)} ;
+    PrepRNP p rnp = {s = \\agr => appPrep p (rnp.s ! agr)} ;
     ComparRAdvAdj cadv a np = {
       s = \\agr => cadv.s ++ a.s ! Posit ! APred ++ cadv.p ++ np.s ! agr ! Nom
       } ;
 
     ComplRN2 n2 rnp = {
-      s = \\agr,_,n,c => n2.s ! n ! c ++ appPrepC n2.c2 (rnp.s ! agr) ;
+      s = \\agr,_,n,c => n2.s ! n ! c ++ appPrep n2.c2 (rnp.s ! agr) ;
       g = n2.g ;
       rc = \\_ => [] ;
       ext = \\agr => [] ;
       adv = [] } ;
     ComplRN3 n3 rnp np = {
-      s = \\agr,_,n,c => n3.s ! n ! c ++ appPrepC n3.c2 (rnp.s ! agr)
-                                      ++ appPrepC n3.c3 (np.s ! agr) ;
+      s = \\agr,_,n,c => n3.s ! n ! c ++ appPrep n3.c2 (rnp.s ! agr)
+                                      ++ appPrep n3.c3 (np.s ! agr) ;
       g = n3.g ;
       rc = \\_ => [] ;
       ext = \\agr => [] ;
@@ -150,7 +149,7 @@ concrete ReflGer of Refl =
 
     -- ExtendGer: ReflPoss num cn : RNP
     DetRCN det cn = {
-      s = \\agr,c => det.s ! cn.g ! (NPC c) ++
+      s = \\agr,c => det.s ! False ! cn.g ! c ++
                      cn.s ! agr ! (adjfCase det.a c) ! det.n ! c ++ cn.adv
                      ++ cn.ext ! agr ;
       isPron = False ;
@@ -161,9 +160,8 @@ concrete ReflGer of Refl =
     -- Reflexive complements of copula verbs
     -- (skips RCom.ext:Agr => Str: (weil man) s:älter (ist) ext:als seine Kinder)
     CompRAP rap = {
-      s = \\agr => (rap.c!agr).p1 ++ rap.s ! APred ++ (rap.c!agr).p2
-                   ++ "als" ++ rap.ext ! agr ;
-      ext = []
+      s = \\agr => (rap.c!agr).p1 ++ rap.s ! APred ++ (rap.c!agr).p2 ;
+      ext = rap.ext ! agrP3 Sg  -- bug: would need \\agr => rap.ext ! agr
       } ;
     CompRAdv radv = {s = \\agr => radv.s!agr ; ext = []} ;
     CompRCN rcn = {
@@ -205,14 +203,15 @@ concrete ReflGer of Refl =
 
     PredVPRAdv np vp radv =
       let rvp  = insertAdv (radv.s ! np.a) vp ; -- = AdvVP (radv.s ! np.a) vp
-          subj = mkSubj np rvp.c1
-      in mkClause subj.p1 subj.p2 rvp ;         -- = PredVP np (AdvVP (...) vp)
+          subj = mkSubject np rvp.c1
+      in mkClause subj.s subj.a rvp ;           -- = PredVP np (AdvVP (...) vp)
 
-    -- GenericCl vp = mkClause "man" (agrP3 Sg) vp ;
-    -- avoid a pronoun that would not be a correct object in German:
+    -- IdiomGer.GenericCl vp = mkClause "man" (agrP3 Sg) vp ;
+    -- Avoid a pronoun that would not be a correct object in German:
     -- one_Pron = mkPronPers "man" "einen" "einem" "seiner" "sein" Masc Sg P3
     --            ** { a = AgSgP3Gen } ; -- special agreement for mkClause str agr vp
-    
+    -- AgSgP3Gen is needed for Eng (oneself,one's), could be (AgSgP3 Masc) for Ger?
+
   linref
     RAP = \ap -> (ap.c! AgSgP3Gen).p1 ++ ap.s ! APred ++ (ap.c!AgSgP3Gen).p2 ++ ap.ext ! AgSgP3Gen ;
     RAdv = \adv -> adv.s ! AgSgP3Gen ;
@@ -223,16 +222,16 @@ concrete ReflGer of Refl =
   -- to parse, use infinitive with "zu" (Eng: to+inf), differing from PhraseGer.UttVP:
   lin
     UttVP vp = { s = useInfVP False vp } ; -- infinitive with zu;
-    UttVPSlash vp = {s = useInfVP False vp ++ vp.c2.s ++ vp.c2.s2} ;
+    UttVPSlash vp = {s = useInfVP False vp ++ vp.c2.s ! GPl} ;
     UttRAP rap =
       let a:Agr = AgSgP3Gen
-      in {s = (rap.c ! a).p1 ++ rap.s ! APred ++ (rap.c!a).p2 ++ rap.ext ! a} ;
+      in {s = (rap.c ! a).p1 ++ rap.s ! APred ++ (rap.c ! a).p2 ++ rap.ext ! a} ;
     UttRAdv radv = {s = radv.s ! AgSgP3Gen} ;
     UttRCN rcn =
       let a:Agr = AgSgP3Gen
-      in {s = rcn.s ! a ! Weak ! Sg ! Nom ++ rcn.adv ++ rcn.ext ! a ++ rcn.rc ! Pl };
+      in {s = rcn.s ! a ! Weak ! Sg ! Acc ++ rcn.adv ++ rcn.ext ! a ++ rcn.rc ! Pl };
     UttRNP rnp =
-      {s = rnp.s ! AgSgP3Gen ! Nom ++ rnp.ext ++ rnp.rc} ;
+      {s = rnp.s ! AgSgP3Gen ! Acc ++ rnp.ext ++ rnp.rc} ;
 
   oper
     insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
@@ -240,21 +239,21 @@ concrete ReflGer of Refl =
 
     insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
       \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
-      let -- prep = vp.c2 ;
-          c = case prep.c of { NPC cc => cc ; _ => Acc } ; -- put rnp.ext ++ rnp.rc to vp.ext ?
-          obj : Agr => Str = \\a => prep.s ++ rnp.s ! a ! c ++ rnp.ext ++ rnp.rc
+      let c = prep.c ;
+          obj : Agr => Str = \\a => prep.s ! GPl ++ rnp.s ! a ! c ++ rnp.ext ++ rnp.rc
       in vp ** {
         nn = \\a =>
           let vpnn = vp.nn ! a in
           case <prep.isPrep, rnp.isPron, c> of { -- consider non-pron rnp as light, add to vpnn.p2
-            <False,True,Acc> => <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4> ; -- pronoun switch:
-            <False,True,_>   => <vpnn.p1 ++ obj ! a, vpnn.p2, vpnn.p3, vpnn.p4> ; -- accPron < pron
-            <False,False,_>  => <vpnn.p1, vpnn.p2 ++ obj ! a, vpnn.p3, vpnn.p4> ; -- < non-pron nominal
-            <True,_,_>       => <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4> } --   or prepositional
+            <isCase,True,Acc> => <obj ! a ++ vpnn.p1, vpnn.p2, vpnn.p3, vpnn.p4> ; -- pronoun switch:
+            <isCase,True,_>   => <vpnn.p1 ++ obj ! a, vpnn.p2, vpnn.p3, vpnn.p4> ; -- accPron < pron
+            <isCase,False,_>  => <vpnn.p1, vpnn.p2 ++ obj ! a, vpnn.p3, vpnn.p4> ; -- < non-pron nominal
+            <_,     _,    _>  => <vpnn.p1, vpnn.p2, vpnn.p3 ++ obj ! a, vpnn.p4> } --   or prepositional
       } ;
 
-  -- rather ad-hoc: Ger.AP need reorganization generally
-  insertRAdj : Str -> (Agr => Str * Str) -> (Agr => Str) -> ResGer.VP -> ResGer.VP = \adj,c,ext,vp -> vp ** {
+  -- rather ad-hoc: Ger.AP needs reorganization generally
+  insertRAdj : Str -> (Agr => Str * Str) -> (Agr => Str) -> ResGer.VP -> ResGer.VP =
+    \adj,c,ext,vp -> vp ** {
     nn = \\agr => 
       let vpnn = vp.nn ! agr in <vpnn.p1, vpnn.p2 ++ (c!agr).p1, -- seiner Frau treu
                                  vpnn.p3 ++ (c!agr).p2,          -- neugierig auf ihr Buch
