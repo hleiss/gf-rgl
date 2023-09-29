@@ -36,29 +36,18 @@ resource ResGer = ParamX ** open Prelude in {
     GenNum = GSg Gender | GPl ;
     RelGenNum = RGenNum GenNum | RSentence ;
 
--- Agreement of $NP$ has three parts.
+-- Agreement of $NP$ has three parts: gender, number and person.
 
-   OldAgr = Ag Gender Number Person ;
+    -- These 3*2*3 = 18 values can be reduced to 8, since gender is used only
+    -- in 3rd person singular. To select reflexive and possessive forms for "man"
+    -- and "Sie" in (mkClause str agr vp), we add values AgSgP3Gen and AgPlPol.  HL 29.9.2023
 
-    -- HL: Reduce |OldAgr| = 3 * 2 * 3 = 18 values and add values to select
-    --     in (mkClause str agr vp) reflexive and possessive forms for "man"
-    --     and "Sie" via AgSgP3Gen and AgPlPol. Then |Agr| = 2+3+2+2 = 10 values.
-
-    Agr = AgSgP1 | AgSgP2 | AgSgP3 Gender | AgSgP3Gen
-          | AgPl Person | AgPlPol ;   -- still too complex (using PCase)
-
+    Agr = AgSgP1 | AgSgP2 | AgSgP3 Gender | AgSgP3Gen | AgPl Person | AgPlPol ;
 
   oper
-    mkAgr : {g : Gender ; n : Number ; p : Person} -> OldAgr = \r ->
-      Ag r.g r.n r.p ;
-
-    genderAgr = overload {
-      genderAgr : OldAgr -> Gender = \r -> case r of {Ag g _ _ => g} ;
-      genderAgr : Agr -> Gender = \r -> case r of {AgSgP3 g => g ; _ => Masc}
-      } ;
+    genderAgr : Agr -> Gender = \r -> case r of {AgSgP3 g => g ; _ => Masc} ;
 
     numberAgr = overload {
-      numberAgr : OldAgr -> Number = \r -> case r of {Ag _ n _ => n} ;
       numberAgr : Agr -> Number = \r -> case r of {
         AgSgP1 | AgSgP2 | AgSgP3 _ | AgSgP3Gen => Sg ;
         AgPl _ | AgPlPol => Pl
@@ -66,7 +55,6 @@ resource ResGer = ParamX ** open Prelude in {
       numberAgr : VAgr -> Number = \r -> case r of {VAg n _ => n} ;
     } ;
     personAgr = overload {
-      personAgr : OldAgr -> Person = \r -> case r of {Ag _ _ p => p} ;
       personAgr : Agr -> Person = \r -> case r of {
         AgSgP1 | AgPl P1 => P1 ;
         AgSgP2 | AgPl P2 => P2 ;
@@ -76,14 +64,13 @@ resource ResGer = ParamX ** open Prelude in {
       personAgr : VAgr -> Person = \r -> case r of {VAg _ p => p}
       } ;
 
-    agr2vagr : Agr -> VAgr = \r -> case r of {
-       AgSgP1  => VAg Sg P1 ;
-       AgPl P1 => VAg Pl P1 ;
-       AgSgP2  => VAg Sg P2 ;
-       AgPl P2 => VAg Pl P2 ;
-       AgSgP3 _ | AgSgP3Gen => VAg Sg P3 ;
-       AgPl P3 | AgPlPol => VAg Pl P3
-     } ;
+    conjAgr : Agr -> Agr -> Agr = \a,b ->
+      let n : Number = conjNumber (numberAgr a) (numberAgr b) ;
+          p : Person = conjPerson (personAgr a) (personAgr b)
+      in case <n,p> of {<Pl,p> => AgPl p ;
+                        <Sg,P3> => AgSgP3 Neutr ;
+                        <Sg,P1> => AgSgP1 ;
+                        <Sg,P2> => AgSgP2 } ;
 
 -- Pronouns are the worst-case noun phrases, which have both case
 -- and possessive forms.
@@ -170,9 +157,6 @@ resource ResGer = ParamX ** open Prelude in {
   oper
     agrP3 : Number -> Agr = agrgP3 Neutr ;
 
-    oldagrgP3 : Gender -> Number -> OldAgr = \g,n ->
-      Ag g n P3 ;
-
     agrgP3 : Gender -> Number -> Agr = \g,n -> case n of {
       Sg => AgSgP3 g ;
       Pl => AgPl P3    -- no gender in Pl
@@ -231,21 +215,13 @@ resource ResGer = ParamX ** open Prelude in {
         _ => VInf False --# notpresent
         } ;
 
-    conjOldAgr : Agr -> Agr -> OldAgr = \a,b -> mkAgr {
-      g = Neutr ; ----
-      n = conjNumber (numberAgr a) (numberAgr b) ;
-      p = conjPerson (personAgr a) (personAgr b)
-      } ;
-
-    conjAgr : Agr -> Agr -> Agr = \a,b ->
-      let n : Number = conjNumber (numberAgr a) (numberAgr b) ;
-          p : Person = conjPerson (personAgr a) (personAgr b)
-      in case <n,p> of {<Pl,p> => AgPl p ;
-                        <Sg,P3> => AgSgP3 Neutr ;
-                        <Sg,P1> => AgSgP1 ;
-                        <Sg,P2> => AgSgP2 } ;
-
---    agr2vagr : Agr -> VAgr = \r -> case r of {Ag _ n p => VAg n p} ;
+    agr2vagr : Agr -> VAgr = \r -> case r of {
+       AgSgP1  => VAg Sg P1 ;
+       AgSgP2  => VAg Sg P2 ;
+       AgSgP3 _ | AgSgP3Gen => VAg Sg P3 ;
+       AgPl p => VAg Pl p ;
+       AgPlPol => VAg Pl P3
+     } ;
 
     vagrP3 : Number -> VAgr = \n -> VAg n P3 ;
 
@@ -984,7 +960,6 @@ resource ResGer = ParamX ** open Prelude in {
     -- let vpi = infVP isAux vp in
     -- vpi.p1 ! agrP3 Sg ++ vpi.p3 ++ vpi.p2 ++ vpi.p4 ;
     let vpi = infVP isAux Simul Pos vp ; -- HL 3/2022
-        -- agr : Agr = (Ag Masc Sg P3) ;
         agr : Agr = AgSgP3Gen ;          -- HL 17.8.2023
         glue : (Agr => Str)*Str -> Str =  \i -> i.p1!agr ++ i.p2
     in
@@ -993,61 +968,18 @@ resource ResGer = ParamX ** open Prelude in {
 -- The nominative case is not used as reflexive, but defined here
 -- so that we can reuse this in personal pronouns. 
 
-  oldreflPron : OldAgr => Case => Str = table {
-    Ag _ Sg P1 => caselist "ich" "mich" "mir"  "meiner" ;
-    Ag _ Sg P2 => caselist "du"  "dich" "dir"  "deiner" ;
-    Ag Masc Sg P3 => caselist "er" "sich" "sich" "seiner" ;
-    Ag Fem  Sg P3 => caselist "sie" "sich" "sich" "ihrer" ;
-    Ag Neutr Sg P3 => caselist "es" "sich" "sich" "seiner" ;
-    Ag _ Pl P1 => caselist "wir" "uns"  "uns"  "unser" ;
-    Ag _ Pl P2 => caselist "ihr" "euch" "euch" "euer" ;
-    Ag _ Pl P3 => caselist "sie" "sich" "sich" "ihrer"
-    } ;
-
-  oldpossPron : OldAgr -> Number -> Gender -> Case -> Str = \a,n,g,c -> case <a,n,g> of {
-    <Ag _ Sg P1,Sg,Masc>  => caselist "mein"  "meinen" "meinem"  "meines" ! c ;
-    <Ag _ Sg P1,Sg,Fem>   => caselist "meine" "meine"  "meiner"  "meiner" ! c ;
-    <Ag _ Sg P1,Sg,Neutr> => caselist "mein"  "mein"   "meinem"  "meines" ! c ;
-    <Ag _ Sg P1,Pl,_>     => caselist "meine" "meine"  "meinen"  "meiner" ! c ;
-    <Ag _ Sg P2,Sg,Masc>  => caselist "dein"  "deinen" "deinem"  "deines" ! c ;
-    <Ag _ Sg P2,Sg,Fem>   => caselist "deine" "deine"  "deiner"  "deiner" ! c ;
-    <Ag _ Sg P2,Sg,Neutr> => caselist "dein"  "dein"   "deinem"  "deines" ! c ;
-    <Ag _ Sg P2,Pl,_>     => caselist "deine" "deine"  "deinen"  "deiner" ! c ;
-    
-    <Ag (Masc|Neutr) Sg P3,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
-    <Ag (Masc|Neutr) Sg P3,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
-    <Ag (Masc|Neutr) Sg P3,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
-    <Ag (Masc|Neutr) Sg P3,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
-
-    <Ag _ _ P3,Sg,Masc>  => caselist "ihr"  "ihren" "ihrem"  "ihres" ! c ;
-    <Ag _ _ P3,Sg,Fem>   => caselist "ihre" "ihre"  "ihrer"  "ihrer" ! c ;
-    <Ag _ _ P3,Sg,Neutr> => caselist "ihr"  "ihr"   "ihrem"  "ihres" ! c ;
-    <Ag _ _ P3,Pl,_>     => caselist "ihre" "ihre"  "ihren"  "ihrer" ! c ;
-
-    <Ag _ Pl P1,Sg,Masc>  => caselist "unser"  "unseren" "unserem"  "unseres" ! c ;
-    <Ag _ Pl P1,Sg,Fem>   => caselist "unsere" "unsere"  "unserer"  "unserer" ! c ;
-    <Ag _ Pl P1,Sg,Neutr> => caselist "unser"  "unser"   "unserem"  "unseres" ! c ;
-    <Ag _ Pl P1,Pl,_>     => caselist "unsere" "unsere"  "unseren"  "unserer" ! c ;
-    
-    <Ag _ Pl P2,Sg,Masc>  => caselist "euer" "euren" "eurem"  "eures" ! c ;
-    <Ag _ Pl P2,Sg,Fem>   => caselist "eure" "eure"  "eurer"  "eurer" ! c ;
-    <Ag _ Pl P2,Sg,Neutr> => caselist "euer" "euer"  "eurem"  "eures" ! c ;
-    <Ag _ Pl P2,Pl,_>     => caselist "eure" "eure"  "euren"  "eurer" ! c
- 
-    } ;
-
   reflPron : Agr => Case => Str = table { -- with persPron nominative
-    AgSgP1 => caselist "ich" "mich" "mir"  "meiner" ;
-    AgSgP2 => caselist "du"  "dich" "dir"  "deiner" ;
-    AgSgP3 Masc => caselist "er" "sich" "sich" "seiner" ;
-    AgSgP3 Fem  => caselist "sie" "sich" "sich" "ihrer" ;
+    AgSgP1       => caselist "ich" "mich" "mir"  "meiner" ;
+    AgSgP2       => caselist "du"  "dich" "dir"  "deiner" ;
+    AgSgP3 Masc  => caselist "er" "sich" "sich" "seiner" ;
+    AgSgP3 Fem   => caselist "sie" "sich" "sich" "ihrer" ;
     AgSgP3 Neutr => caselist "es" "sich" "sich" "seiner" ;
-    AgSgP3Gen => caselist "man" "sich" "sich" "seiner" ;
-    AgPl P1 => caselist "wir" "uns"  "uns"  "unser" ;
-    AgPl P2 => caselist "ihr" "euch" "euch" "euer" ;
-    AgPl P3 => caselist "sie" "sich" "sich" "ihrer" ;
-    --AgPlReci => caselist "man" "einander" "einander" "einander" ;  -- reciPron ?
-    AgPlPol => caselist "Sie" "sich" "sich" "Ihrer"         -- HL 8/2023
+    AgSgP3Gen    => caselist "man" "sich" "sich" "seiner" ;
+    AgPl P1      => caselist "wir" "uns"  "uns"  "unser" ;
+    AgPl P2      => caselist "ihr" "euch" "euch" "euer" ;
+    AgPl P3      => caselist "sie" "sich" "sich" "ihrer" ;
+    AgPlPol      => caselist "Sie" "sich" "sich" "Ihrer"              -- HL 8/2023
+    -- ; AgPlReci  => caselist "man" "einander" "einander" "einander" -- reciPron ?
     } ;
 
   possPron : Agr -> Number -> Gender -> Case -> Str = \a,n,g,c -> case <a,n,g> of {
@@ -1060,15 +992,15 @@ resource ResGer = ParamX ** open Prelude in {
     <AgSgP2,Sg,Neutr> => caselist "dein"  "dein"   "deinem"  "deines" ! c ;
     <AgSgP2,Pl,_>     => caselist "deine" "deine"  "deinen"  "deiner" ! c ;
 
-    <AgSgP3 (Masc|Neutr),Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
-    <AgSgP3 (Masc|Neutr),Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
-    <AgSgP3 (Masc|Neutr),Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
-    <AgSgP3 (Masc|Neutr),Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
-
     <AgSgP3 Fem,Sg,Masc>  => caselist "ihr"  "ihren" "ihrem"  "ihres" ! c ;
     <AgSgP3 Fem,Sg,Fem>   => caselist "ihre" "ihre"  "ihrer"  "ihrer" ! c ;
     <AgSgP3 Fem,Sg,Neutr> => caselist "ihr"  "ihr"   "ihrem"  "ihres" ! c ;
     <AgSgP3 Fem,Pl,_>     => caselist "ihre" "ihre"  "ihren"  "ihrer" ! c ;
+
+    <AgSgP3 _,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
+    <AgSgP3 _,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
+    <AgSgP3 _,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
+    <AgSgP3 _,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
 
     <AgPl P1,Sg,Masc>  => caselist "unser"  "unseren" "unserem"  "unseres" ! c ;
     <AgPl P1,Sg,Fem>   => caselist "unsere" "unsere"  "unserer"  "unserer" ! c ;
@@ -1094,7 +1026,6 @@ resource ResGer = ParamX ** open Prelude in {
     <AgPlPol,Sg,Fem>   => caselist "Ihre" "Ihre"  "Ihrer"  "Ihrer" ! c ;
     <AgPlPol,Sg,Neutr> => caselist "Ihr"  "Ihr"   "Ihrem"  "Ihres" ! c ;
     <AgPlPol,Pl,_>     => caselist "Ihre" "Ihre"  "Ihren"  "Ihrer" ! c
-
     } ;
 
   conjThat : Str = "dass" ;

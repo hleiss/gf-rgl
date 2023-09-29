@@ -18,7 +18,6 @@ concrete RelativeGer of Relative = CatGer ** open ResGer, Prelude in {
 	    } ;
           agr = case rp.a of {
             RNoAg => agrP3 (numGenNum gn) ;
-            -- RAg n p => Ag Neutr n p
             RAg n p => case n of {Sg => AgSgP3 Neutr ; Pl => AgPl p}
             } ;
           cl = mkClause (rp.s ! rgn ! Nom) agr vp

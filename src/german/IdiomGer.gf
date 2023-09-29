@@ -54,7 +54,6 @@ concrete IdiomGer of Idiom = CatGer **
     ProgrVP = insertAdv "eben" ; ----
 
     ImpPl1 vp = {s = 
---      (mkClause "wir" (Ag Fem Pl P1) vp).s !
       (mkClause "wir" (AgPl P1) vp).s !
                            MConjunct ! Pres ! Simul ! Pos ! Inv 
       } ;

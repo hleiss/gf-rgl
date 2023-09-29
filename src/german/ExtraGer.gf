@@ -29,7 +29,6 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     ICompAP ap = {s = \\_ => "wie" ++ ap.s ! APred ;
                   ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext} ;
 
---    CompIQuant iq = {s = table {Ag g n p => iq.s ! n ! g ! Nom} ; ext = ""} ;
     CompIQuant iq = {s = table {a => iq.s ! numberAgr a ! genderAgr a ! Nom} ; ext = ""} ;
 
     IAdvAdv adv = {s = "wie" ++ adv.s} ;
@@ -178,7 +177,6 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     RNPList = {s1,s2 : Agr => Case => Str} ;
 
   linref
---    RNP = \rnp -> rnp.s ! (Ag Masc Sg P3) ! Acc ++ rnp.ext ++ rnp.rc ;
     RNP = \rnp -> rnp.s ! AgSgP3 Masc ! Acc ++ rnp.ext ++ rnp.rc ;
 
   lin
@@ -365,7 +363,6 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     esSubj : CatGer.NP = lin NP {
       s = \\_,_ => "es" ;
       rc, ext = [] ;
-      -- a = Ag Neutr Sg P3 ;
       a = AgSgP3 Neutr ;
       w = WPron
     } ;
