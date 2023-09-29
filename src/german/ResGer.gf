@@ -39,8 +39,8 @@ resource ResGer = ParamX ** open Prelude in {
 -- Agreement of $NP$ has three parts: gender, number and person.
 
     -- These 3*2*3 = 18 values can be reduced to 8, since gender is used only
-    -- in 3rd person singular. To select reflexive and possessive forms for "man"
-    -- and "Sie" in (mkClause str agr vp), we add values AgSgP3Gen and AgPlPol.  HL 29.9.2023
+    -- in 3rd person singular. To select reflexive and possessive forms for "Sie"
+    -- in (mkClause str agr vp), add a value AgPlPol, for "man", add AgSgP3Gen.  HL 29.9.2023
 
     Agr = AgSgP1 | AgSgP2 | AgSgP3 Gender | AgSgP3Gen | AgPl Person | AgPlPol ;
 
@@ -974,7 +974,7 @@ resource ResGer = ParamX ** open Prelude in {
     AgSgP3 Masc  => caselist "er" "sich" "sich" "seiner" ;
     AgSgP3 Fem   => caselist "sie" "sich" "sich" "ihrer" ;
     AgSgP3 Neutr => caselist "es" "sich" "sich" "seiner" ;
-    AgSgP3Gen    => caselist "man" "sich" "sich" "seiner" ;
+    AgSgP3Gen    => caselist "man" "sich" "sich" "seiner" ; -- älter als man (selbst) sein
     AgPl P1      => caselist "wir" "uns"  "uns"  "unser" ;
     AgPl P2      => caselist "ihr" "euch" "euch" "euer" ;
     AgPl P3      => caselist "sie" "sich" "sich" "ihrer" ;
@@ -1002,6 +1002,11 @@ resource ResGer = ParamX ** open Prelude in {
     <AgSgP3 _,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
     <AgSgP3 _,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
 
+    <AgSgP3Gen,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
+    <AgSgP3Gen,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
+    <AgSgP3Gen,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
+    <AgSgP3Gen,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
+
     <AgPl P1,Sg,Masc>  => caselist "unser"  "unseren" "unserem"  "unseres" ! c ;
     <AgPl P1,Sg,Fem>   => caselist "unsere" "unsere"  "unserer"  "unserer" ! c ;
     <AgPl P1,Sg,Neutr> => caselist "unser"  "unser"   "unserem"  "unseres" ! c ;
@@ -1016,11 +1021,6 @@ resource ResGer = ParamX ** open Prelude in {
     <AgPl P3,Sg,Fem>   => caselist "ihre" "ihre"  "ihrer"  "ihrer" ! c ;
     <AgPl P3,Sg,Neutr> => caselist "ihr"  "ihr"   "ihrem"  "ihres" ! c ;
     <AgPl P3,Pl,_>     => caselist "ihre" "ihre"  "ihren"  "ihrer" ! c ;
-
-    <AgSgP3Gen,Sg,Masc>  => caselist "sein"  "seinen" "seinem"  "seines" ! c ;
-    <AgSgP3Gen,Sg,Fem>   => caselist "seine" "seine"  "seiner"  "seiner" ! c ;
-    <AgSgP3Gen,Sg,Neutr> => caselist "sein"  "sein"   "seinem"  "seines" ! c ;
-    <AgSgP3Gen,Pl,_>     => caselist "seine" "seine"  "seinen"  "seiner" ! c ;
 
     <AgPlPol,Sg,Masc>  => caselist "Ihr"  "Ihren" "Ihrem"  "Ihres" ! c ;
     <AgPlPol,Sg,Fem>   => caselist "Ihre" "Ihre"  "Ihrer"  "Ihrer" ! c ;

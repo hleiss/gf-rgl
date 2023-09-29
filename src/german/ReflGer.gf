@@ -210,7 +210,9 @@ concrete ReflGer of Refl =
     -- Avoid a pronoun that would not be a correct object in German:
     -- one_Pron = mkPronPers "man" "einen" "einem" "seiner" "sein" Masc Sg P3
     --            ** { a = AgSgP3Gen } ; -- special agreement for mkClause str agr vp
-    -- AgSgP3Gen is needed for Eng (oneself,one's), could be (AgSgP3 Masc) for Ger?
+    -- AgSgP3Gen is needed for Eng (oneself,one's). In Ger one could use (AgSgP3 Masc),
+    -- except that in (ComparRA old_A ReflPron), ReflPron can be nominative:
+    --    to be older than oneself = "älter als man selbst sein"
 
   linref
     RAP = \ap -> (ap.c! AgSgP3Gen).p1 ++ ap.s ! APred ++ (ap.c!AgSgP3Gen).p2 ++ ap.ext ! AgSgP3Gen ;

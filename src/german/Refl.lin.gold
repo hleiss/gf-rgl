@@ -50,7 +50,7 @@ Refl: AdjRCN (ComparRA old_A (ReflPoss NumPl (UseN child_N))) (UseN person_N)
 ReflGer: ältere Person als seine Kinder
 ReflEng: person older than one's children
 Refl: DetRCN many_Det (AdjRCN (ComparRA old_A ReflPron) (UseN man_N))
-ReflGer: viele älteren Männer als man [selbst]
+ReflGer: viele älteren Männer als man [selbst]  [Duden 494: viele ältere_ Männer]
 ReflEng: many men older than oneself
 Refl: UttVP (UseComp (CompRNP (ReflPoss NumSg (UseN boss_N))))
 ReflGer: sein Chef zu sein
