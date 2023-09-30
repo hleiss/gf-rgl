@@ -225,6 +225,7 @@ mkN : overload {
   zu_Prep  : Prep ; -- zu + dative, with contractions zum, zur
   anDat_Prep : Prep ; -- an + dative, with contraction am
   inDat_Prep : Prep ; -- in + dative, with contraction im
+  anAcc_Prep : Prep ; -- an + accusative, with contraction ans
   inAcc_Prep : Prep ; -- in + accusative, with contraction ins
 
 --2 Verbs
@@ -381,10 +382,8 @@ mkV2 : overload {
 -- The definitions should not bother the user of the API. So they are
 -- hidden from the document.
 
-
-
   Gender = MorphoGer.Gender ;
-  Case = MorphoGer.Case ;
+  Case   = MorphoGer.Case ;
   Number = MorphoGer.Number ;
   masculine = Masc ;
   feminine  = Fem ;
@@ -566,7 +565,6 @@ mkV2 : overload {
   datPrep = mkPrep dative ;
   genPrep = mkPrep genitive ;
 
-  --von_Prep = mkPrep "von" dative ;
   von_Prep   = mkPrep "von" "vom" "von der" "vom" dative ;
   zu_Prep    = mkPrep "zu" "zum" "zur" "zum" dative ;
   inDat_Prep = mkPrep "in" "im" "in der" "im" dative ;

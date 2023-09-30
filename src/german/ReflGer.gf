@@ -213,6 +213,7 @@ concrete ReflGer of Refl =
     -- AgSgP3Gen is needed for Eng (oneself,one's). In Ger one could use (AgSgP3 Masc),
     -- except that in (ComparRA old_A ReflPron), ReflPron can be nominative:
     --    to be older than oneself = "älter als man selbst sein"
+    -- e.g. one should help people that are older than oneself
 
   linref
     RAP = \ap -> (ap.c! AgSgP3Gen).p1 ++ ap.s ! APred ++ (ap.c!AgSgP3Gen).p2 ++ ap.ext ! AgSgP3Gen ;

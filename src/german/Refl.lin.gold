@@ -5,7 +5,7 @@ Refl: ComplRA2 proud_A2 (ReflPoss NumPl (UseN child_N))
 ReflGer: stolz auf seine Kinder
 ReflEng: proud of one's children
 Refl: ComparRA old_A ReflPron
-ReflGer: älter als man
+ReflGer: älter als man selbst
 ReflEng: older than oneself
 Refl: ComparRA old_A (ReflPoss NumPl (UseN child_N))
 ReflGer: älter als seine Kinder
@@ -50,7 +50,7 @@ Refl: AdjRCN (ComparRA old_A (ReflPoss NumPl (UseN child_N))) (UseN person_N)
 ReflGer: ältere Person als seine Kinder
 ReflEng: person older than one's children
 Refl: DetRCN many_Det (AdjRCN (ComparRA old_A ReflPron) (UseN man_N))
-ReflGer: viele älteren Männer als man [selbst]  [Duden 494: viele ältere_ Männer]
+ReflGer: viele älteren Männer als man selbst  [Duden 494: viele ältere_ Männer]
 ReflEng: many men older than oneself
 Refl: UttVP (UseComp (CompRNP (ReflPoss NumSg (UseN boss_N))))
 ReflGer: sein Chef zu sein
@@ -104,11 +104,11 @@ Refl: UttImpPl PPos (ImpVP (ComplRSlash (SlashV2a love_V2) (ConjRNP and_Conj (Ba
 ReflGer: liebt eure Ehefrau und euch
 ReflEng: love your wife and yourselves
 Refl: UttImpSg PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
-ReflGer: sei nicht klüger als sein Bruder [Bug: als dein Bruder]
+ReflGer: sei nicht klüger als sein Bruder [Bug CompRAP: als dein Bruder]
 ReflEng: don't be cleverer than your brother
 Refl: UttImpPol PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
-ReflGer: seien Sie nicht klüger als sein Bruder [Bug: als Ihr Bruder]
+ReflGer: seien Sie nicht klüger als sein Bruder [Bug CompRAP: als Ihr Bruder]
 ReflEng: don't be cleverer than your brother
 Refl: UttImpPl PNeg (ImpVP (UseComp (CompRAP (ComparRA clever_A (ReflPoss NumSg (UseN2 brother_N2))))))
-ReflGer: seid nicht klüger als sein Bruder [Bug: als euer Bruder]
+ReflGer: seid nicht klüger als sein Bruder [Bug CompRAP: als euer Bruder]
 ReflEng: don't be cleverer than your brother
