@@ -1,4 +1,5 @@
-concrete CatGer of Cat = 
+--# -path=.:../abstract:../common:../prelude
+concrete CatGer of Cat =
   CommonX - [Tense,Temp] ** 
   open ResGer, Prelude in {
 
@@ -41,7 +42,7 @@ concrete CatGer of Cat =
     VPSlash = ResGer.VPSlash ;
     Comp = {s : Agr => Str ; ext : Str} ; 
 
--- Adjective (HL 7/23: we need c : Agr => Str*Str to handle reflexive objects, cf.ReflA2)
+-- Adjective  (HL 7/23: we need c : Agr => Str * Str to handle reflexive objects, cf ReflA2)
 
     AP = {s : AForm => Str ; isPre : Bool ; c: Str * Str ; ext : Str} ; 
     -- ich bin [c1 ihm] treu 
@@ -57,14 +58,15 @@ concrete CatGer of Cat =
       adv : Str ;          -- Haus    [adv auf dem Hügel]
       g : Gender
       } ;
-    NP = ResGer.NP ; 
+    NP = ResGer.NP ;
     Pron = {s : NPForm => Str ; a : Agr} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
     DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
-   -- HL 7/2022: first Bool = True if used to glue in Sg with preposition
-   -- second Bool is True if a cardinal number is present
-   Quant = {
+
+    -- HL 7/2022: first Bool = True if used to glue in Sg with preposition
+    -- second Bool is True if a cardinal number is present
+    Quant = {
       s, sp : Bool => Bool => Number => Gender => Case => Str ;
       a   : Adjf ;
       aPl : Adjf ;  --- to distinguish "meine guten Freunde" / "gute Freunde"
@@ -75,6 +77,7 @@ concrete CatGer of Cat =
       c : {p : Str ; k : PredetCase} ;
       a : PredetAgr -- if an agr is forced, e.g. jeder von uns ist ...
       } ;
+
     Num = {s : Gender => Case => Str ; n : Number ; isNum : Bool} ;
     Card = {s : Gender => Case => Str ; n : Number} ;
     Ord = {s : AForm => Str} ;
@@ -83,6 +86,7 @@ concrete CatGer of Cat =
 
     Numeral = {s : CardOrd => Str ; n : Number } ;
     Digits = {s : CardOrd => Str ; n : Number } ;
+    Decimal = {s : CardOrd => Str ; n : Number ; hasDot : Bool} ;
 
 -- Structural
 
@@ -106,7 +110,8 @@ concrete CatGer of Cat =
     N3 = ResGer.Noun ** {c2,c3 : Preposition} ;
     GN = {s : Case => Str; g : Sex} ;
     SN = {s : Sex => Case => Str} ;
-    LN, PN = {s : Case => Str; g : Gender; n : Number} ;
+    PN = {s : Case => Str; g : Gender; n : Number} ;
+    LN = {s : Adjf => Case => Str; hasArt : Bool; g : Gender; n : Number} ;
 
 -- tense with possibility to choose conjunctive forms
 
@@ -114,7 +119,7 @@ concrete CatGer of Cat =
     Tense = {s : Str ; t : ResGer.Tense ; m : Mood} ;
 
   linref
-    NP = \np -> np.s ! False ! Nom ++ np.ext ++ np.rc ; -- HL 7/22 Bool added
+    NP = \np -> np.s ! False ! Nom ++ np.ext ++ np.rc ; -- HL 7/2022 Bool added
     CN = \cn -> cn.s ! Strong ! Pl ! Nom ++ cn.adv ++ cn.ext ++ cn.rc ! Pl ;
 
     SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! GPl ;
@@ -128,6 +133,7 @@ concrete CatGer of Cat =
 
     V, VS, VQ, VA = \v -> useInfVP False (predV v) ;
     V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ;
+
     V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ++ v.c3.s ! GPl ;
 
     VV = \v -> useInfVP v.isAux (predVGen v.isAux v) ;

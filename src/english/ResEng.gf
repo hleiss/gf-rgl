@@ -695,4 +695,7 @@ param
   finalComma : Str = pre {"," | "." => []; "" => SOFT_BIND ++ ","; _ => []} ;
   frontComma : Str = SOFT_BIND ++ "," ;
 
+param
+  LNPrep = InPrep | OnPrep | AtPrep ;
+
 }

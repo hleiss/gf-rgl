@@ -25,7 +25,6 @@ resource ResGer = ParamX ** open Prelude in {
   param
     Case = Nom | Acc | Dat | Gen ;
     Gender = Masc | Fem | Neutr ;
-    Sex = Male | Female ;
 
 -- Complex $CN$s, like adjectives, have strong and weak forms.
 
@@ -261,7 +260,7 @@ resource ResGer = ParamX ** open Prelude in {
     g : Gender
     } ;
 
-  NP : Type = { -- HL 7/22: Bool = True if DefArt is dropped to combine with Prep of type isPrepDefArt
+  NP : Type = { -- HL 7/22: Bool = True if DefArt is dropped to combine with prep of type isPrepDefArt
      s : Bool => Case => Str ;
      rc : Str ;  -- die Frage , [rc die ich gestellt habe]
      ext : Str ; -- die Frage , [sc wo sie schläft] ; die Regel , [vp kein Fleisch zu essen] | [s dass ...]
@@ -431,14 +430,15 @@ resource ResGer = ParamX ** open Prelude in {
       [] VHaben ;
 
 -- Prepositions indicate the case of their complement noun phrase.
--- There are three types: (i) cases, (ii) pure pre-, post- and circum-positions,
--- and (iii) prepositions glued with definite article in singular.
+
+-- There are three types: (i) cases, (ii) pure pre-, post- and circum-positions, 
+-- and (iii) prepositions glued with definite article in singular (using s!(GSg g)).
 
   param
-    PrepType = isCase | isPrep | isPrepDefArt ;
+    PrepType = isCase | isPrep | isPrepDefArt ;                  -- HL 7/2022
 
   oper
-    Preposition : Type = {s : GenNum => Str ; s2:Str ; c:Case ; isPrep : PrepType} ;
+    Preposition : Type = {s : GenNum => Str ; s2:Str ; c : Case ; isPrep : PrepType} ;
 
   isaCase : Preposition -> Bool = \p -> case p.isPrep of {isCase => True ; _ => False} ;
   isaPrep : Preposition -> Bool = \p -> case p.isPrep of {isPrep => True ; _ => False} ;
@@ -654,7 +654,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   predV : Verb -> VP = predVGen False ;
 
-  predVc : Verb ** {c2 : Preposition} -> VPSlash = \v -> 
+  predVc : Verb ** {c2 : Preposition} -> VPSlash = \v ->
     predV v ** {c2 = v.c2 ; objCtrl = False} ;
 
   predVGen : Bool -> Verb -> VP = \isAux, verb -> {
@@ -1055,7 +1055,7 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- Function that allows the construction of non-nominative subjects.
   mkSubject : NP -> Preposition -> {s:Str ; a:Agr} = \np, prep ->
-    let 
+    let
       agr = case prep.c of { Nom => np.a ; _ => AgSgP3 Masc } ;
       subj = appPrepNP prep np
     in {s = subj ; a = agr} ;
