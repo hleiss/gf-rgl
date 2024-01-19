@@ -1,4 +1,4 @@
---# -path=.:../abstract:../common:prelude
+--# -path=.:../abstract:../common:../prelude
 
 concrete GrammarGer of Grammar = 
   NounGer,
@@ -11,7 +11,7 @@ concrete GrammarGer of Grammar =
   RelativeGer,
   ConjunctionGer,
   PhraseGer,
-  TextX - [Tense,Temp],
+  TextX - [Tense,Temp,Adv,CAdv],
   IdiomGer,
   StructuralGer,
   TenseGer,

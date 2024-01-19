@@ -34,7 +34,7 @@ lin
   married_Cl x y = ----mkCl (lin NP x) L.married_A2 (lin NP y) | 
                    mkCl (mkNP and_Conj (lin NP x) (lin NP y)) (P.mkA "verheiratet") ;
 
-  what_name_QCl x = mkQCl how_IAdv (mkCl (lin NP x) I.heißen_V) ;
+  what_name_QCl x = mkQCl how_IAdv (mkCl x I.heißen_V) ;
 ----  how_old_QCl x = mkQCl (E.ICompAP (mkAP L.old_A)) (lin NP x) ; ---- compilation slow
   how_old_QCl x = mkQCl (E.IAdvAdv (P.mkAdv "alt")) (mkCl (lin NP x) G.UseCopula) ; ----
   how_far_QCl x = mkQCl (E.IAdvAdv L.far_Adv) (mkCl (mkVP (SyntaxGer.mkAdv to_Prep (lin NP x)))) ;
@@ -75,7 +75,7 @@ lin
 
 lincat
   Timeunit = N ;
-  Hour = {short:Str ; long:Str ; adv:Adv} ;
+  Hour = {short:Str ; long:Str ; adv:CatGer.Adv} ;
   Weekday = N ;
   Monthday = NP ;
   Month = N ;
@@ -89,7 +89,9 @@ lin
       in  SyntaxGer.mkAdv (for_Prep | accPrep) n_hours_NP ;
 
     timeunitRange l u time =
-      {s = l.s ! R.AMod (R.gennum R.Masc l.n) R.Nom ++ "bis" ++ u.s ! R.AMod (R.gennum R.Masc u.n) R.Nom ++ time.s ! R.Pl ! R.Nom} ;
+      {s = l.s ! R.AMod (R.gennum R.Masc l.n) R.Nom ++ "bis"
+         ++ u.s ! R.AMod (R.gennum R.Masc u.n) R.Nom ++ time.s ! R.Pl ! R.Nom ;
+      cp,rc = []} ;
 
   oper
     mkHour : Str -> Str -> Str -> Hour
@@ -195,7 +197,7 @@ lin
   languageNP l = mkNP l ;
   languageCN l = mkCN l ;
 
-oper mkLanguage : Str -> N = \s -> P.mkN s neuter ; ---- produces Neuter
+oper mkLanguage : Str -> N = \s -> P.mkN s neuter ; ---- need mkN : A -> N for "das Arabische" etc.
 
 ----------------------------------------------
 ---- lexicon of special names

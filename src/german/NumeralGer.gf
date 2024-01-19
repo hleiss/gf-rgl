@@ -82,8 +82,8 @@ oper
     IIDig d i =
       let isPld : Bool = case d.n of {Sg => False ; _ => True} ;
           b : Bool = case i.isDig of {True => isPld ; _ => notB i.tail1to19} ;
-          i' : Digits = case b of {True => IDig (mkDig (i.s ! invNum ++ BIND ++ "s")) ;
-                                   _  => i }
+          i' : Digits = lin Digits (case b of {True => IDig (mkDig (i.s ! invNum ++ BIND ++ "s")) ;
+                                               _  => i})
       in {s = table {NCard af => d.s ! invNum ++ BIND ++ i.s ! NCard af ;
                      NOrd af => d.s ! invNum ++ BIND ++ i'.s ! NOrd af} ;
           n = Pl ;

@@ -7,7 +7,7 @@ concrete ConjunctionGer of Conjunction =
 
     ConjS conj ss = conjunctDistrTable Order conj ss ;
 
-    ConjAdv conj ss = conjunctDistrSS conj ss ;
+    ConjAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2 ; cp,rc = []} ;
 
     ConjNP conj ss = heavyNP (
     {s = \\_ => (conjunctDistrTable Case conj ss).s ;
@@ -43,8 +43,18 @@ concrete ConjunctionGer of Conjunction =
       s2 = xs.s2
       } ;
 
-    BaseAdv = twoSS ;
-    ConsAdv = consrSS comma ;
+    BaseAdv x y = {
+                s1 = bigAdv (lin Adv x) ;
+		s2 = bigAdv (lin Adv y) ;
+		rc,cp = [] ; lock_Adv = <>} ;
+    ConsAdv xs x = {
+		s1 = xs.s ++ comma ++ x.s1 ;
+		s2 = x.s2 ;
+		} ;
+    BaseAdV = twoSS ;
+    ConsAdV = consrSS comma ;
+    BaseIAdv = twoSS ;
+    ConsIAdv = consrSS comma ;
     BaseNP x y = {
 		s1 = \\c => x.s ! False ! c ++ bigNP x ;
 		s2 = \\c => y.s ! False ! c ++ bigNP y ;
@@ -54,26 +64,26 @@ concrete ConjunctionGer of Conjunction =
 		s2 = x.s2 ;
 		a = conjAgr xs.a x.a } ;
     BaseAP x y = lin AP {
-		s1 = bigAP x ;
-		s2 = bigAP y ;
+		s1 = bigAP (lin AP x) ;
+		s2 = bigAP (lin AP y) ;
 		isPre = andB x.isPre y.isPre ;
 		c = <[],[]> ;
 	  	ext = []} ;
    ConsAP xs x = lin AP {
-		s1 = \\a => (bigAP xs) ! a ++ comma ++ x.s1 ! a ;
+		s1 = \\a => (bigAP (lin AP xs)) ! a ++ comma ++ x.s1 ! a ;
 		s2 = x.s2 ;
 		isPre = andB x.isPre xs.isPre ;
 		c = <[],[]> ;
 	  	ext = []} ;
     BaseRS x y = twoTable RelGenNum x y ** {c = y.c} ;
     ConsRS xs x = consrTable RelGenNum comma xs x ** {c = xs.c} ;
-    BaseCN x y = lin CN {
-      s1 = bigCN x ;
-      s2 = bigCN y ;
+    BaseCN x y = {
+      s1 = bigCN (lin CN x) ;
+      s2 = bigCN (lin CN y) ;
       g  = x.g ; --- gender of first CN, used e.g. in articles
       } ; 
-    ConsCN x xs = lin CN {
-      s1 = \\a,n,c => bigCN x ! a ! n ! c ++ comma ++ xs.s1 ! a ! n ! c ;
+    ConsCN x xs = {
+      s1 = \\a,n,c => bigCN (lin CN x) ! a ! n ! c ++ comma ++ xs.s1 ! a ! n ! c ;
       s2 = xs.s2 ;
       g  = x.g ; --- gender of first CN, used e.g. in articles
       } ; 
@@ -82,6 +92,8 @@ concrete ConjunctionGer of Conjunction =
   lincat
     [S] = {s1,s2 : Order => Str} ;
     [Adv] = {s1,s2 : Str} ;
+    [AdV] = {s1,s2 : Str} ;
+    [IAdv] = {s1,s2 : Str} ;
     [NP] = {s1,s2 : Case => Str ; a : Agr} ;
     [AP] = {s1,s2 : AForm => Str ; isPre : Bool; c : Str * Str ; ext : Str} ;
     [RS] = {s1,s2 : RelGenNum => Str ; c : Case} ;
@@ -93,4 +105,5 @@ concrete ConjunctionGer of Conjunction =
     bigCN : CN -> Adjf => Number => Case => Str = \cn ->
 		\\a,n,c => cn.s ! a ! n ! c ++ cn.adv ++ cn.ext ++ cn.rc ! n ;
 		
+    bigAdv : CatGer.Adv -> Str = \adv -> adv.s ++ adv.cp ++ adv.rc ;
 }

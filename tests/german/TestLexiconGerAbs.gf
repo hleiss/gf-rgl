@@ -47,4 +47,8 @@ fun
   treu_A2 : A2 ;  -- Ger: dative complement
   stolz_A2 : A2 ;
 
+  -- Adverbs
+
+  anders_CAdv : CAdv ;
+
 }

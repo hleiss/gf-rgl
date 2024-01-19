@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common:../prelude
 concrete CatGer of Cat =
-  CommonX - [Tense,Temp] ** 
+  CommonX - [Tense,Temp,Adv,CAdv] **
   open ResGer, Prelude in {
 
   flags optimize=all_subs ;
@@ -41,6 +41,11 @@ concrete CatGer of Cat =
     VP = ResGer.VP ;
     VPSlash = ResGer.VPSlash ;
     Comp = {s : Agr => Str ; ext : Str} ; 
+
+    -- Adverb
+
+    Adv = {s : Str ; cp : Str ; rc : Str} ;
+    CAdv = {s : Str ; p : Str ; deg : Degree} ;
 
 -- Adjective  (HL 7/23: we need c : Agr => Str * Str to handle reflexive objects, cf ReflA2)
 

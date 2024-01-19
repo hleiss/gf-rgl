@@ -66,4 +66,9 @@ lin
   neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
   treu_A2 = mkA2 (compoundA (mkA "faithful")) (mkPrep "to") ;
   stolz_A2 = mkA2 (mkA "proud" "prouder") (mkPrep "of") ;
+
+  -- Adverbs
+
+  anders_CAdv = mkCAdv "other" "than" Posit ; -- (nicht) anders bewertet als
+
 }

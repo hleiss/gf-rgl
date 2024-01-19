@@ -225,6 +225,10 @@ mkN : overload {
 
   mkAdv : Str -> Adv ; -- adverbs have just one form anyway
 
+  mkCAdv : overload {
+    mkCAdv : Str -> Str -> CAdv ; -- comparative adverb (with positive degree)
+    mkCAdv : Str -> Str -> Degree -> CAdv -- comparative adverb with degree
+    } ;
 
 --2 Prepositions
 
@@ -234,9 +238,7 @@ mkN : overload {
     mkPrep : Str -> Case -> Prep ; -- e.g. "durch" + accusative
     mkPrep : Case -> Str -> Prep ; -- postposition
     mkPrep : Str -> Case -> Str -> Prep ; -- both sides
-    -- for prepositions glued with DefArt in singular
-    -- e.g. "auf" "auf den" "auf die" "aufs" + accusative
-    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ;
+    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg, e.g. "auf" "auf den" "auf die" "aufs" + accusative
     mkPrep : Case -> Prep ;        -- convert case to preposition
     } ;
 
@@ -575,7 +577,14 @@ mkV2 : overload {
 
   mkA2 = \a,p -> a ** {c2 = p ; lock_A2 = <>} ;
 
-  mkAdv s = {s = s ; lock_Adv = <>} ;
+  mkAdv s = {s = s ; cp,rc = [] ; lock_Adv = <>} ;
+
+  mkCAdv = overload {
+    mkCAdv : Str -> Str -> CAdv =
+      \s1,s2 -> {s = s1 ; p = s2 ; deg = Posit ; lock_CAdv = <>} ;
+    mkCAdv : Str -> Str -> Degree -> CAdv =
+      \s1,s2,d -> {s = s1 ; p = s2 ; deg = d ; lock_CAdv = <>}
+    } ;
 
   mkPrep = overload {
     mkPrep : Str -> Case -> Prep = \s,c ->

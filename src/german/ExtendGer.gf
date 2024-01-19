@@ -10,6 +10,7 @@ concrete ExtendGer of Extend =
       PastPartAP, PastPartAgentAP,
       PassVPSlash, PassAgentVPSlash,
       AdvIsNP,
+      ComplDirectVS, ComplDirectVQ,
       RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, Conj_RNP,
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
       CompoundN, DetNPMasc, DetNPFem, UseDAP, UseDAPMasc, UseDAPFem,
@@ -157,7 +158,8 @@ concrete ExtendGer of Extend =
       } ;
 
     PrepCN prep cn = {
-      s = prep.s ! GPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext} ;
+      s = prep.s ! GPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ;
+      cp, rc = []} ;
 
   -- fronted/focal constructions, only for main clauses
 
@@ -216,6 +218,11 @@ concrete ExtendGer of Extend =
 -- infinitive for purpose AR 21/8/2013
 
 -- object S without "that"
+
+    ComplDirectVS vs utt =
+      AdvVP (UseV <lin V vs : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,rc=[]}) ;
+    ComplDirectVQ vq utt =
+      AdvVP (UseV <lin V vq : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,rc=[]}) ;
 
 -- front the extraposed part
 
@@ -390,7 +397,8 @@ concrete ExtendGer of Extend =
       } ;
 
 
-    InOrderToVP vp = {s = "um" ++ useInfVP False vp} ;
+    InOrderToVP vp = {s = "um" ++ useInfVP False vp ;
+      cp, rc = []} ;
 
   oper
     insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022

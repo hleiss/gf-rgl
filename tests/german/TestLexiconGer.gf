@@ -77,4 +77,7 @@ lin
   treu_A2 = mkA2 (mk3A "treu" "treuer" "treueste") datPrep ;
   stolz_A2 = mkA2 (mk3A "stolz" "stolzer" "stolzeste") (mkPrep "auf" accusative) ;
 
+  -- Adverbs
+
+  anders_CAdv = mkCAdv "anders" "als" Posit ; -- (nicht) anders bewertet als
 }

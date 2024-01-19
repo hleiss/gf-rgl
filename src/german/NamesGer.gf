@@ -72,7 +72,8 @@ lin InLN ln = {
              a = agrgP3 ln.g ln.n ;
              w = WLight ;
              rc, ext = []
-      }
+        } ;
+      cp,rc = []
       } ;
 
 -- AdjLN : AP -> LN -> LN ;
