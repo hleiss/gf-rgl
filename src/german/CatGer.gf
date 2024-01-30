@@ -27,9 +27,11 @@ concrete CatGer of Cat =
 
     QCl = {s : Mood => ResGer.Tense => Anteriority => Polarity => QForm => Str} ;
     IP = {s : Case => Str ; n : Number} ;
+-- HL 1/2024: [welch(er|e|es) CN]:IP nutzt:V2 (seine|ihre|ihre)!ip.a Vorteile?
+--    IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ; 
     IComp = {s : Agr => Str ; ext : Str} ; 
-    IDet = {s : Gender => Case => Str ; n : Number} ;
-    IQuant = {s : GenNum => Case => Str} ;
+    IDet = {s : Gender => Case => Str ; n : Number ; a : Adjf} ;
+    IQuant = {s : GenNum => Case => Str ; a : Adjf} ;
 
 -- Relative
 
@@ -45,7 +47,7 @@ concrete CatGer of Cat =
     -- Adverb
 
     Adv = {s : Str ; cp : Str ; rc : Str} ;
-    CAdv = {s : Str ; p : Str ; deg : Degree} ;
+    CAdv = {s : Bool => Str * Str ; deg : Degree} ;
 
 -- Adjective  (HL 7/23: we need c : Agr => Str * Str to handle reflexive objects, cf ReflA2)
 
@@ -152,4 +154,5 @@ concrete CatGer of Cat =
     Prep = \prep -> case prep.t of {isPrepDefArt => prep.s ! GSg Masc ;
                                     _ => prep.s ! GPl } ;
 
+    Adv = \adv -> adv.s ++ adv.cp ++ adv.rc ;
 }

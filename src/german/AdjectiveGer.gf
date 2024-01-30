@@ -17,10 +17,11 @@ concrete AdjectiveGer of Adjective = CatGer ** open ResGer, Prelude in {
       c = <[],[]> ;
       ext = []
       } ;
-    CAdvAP adv ap np = ap ** {
-      s = \\af => adv.s ++ ap.s ! af ;
-      s2 = \\c => adv.p ++ np.s ! False ! c ++ np.ext ++ np.rc ;
-      isPre = True -- HL 1/2023
+    CAdvAP cadv ap np = let adv : Str * Str = cadv.s ! False in
+      ap ** {
+        s = \\afl => adv.p1 ++ ap.s ! afl ;
+        s2 = \\c => ap.s2 ! c ++ adv.p2 ++ np.s ! False ! c ++ np.ext ++ np.rc ;
+        isPre = True
       } ;
     UseComparA a = {
       s = \\af => a.s ! Compar ! af ;

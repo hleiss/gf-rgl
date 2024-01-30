@@ -50,7 +50,7 @@ concrete StructuralGer of Structural = CatGer **
   here_Adv = P.mkAdv "hier" ;
   how_IAdv = ss "wie" ;
   how8much_IAdv = ss "wieviel" ;
-  how8many_IDet = {s = \\g,c => "wie viel" + detEnding ! (gennum g Pl) ! c ; n = Pl} ;
+  how8many_IDet = {s = \\g,c => "wie viel" + detEnding ! (gennum g Pl) ! c ; n = Pl ; a = Strong} ;
   if_Subj = ss "wenn" ; --- no variants in the RGL! | ss "falls" ;
   in8front_Prep = mkPrep "vor" P.dative ;
   i_Pron = mkPronPers "ich" "mich" "mir" "meiner" "mein" Masc Sg P1 ;
@@ -60,7 +60,7 @@ concrete StructuralGer of Structural = CatGer **
   many_Det = {
     s,sp = \\_,g,c => "viel" + adjEnding ! (gennum g Pl) ! c ;
     n = Pl ; a = Strong ; isDef = False ; hasDefArt = False} ;
-  more_CAdv = P.mkCAdv "" "als" Compar ;
+  more_CAdv = P.mkCAdv <"mehr","als"> <"","als"> Compar ; -- mehr als 5 ; besser als np
 --  most_Predet = {s = appAdj (regA "meist") ; c = noCase ; a = PAgNone} ;
   most_Predet = {                                                           -- HL 5/2022
     s = \\n,g,c => let gn = R.gennum g n ;
@@ -130,15 +130,22 @@ concrete StructuralGer of Structural = CatGer **
         VHaben) ;
   we_Pron = mkPronPers "wir" "uns"  "uns"   "unser"  "unser" Fem Pl P1 ;
 
-  whatSg_IP = {s = caselist "was" "was" "was" "wessen" ; n = Sg} ; ----
-  whatPl_IP = {s = caselist "was" "was" "was" "wessen" ; n = Pl} ; -- HL 6/2016
+  whatSg_IP = {s = caselist "was" "was" "was" "wessen" ;
+               n = Sg} ;
+               -- a = GSg Neutr ; isPron = True} ; -- todo: mit was => womit
+  whatPl_IP = {s = caselist "was alles" "was alles" "was allem" "wessen allem" ;
+               n = Sg} ;
+               -- a = GSg Neutr ; isPron = True} ; -- Duden 563
 
   when_IAdv = ss "wann" ;
   when_Subj = ss "wenn" ;
   where_IAdv = ss "wo" ;
-  which_IQuant = {s = \\gn,c => "welch" + detEnding ! gn ! c} ;
-  whoSg_IP = {s = caselist "wer" "wen" "wem" "wessen" ; n = Sg} ;
-  whoPl_IP = {s = caselist "wer" "wen" "wem" "wessen" ; n = Sg} ; -- HL 6/2016
+  which_IQuant = {s = \\gn,c => "welch" + detEnding ! gn ! c ; a = Weak} ;
+  whoSg_IP = {s = caselist "wer" "wen" "wem" "wessen" ; -- a = GSg Masc ; isPron = True} ; -- Duden 563
+              n = Sg} ;
+  whoPl_IP = {s = caselist "wer alles" "wen alles" "wem alles" "wessen alles" ;
+              n = Sg} ;
+              -- a = GSg Masc ; isPron = True} ; -- Duden 563
   why_IAdv = ss "warum" ;
   without_Prep = mkPrep "ohne" P.accusative ;
   with_Prep = mkPrep "mit" P.dative ;
@@ -162,7 +169,7 @@ concrete StructuralGer of Structural = CatGer **
   at_most_AdN = ss "höchstens" ;
   except_Prep = mkPrep "außer" P.dative ;
 
-  as_CAdv = P.mkCAdv "ebenso" "wie" ;
+  as_CAdv = P.mkCAdv <"genau",[]> <"so","wie"> Posit ; -- genau 5 ; so gut wie np 
   have_V2 = P.dirV2 IrregGer.haben_V ;
   that_Subj = ss "dass" ;
 

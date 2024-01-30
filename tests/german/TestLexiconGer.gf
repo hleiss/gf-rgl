@@ -1,8 +1,11 @@
 --# -path=.:../abstract:../common:../prelude: 
 
 concrete TestLexiconGer of TestLexiconGerAbs = 
-  LexiconGer ** open (R=ResGer), (P=Prelude), ParadigmsGer 
+  LexiconGer **
+  open (R=ResGer), (P=Prelude), ParadigmsGer, (Irreg=IrregGer)
 in {
+
+  -- Verbs
 
 lincat 
   V4 = R.Verb ** {c2,c3,c4 : R.Preposition} ;
@@ -13,10 +16,6 @@ oper
 
   reflV3 : V -> Case -> Prep -> Prep -> V3 ; -- reflexive, with case, and prep-objects
   reflV3 v c p q = mkV3 (reflV v c) p q ;
-
-  bei_Prep   = mkPrep "bei" dative ; 
-  fuer_Prep  = mkPrep "für" accusative ;
-  mit_Prep   = mkPrep "mit" dative ; 
 
   -- quaternary verbs:
   mkV4 : V -> Prep -> Prep -> Prep -> V4 = 
@@ -40,6 +39,7 @@ lin
   erinnern_an_V3 = dirV3 (irregV "erinnern" "erinnert" "erinnerte"
                                  "erinnerte" "erinnert") (mkPrep "an" accusative) ;
   danken_dat_fuer_V3 = mkV3 (regV "danken") datPrep (mkPrep "für" accusative) ;
+  write_to_V3 = dirV3 Irreg.schreiben_V ((mkPrep "an" accusative) | datPrep) ;
   debattieren_mit_ueber_V3 = mkV3 (irregV "debattieren" "debattiert" "debattierte"
                                           "debattierte" "debattiert") mit_Prep (mkPrep "über" accusative) ;
   lehren_V3 = dirV3 (regV "lehren") accPrep ;
@@ -71,13 +71,57 @@ lin
   sehen_V2V  = auxV2V (irregV "sehen" "sieht" "sah" "sähe" "gesehen") accPrep ;
   hoeren_V2V = auxV2V (regV "hören") accPrep ;
 
+  erwarten_V2 = mkV2 (irregV "erwarten" "erwartet" "erwartete" "erwarte" "erwartet") ;
+
   -- Adjectives
 
+  ander_A = mkA "ander" ;
+  froh_A  = mkA "froh" ;
   neugierig_auf_A2 = mkA2 (mk3A "neugierig" "neugieriger" "neugierigste") (mkPrep "auf" accusative) ;
   treu_A2 = mkA2 (mk3A "treu" "treuer" "treueste") datPrep ;
   stolz_A2 = mkA2 (mk3A "stolz" "stolzer" "stolzeste") (mkPrep "auf" accusative) ;
+  ausgehend_A2 = mkA2 (mkA "ausgehend") von_Prep ;
+  einhergehend_A2 = mkA2 (mkA "einhergehend") mit_Prep ;
 
   -- Adverbs
 
-  anders_CAdv = mkCAdv "anders" "als" Posit ; -- (nicht) anders bewertet als
+--  anders_Adv  = mkAdv "anders" ;
+  nirgends_Adv = mkAdv "nirgends";
+  ueberall_Adv = mkAdv "überall";
+  anders_als_CAdv = mkCAdv "anders" "als" ; -- (nicht) anders bewertet als
+
+  dieser_Tage_Adv = mkAdv "dieser Tage";
+  
+  -- Conjunctions
+
+  neither7nor_DConj = mkConj "weder" "noch" ;
+  notonly_butalso_Conj =mkConj "nicht nur" "sondern auch";
+
+  -- Prepositions
+
+  fuer_Prep  = mkPrep "für" accusative ;
+  mit_Prep   = mkPrep "mit" dative ;
+  wegen_Prep = mkPrep "wegen" dative ;
+  wegen2_Prep = mkPrep genitive "wegen" ;          -- postposition
+  entlang_Prep  = mkPrep "entlang" genitive ;
+  entlang2_Prep = mkPrep accusative "entlang" ;
+  um_herum_Prep = mkPrep "um" accusative "herum" ; -- circumposition
+  von_aus_Prep  = mkPrep "von" dative "aus" ;
+
+  -- Noun
+
+  idea_N = mkN "Idee" "Ideen" feminine ;
+  intention_N = mkN "Absicht" "Absichten" feminine ;
+
+  -- Proper name
+
+  mary_PN = mkPN "Maria" ;
+
+  -- Determiner
+
+  how8much_IDet = {s = table {R.Fem => R.caselist  "wieviel" "wieviel" "wievieler" "wievieler" ;
+                              _ => R.caselist "wieviel" "wieviel" "wievielem" "wievielen"} ;
+                   a = R.Strong ;
+                   n = R.Sg} ;
+                              
 }

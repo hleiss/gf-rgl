@@ -3,14 +3,14 @@ concrete AdverbGer of Adverb = CatGer ** open ResGer, Prelude in {
   lin
     PositAdvAdj a = {s = a.s ! Posit ! APred ; cp,rc = []} ;
 
-    ComparAdvAdj cadv a np = {
-      s = cadv.s ++ a.s ! cadv.deg ! APred ;
-      cp = cadv.p ++ np.s ! False ! Nom ++ bigNP np ;
+    ComparAdvAdj cadv a np = let adv : Str * Str = cadv.s ! False in {
+      s = adv.p1 ++ a.s ! cadv.deg ! APred ;
+      cp = adv.p2 ++ np.s ! False ! Nom ++ bigNP np ;
       rc = []
       } ;
-    ComparAdvAdjS cadv a s = {
-      s = cadv.s ++ a.s ! Posit ! APred ;
-      cp = cadv.p ++ s.s ! Sub ;
+    ComparAdvAdjS cadv a s = let adv : Str * Str = cadv.s ! False in {
+      s = adv.p1 ++ a.s ! cadv.deg ! APred ;
+      cp = adv.p2 ++ s.s ! Sub ;
       rc = []
       } ;
 
@@ -22,7 +22,7 @@ concrete AdverbGer of Adverb = CatGer ** open ResGer, Prelude in {
 
     SubjS subj s = {s = subj.s ++ s.s ! Sub ; cp,rc = []} ;
 
-    AdnCAdv cadv = {s = cadv.s ++ conjThan} ; ---- HL: ebenso als ?
+    AdnCAdv cadv = let adv : Str * Str = cadv.s ! True in {s = adv.p1 ++ adv.p2} ;
 
 }
 

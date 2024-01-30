@@ -6,6 +6,8 @@ concrete TestLexiconEng of TestLexiconGerAbs =
   LexiconEng ** open (R=ResEng), (P=Prelude), ParadigmsEng, (I=IrregEng)
 in {
 
+  -- Verbs
+
 lincat 
   V4 = R.Verb ** {c2,c3,c4 : Str} ;
 
@@ -38,6 +40,7 @@ lin
   anklagen_gen_V3 = dirV3 (regV "accuse") (mkPrep "of") ;
   erklaeren_dat_V3 = dirV3 (regV "explain") (mkPrep "to") ;
   erinnern_an_V3 = dirV3 (regV "remind") (mkPrep "of") ;
+  write_to_V3 = dirV3 (irregV "write" "wrote" "written") toP ;
   danken_dat_fuer_V3 = dirV3 (regV "thank") (mkPrep "for") ;
   debattieren_mit_ueber_V3 = mkV3 (regV "debate") (mkPrep "with") (mkPrep "about") ;
   lehren_V3 = mkV3 (irregV "teach" "taught" "taught") noPrep noPrep ;
@@ -61,14 +64,52 @@ lin
   sehen_V2V  = mkV2V (I.see_V) ;
   hoeren_V2V = mkV2V (I.hear_V) ;
 
+  erwarten_V2 = mkV2 (mkV "expect") ;
+
   -- Adjectives
 
+  ander_A = compoundA (mkA "other") ; -- from DictEng other_A
+  froh_A = mkA "glad" "gladder" ;     -- from DictEng glad_A
   neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
   treu_A2 = mkA2 (compoundA (mkA "faithful")) (mkPrep "to") ;
   stolz_A2 = mkA2 (mkA "proud" "prouder") (mkPrep "of") ;
 
   -- Adverbs
 
-  anders_CAdv = mkCAdv "other" "than" Posit ; -- (nicht) anders bewertet als
+  anders_Adv  = mkAdv "differently" ;
+  nirgends_Adv = mkAdv "nowhere" ;
+  ueberall_Adv = mkAdv "everywhere" ;
+  anders_CAdv = mkCAdv "other" "no other" "than" ; -- (nicht) anders bewertet als
 
+  dieser_Tage_Adv = mkAdv "these days" ;
+  
+  -- Conjunctions
+
+  neither7nor_DConj = mkConj "neither" "nor" singular ;
+  notonly_butalso_Conj = mkConj "not only" "but also" singular ;
+
+  -- Prepositions
+
+  fuer_Prep = mkPrep "for" ;
+  mit_Prep  = mkPrep "with" ;
+  wegen_Prep = mkPrep "because of" ;
+  wegen2_Prep = mkPrep "because of" ;
+  entlang_Prep = mkPrep "along" ;
+  entlang2_Prep = mkPrep "along" ;
+  um_herum_Prep = mkPrep "around" ;
+  von_aus_Prep = mkPrep "from" ;
+  
+  -- Noun
+
+  idea_N = mkN "idea" ;
+  intention_N = mkN "intention" ;
+
+  -- Proper name
+
+  mary_PN = mkPN "Mary" ;
+
+  -- Determiner
+
+  how8much_IDet = {s = "how much" ; n = R.Sg} ;
+  
 }

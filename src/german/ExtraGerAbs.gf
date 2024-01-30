@@ -7,7 +7,6 @@ abstract ExtraGerAbs = Extra [
   Foc,FocObj,FocAdv,FocAP,UseFoc,
     RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP
     ,RNPList,ConjRNP,Base_rr_RNP,Base_nr_RNP,Base_rn_RNP,Cons_rr_RNP,Cons_nr_RNP
-    ,DetNPMAsc,DetNPFem
   ] ** {
   flags coding=utf8;
   

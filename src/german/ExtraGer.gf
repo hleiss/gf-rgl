@@ -16,10 +16,12 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
       insertInf {inpl = <\\_ => [], (vpi.s ! v.isAux)> ; extr = \\_ => []}  -- HL 3/22
         (predVGen v.isAux v) ;
 
-    PPzuAdv cn = {s = case cn.g of {
-      Masc | Neutr => "zum" ;
-      Fem => "zur"
-      } ++ cn.s ! adjfCase Weak Dat ! Sg ! Dat 
+    PPzuAdv cn = {
+      s = case cn.g of {
+        Masc | Neutr => "zum" ;
+        Fem => "zur"
+        } ++ cn.s ! adjfCase Weak Dat ! Sg ! Dat ;
+      cp,rc =[]
     } ;
 
     TImpfSubj  = {s = [] ; t = Past ; m = MConjunct} ;   --# notpresent
@@ -183,7 +185,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 
   lin
     ReflRNP vps rnp =
-      insertObjReflNP rnp vps ;
+      insertObjReflNP (lin RNP rnp) vps ;
 
     ReflPron = { -- with personal pronoun nominative
       s = ResGer.reflPron ; rc,ext = [] ; isPron = True } ;
@@ -291,9 +293,9 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 	
   lin 
     FocObj np cl =
-      let n = appPrepNP cl.c2 np in mkFoc n cl ;
+      let n = appPrepNP cl.c2 np in (mkFoc n (lin Cl cl)) ;
 
-    FocAdv adv cl = mkFoc adv.s cl ;
+    FocAdv adv cl = mkFoc adv.s (lin Cl cl) ;
 
     FocAP ap np =
       let adj = ap.s ! APred ;
@@ -305,7 +307,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
                -- "stolz ist sie auf ihn"
           subj = mkSubject np vp.c1 ;
           cl = mkClause subj.s subj.a vp
-      in mkFoc adj cl ;
+      in mkFoc adj (lin Cl cl) ;
 
     UseFoc t p f = {s = t.s ++ p.s ++ f.s ! t.m ! t.t ! t.a ! p.p} ;
 
@@ -340,7 +342,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 	
     FtoCl cl =
       let subj = mkSubject cl.subj cl.c1
-      in DisToCl subj.s subj.a cl ;
+      in DisToCl subj.s subj.a (lin VP cl) ;
 
 
   oper -- extra operations for ExtraGer
@@ -355,7 +357,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
       w = WPron
     } ;
 
-    DisToCl : Str -> Agr -> FClause -> Clause = \subj,agr,vp ->
+    DisToCl : Str -> Agr -> ResGer.VP -> Clause = \subj,agr,vp ->
 	  let vps = useVP vp in {
       s = \\m,t,a,b,o =>
         let

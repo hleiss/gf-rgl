@@ -1,8 +1,9 @@
+--# -path=.:../../src/abstract:../../src/common:../../src/api:../../src/prelude:../../src/german
 abstract TestLang = 
   Grammar - [SlashVP, RelSlash, QuestSlash, AdvSlash, SlashPrep, SlashVS, UseSlash],
   TestLexiconGerAbs
   , Construction
-  , Extend [PassVPSlash,PastPartAP
+  , Extra [PassVPSlash,PastPartAP
               ,RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP,AdvRNP,ReflA2RNP,PossPronRNP
               ,RNPList,ConjRNP,Base_rr_RNP,Base_nr_RNP,Base_rn_RNP,Cons_rr_RNP,Cons_nr_RNP]
   ** {

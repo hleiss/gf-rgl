@@ -1,4 +1,4 @@
---# -path=.:../common:../abstract:../../prelude
+--# -path=.:../common:../abstract:../prelude:
 
 --1 German Lexical Paradigms
 --
@@ -226,9 +226,11 @@ mkN : overload {
   mkAdv : Str -> Adv ; -- adverbs have just one form anyway
 
   mkCAdv : overload {
-    mkCAdv : Str -> Str -> CAdv ; -- comparative adverb (with positive degree)
-    mkCAdv : Str -> Str -> Degree -> CAdv -- comparative adverb with degree
+    mkCAdv : Str -> Str -> CAdv ;          -- comparative adverb (with positive degree)
+    mkCAdv : Str * Str -> Str * Str -> Degree -> CAdv -- comparative adverb with degree
     } ;
+
+  mkIAdv : Str -> IAdv ;
 
 --2 Prepositions
 
@@ -258,6 +260,13 @@ mkN : overload {
   inDat_Prep  : Prep ; -- in + dative, with contraction im
   inAcc_Prep  : Prep ; -- in + accusative, with contraction ins
   aufAcc_Prep : Prep ; -- auf + accusative, with contraction aufs
+
+--2 Conjunctions
+
+  mkConj : overload {
+    mkConj : Str -> Conj ;
+    mkConj : Str -> Str -> Conj ;  -- weder x noch y
+    } ;
 
 --2 Verbs
 
@@ -528,6 +537,11 @@ mkV2 : overload {
        g = g ; n = Sg ; lock_PN = <>} 
     } ;
 
+  mkConj = overload {
+    mkConj : Str -> Conj = \s -> lin Conj {s1 = s ; s2 = [] ; n = Pl} ;
+    mkConj : Str -> Str -> Conj = \s,t -> lin Conj {s1 = s ; s2 = t ; n = Pl} ;
+    } ;
+
   mk2PN  : (karolus, karoli : Str) -> Gender -> PN ; -- karolus, karoli
   regPN : (Johann : Str) -> Gender -> PN ;  
     -- Johann, Johanns ; Johannes, Johannes
@@ -581,10 +595,12 @@ mkV2 : overload {
 
   mkCAdv = overload {
     mkCAdv : Str -> Str -> CAdv =
-      \s1,s2 -> {s = s1 ; p = s2 ; deg = Posit ; lock_CAdv = <>} ;
-    mkCAdv : Str -> Str -> Degree -> CAdv =
-      \s1,s2,d -> {s = s1 ; p = s2 ; deg = d ; lock_CAdv = <>}
+      \s1,s2 -> lin CAdv {s = \\_ => <s1,s2> ; deg = Posit} ;
+    mkCAdv : Str * Str -> Str * Str -> Degree -> CAdv =
+      \strs1,strs2,d -> lin CAdv {s = table {True => strs1 ; False => strs2} ; deg = d}
     } ;
+
+  mkIAdv s = {s = s ; lock_IAdv = <>} ;
 
   mkPrep = overload {
     mkPrep : Str -> Case -> Prep = \s,c ->

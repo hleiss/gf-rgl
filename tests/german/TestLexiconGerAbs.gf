@@ -1,6 +1,8 @@
 --# -path=.:../abstract:../common:../prelude: -- partially extracted from DictVerbsGerAbs
 abstract TestLexiconGerAbs = Lexicon ** {
 
+  -- Verbs
+
 fun
   aendern_rV : V ;
   anstrengen_rV : V ;
@@ -15,6 +17,7 @@ fun
   erklaeren_dat_V3 : V3 ;
   lehren_V3 : V3 ;
   erinnern_an_V3 : V3 ;
+  write_to_V3 : V3 ;
   danken_dat_fuer_V3 : V3 ;
   debattieren_mit_ueber_V3 : V3 ;
 
@@ -35,6 +38,8 @@ fun
   sehen_V2V : V2V ;
   hoeren_V2V : V2V ; 
 
+  erwarten_V2 : V2 ;
+  
 cat 
   V4 ;
 fun
@@ -43,12 +48,49 @@ fun
 
   -- Adjectives
 
+  ander_A : A ;
+  froh_A : A ;
   neugierig_auf_A2 : A2 ;
   treu_A2 : A2 ;  -- Ger: dative complement
   stolz_A2 : A2 ;
-
+  ausgehend_A2 : A2 ;
+  einhergehend_A2 : A2 ;
+  
   -- Adverbs
 
-  anders_CAdv : CAdv ;
+--  anders_Adv : Adv ;
+  nirgends_Adv : Adv ;
+  ueberall_Adv : Adv ;
+  anders_als_CAdv : CAdv ;
 
+  dieser_Tage_Adv : Adv ;
+
+  -- Conjunctions
+
+  neither7nor_DConj : Conj ;
+  notonly_butalso_Conj : Conj ;
+
+  -- Prepositions
+
+  fuer_Prep : Prep ;
+  mit_Prep : Prep ;
+  wegen_Prep : Prep ;
+  wegen2_Prep : Prep ;
+  entlang_Prep : Prep ;   -- pre  + genitive
+  entlang2_Prep : Prep ;  -- post + accusative
+  um_herum_Prep : Prep ;  -- cirumposition
+  von_aus_Prep : Prep ;
+  
+  -- Noun
+
+  idea_N : N ;
+  intention_N : N ;
+
+  -- Proper name
+
+  mary_PN : PN ;
+
+  -- Determiner
+
+  how8much_IDet : IDet ;
 }
