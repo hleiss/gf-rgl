@@ -137,21 +137,21 @@ lin
   InflectionV v = {
     t  = "v" ;
     s1 = heading1 (heading verb_Category) ++  
-         paragraph (verbExample (S.mkCl S.she_NP v)) ;
+         paragraph (verbExample (S.mkCl S.she_NP (lin V v))) ;
     s2 = inflVerb v
     } ;
 
   InflectionV2 v = {
     t  = "v" ;
     s1 = heading1 (heading verb_Category) ++  
-         paragraph (verbExample (S.mkCl S.she_NP v S.something_NP)) ;
+         paragraph (verbExample (S.mkCl S.she_NP (lin V2 v) S.something_NP)) ;
     s2 = inflVerb v
     } ;
 
   InflectionV3 v = {
     t  = "v" ;
     s1 = heading1 (heading verb_Category) ++  
-         paragraph (verbExample (S.mkCl S.she_NP v S.something_NP S.something_NP)) ;
+         paragraph (verbExample (S.mkCl S.she_NP (lin V3 v) S.something_NP S.something_NP)) ;
     s2 = inflVerb v
     } ;
 

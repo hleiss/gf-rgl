@@ -37,7 +37,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
         insertInf inf vps) ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
 
     SlashV2A v ap =
-      insertAdj (ap.s ! APred ++ ap.s2 ! Nom) ap.c ap.ext (predV v) ** {c2 = v.c2; objCtrl = False} ;
+      insertAdj (ap.s ! APred ++ appPrep v.c2 ap.s2) ap.c ap.ext (predV v) ** {c2 = v.c2; objCtrl = False} ;
 
     ComplSlash vps np =
       -- IL 24/04/2018 force reflexive in the VPSlash to take the agreement of np.
@@ -95,7 +95,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
    --     insertObjNP np v.c2 (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl}) ;
      let prep = v.c2 ;
          obj = appPrep prep (np.s!False) ; -- simplify: no glueing of prep+DefArt, HL 8/22
-         b : Bool = case prep.t of {isPrep | isPrepDefArt => True ; _ => False} ;
+         b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
          c = prep.c ;
          w = np.w ;
          vps = (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl})
@@ -109,7 +109,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
 
     UseCopula = predV sein_V ;
 
-    CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ; ext = ap.ext} ;
+    CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ; ext = ap.ext} ;
     CompNP np = {s = \\_ => np.s ! False ! Nom ++ np.rc ; ext = np.ext} ;
     CompAdv a = {s = \\_ => a.s ; ext = []} ;
 
@@ -120,8 +120,18 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
 		ext = cn.adv ++ cn.ext
       } ;
 
-    AdvVP vp adv = insertAdv (adv.s ++ adv.cp ++ adv.rc) vp ;
-    ExtAdvVP vp adv = insertAdv (embedInCommas adv.s) vp ;
+--    AdvVP vp adv = insertAdv (adv.s ++ adv.cp ++ adv.cor) vp ;
+    AdvVP vp adv = case adv.hasCor of {
+      True => insertAdv (adv.cor ++ embedInCommas (adv.s ++ adv.cp)) vp ;
+      False => let str = (adv.s ++ adv.cp ++ adv.cor) ;
+                   advs = if_then_Str adv.t (embedInCommas str) str -- clausal/non-clausal
+        in insertAdv advs vp
+    } ;
+
+    ExtAdvVP vp adv =
+      let cor = if_then_Str adv.hasCor adv.cor [] ;
+          ext = (bindComma ++ adv.s ++ adv.cp)
+      in insertExtrapos ext (insertAdv cor vp) ;
 
     AdVVP adv vp = insertAdv adv.s vp ; -- not AdV 27/5/2012: nicht immer
 

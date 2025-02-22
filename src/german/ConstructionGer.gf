@@ -1,10 +1,10 @@
 --# -path=.:../abstract
 
 concrete ConstructionGer of Construction = CatGer **
-  open SyntaxGer, SymbolicGer, (P = ParadigmsGer),
+  open SyntaxGer, SymbolicGer, ParadigmsGer,
        (L = LexiconGer), (E = ExtendGer), (G = GrammarGer), (I = IrregGer), (R = ResGer), (N = NounGer), Prelude in {
 flags coding=utf8 ;
-
+{-
 oper
   mkPrep : Str -> P.Case -> Prep = P.mkPrep ;
   mkV2 : V -> V2 = P.mkV2 ;
@@ -19,45 +19,46 @@ oper
   neuter = P.neuter ;
   regV = P.regV ;
   invarA = P.invarA ;
-
+-}
 lin
-  hungry_VP = mkVP (P.mkA "hungrig") ;
-  thirsty_VP = mkVP (P.mkA "durstig") ;
-  tired_VP = mkVP (P.mkA "müde") ;
-  scared_VP = mkVP have_V2 (mkNP (P.mkN "Angst" "Ängste" feminine)) ;
-  ill_VP = mkVP (P.mkA "krank") ;
-  ready_VP = mkVP (P.mkA "bereit") ;
+  hungry_VP = mkVP (mkA "hungrig") ;
+  thirsty_VP = mkVP (mkA "durstig") ;
+  tired_VP = mkVP (mkA "müde") ;
+  scared_VP = mkVP have_V2 (mkNP (mkN "Angst" "Ängste" feminine)) ;
+  ill_VP = mkVP (mkA "krank") ;
+  ready_VP = mkVP (mkA "bereit") ;
 
   has_age_VP card = mkVP (lin AP (mkAP (lin AdA (mkUtt (mkNP <lin Card card : Card> L.year_N))) L.old_A)) ;
 
-  have_name_Cl x y = mkCl (lin NP x) (mkV2 I.heißen_V) (lin NP y) ;
+  have_name_Cl x y = mkCl (lin NP x) (ParadigmsGer.mkV2 I.heißen_V) (lin NP y) ;
   married_Cl x y = ----mkCl (lin NP x) L.married_A2 (lin NP y) | 
-                   mkCl (mkNP and_Conj (lin NP x) (lin NP y)) (P.mkA "verheiratet") ;
+                   mkCl (mkNP and_Conj (lin NP x) (lin NP y)) (mkA "verheiratet") ;
 
   what_name_QCl x = mkQCl how_IAdv (mkCl x I.heißen_V) ;
 ----  how_old_QCl x = mkQCl (E.ICompAP (mkAP L.old_A)) (lin NP x) ; ---- compilation slow
-  how_old_QCl x = mkQCl (E.IAdvAdv (P.mkAdv "alt")) (mkCl (lin NP x) G.UseCopula) ; ----
+  how_old_QCl x = mkQCl (E.IAdvAdv (ParadigmsGer.mkAdv "alt")) (mkCl (lin NP x) G.UseCopula) ; ----
   how_far_QCl x = mkQCl (E.IAdvAdv L.far_Adv) (mkCl (mkVP (SyntaxGer.mkAdv to_Prep (lin NP x)))) ;
 
 -- some more things
   weather_adjCl ap = mkCl (mkVP (lin AP ap)) ;
    
-  is_right_VP = mkVP have_V2 (mkNP (P.mkN "Recht")) ;
-  is_wrong_VP = mkVP have_V2 (mkNP (P.mkN "Unrecht")) ;
+  is_right_VP = mkVP have_V2 (mkNP (mkN "Recht")) ;
+  is_wrong_VP = mkVP have_V2 (mkNP (mkN "Unrecht")) ;
 
-  n_units_AP card cn a = mkAP (lin AdA (mkUtt (mkNP <lin Card card : Card> (lin CN cn)))) (lin A a) ;
-  n_unit_CN card unit cn = mkCN (invarA (mkUtt (mkNP <lin Card card : Card> (lin CN unit))).s) cn ;
+--  n_units_AP card cn a = mkAP (lin AdA (mkUtt (mkNP <lin Card card : Card> (lin CN cn)))) (lin A a) ;
+  n_units_AP card cn a = mkAP (lin AdA (mkUtt (mkNP <lin Card card:Card> <cn : CN>))) (lin A a) ;
+  n_unit_CN card unit cn = mkCN (invarA (mkUtt (mkNP <lin Card card : Card> (lin CN unit))).s) (lin CN cn) ;
 
-  bottle_of_CN np = N.ApposCN (mkCN (P.mkN "Flasche")) np ;
-  cup_of_CN np    = N.ApposCN (mkCN (P.mkN "Tasse"))   np ;
-  glass_of_CN np  = N.ApposCN (mkCN (P.mkN "Glas" "Gläser" neuter)) np ;
+  bottle_of_CN np = N.ApposCN (mkCN (mkN "Flasche")) np ;
+  cup_of_CN np    = N.ApposCN (mkCN (mkN "Tasse"))   np ;
+  glass_of_CN np  = N.ApposCN (mkCN (mkN "Glas" "Gläser" neuter)) np ;
 
   few_X_short_of_Y np x y =  -- np.dat fehlen (wenige x).nom an y
     let
-      xs : NP = (mkNP G.few_Det x) ;
-      ys : NP = (mkNP G.IndefArt y) ;
-      fehlen_V3 : V3 = P.mkV3 (regV "fehlen") datPrep (mkPrep "an" dative) ;
-      vp : VP = mkVP (mkVPSlash fehlen_V3 np) ys
+      xs : NP = (mkNP G.few_Det (lin CN x)) ;
+      ys : NP = (mkNP G.IndefArt (lin CN y)) ;
+      fehlen_V3 : V3 = ParadigmsGer.mkV3 (regV "fehlen") datPrep (mkPrep "an" dative) ;
+      vp : VP = mkVP (mkVPSlash fehlen_V3 (lin NP np)) ys
     in
       mkS (mkCl xs vp) ;
 
@@ -85,19 +86,19 @@ lincat
 -- timeunitRange : Card -> Card -> Timeunit -> Adv ; -- (cats live) ten to twenty years
 lin
     timeunitAdv n time =
-      let n_hours_NP : NP = mkNP n time
+      let n_hours_NP : NP = mkNP (lin Card n) time
       in  SyntaxGer.mkAdv (for_Prep | accPrep) n_hours_NP ;
 
     timeunitRange l u time =
       {s = l.s ! R.AMod (R.gennum R.Masc l.n) R.Nom ++ "bis"
          ++ u.s ! R.AMod (R.gennum R.Masc u.n) R.Nom ++ time.s ! R.Pl ! R.Nom ;
-      cp,rc = []} ;
+      cp,cor = [] ; hasCor,t = False} ;
 
   oper
     mkHour : Str -> Str -> Str -> Hour
     = \n,m,daytime ->
       let numeral : Str -> Str = \k -> (SyntaxGer.mkUtt (SyntaxGer.mkCard k)).s
-      in lin Hour {short = numeral n ; long = numeral m ; adv = P.mkAdv daytime} ;
+      in lin Hour {short = numeral n ; long = numeral m ; adv = ParadigmsGer.mkAdv daytime} ;
 
 lin
     oneHour         = mkHour "1" "1" "nachts" ;
@@ -134,8 +135,8 @@ lin
   -- timeHourMinute : Hour -> Card -> Adv ; -- at six forty a.m./p.m.
                                             -- um sechs/achtzehn Uhr vierzig
   timeHourMinute h card =
-    let min : Str = (SyntaxGer.mkUtt card).s
-    in P.mkAdv ("um" ++ h.short ++ "Uhr" ++ min) ;
+    let min : Str = (SyntaxGer.mkUtt (lin Card card)).s
+    in ParadigmsGer.mkAdv ("um" ++ h.short ++ "Uhr" ++ min) ;
 
 {- -- Remark (HL 7/2023):
 -- To avoid massive overgeneration, we'd better replace Card here by
@@ -191,51 +192,51 @@ lin
   weekdayN w = w ;
   monthN m = m ;
 
-  weekdayPN w = P.mkPN w ;
-  monthPN m = P.mkPN m ;
+  weekdayPN w = mkPN w ;
+  monthPN m = mkPN m ;
 
   languageNP l = mkNP l ;
   languageCN l = mkCN l ;
 
-oper mkLanguage : Str -> N = \s -> P.mkN s neuter ; ---- need mkN : A -> N for "das Arabische" etc.
+oper mkLanguage : Str -> N = \s -> mkN s neuter ; ---- need mkN : A -> N for "das Arabische" etc.
 
 ----------------------------------------------
 ---- lexicon of special names
 
-lin second_Timeunit = P.mkN "Sekunde" ;
-lin minute_Timeunit = P.mkN "Minute" ;
-lin hour_Timeunit = P.mkN "Stunde" ;
-lin day_Timeunit = P.mkN "Tag" ;
-lin week_Timeunit = P.mkN "Woche" ;
-lin month_Timeunit = P.mkN "Monat";
-lin year_Timeunit = P.mkN "Jahr" "Jahre" neuter ;
+lin second_Timeunit = mkN "Sekunde" ;
+lin minute_Timeunit = mkN "Minute" ;
+lin hour_Timeunit = mkN "Stunde" ;
+lin day_Timeunit = mkN "Tag" ;
+lin week_Timeunit = mkN "Woche" ;
+lin month_Timeunit = mkN "Monat";
+lin year_Timeunit = mkN "Jahr" "Jahre" neuter ;
 
-lin monday_Weekday = P.mkN "Montag" ;
-lin tuesday_Weekday = P.mkN "Dienstag" ;
-lin wednesday_Weekday = P.mkN "Mittwoch" ;
-lin thursday_Weekday = P.mkN "Donnerstag" ;
-lin friday_Weekday = P.mkN "Freitag" ;
-lin saturday_Weekday = P.mkN "Samstag" ;
-lin sunday_Weekday = P.mkN "Sonntag" ;
+lin monday_Weekday = mkN "Montag" ;
+lin tuesday_Weekday = mkN "Dienstag" ;
+lin wednesday_Weekday = mkN "Mittwoch" ;
+lin thursday_Weekday = mkN "Donnerstag" ;
+lin friday_Weekday = mkN "Freitag" ;
+lin saturday_Weekday = mkN "Samstag" ;
+lin sunday_Weekday = mkN "Sonntag" ;
 
-lin january_Month = P.mkN "Januar" ;
-lin february_Month = P.mkN "Februar" ;
-lin march_Month = P.mkN "März" ;
-lin april_Month = P.mkN "April" ;
-lin may_Month = P.mkN "Mai" ;
-lin june_Month = P.mkN "Juni" ;
-lin july_Month = P.mkN "Juli" ;
-lin august_Month = P.mkN "August" ;
-lin september_Month = P.mkN "September" ;
-lin october_Month = P.mkN "Oktober" ;
-lin november_Month = P.mkN "November" ;
-lin december_Month = P.mkN "Dezember" ;
+lin january_Month = mkN "Januar" ;
+lin february_Month = mkN "Februar" ;
+lin march_Month = mkN "März" ;
+lin april_Month = mkN "April" ;
+lin may_Month = mkN "Mai" ;
+lin june_Month = mkN "Juni" ;
+lin july_Month = mkN "Juli" ;
+lin august_Month = mkN "August" ;
+lin september_Month = mkN "September" ;
+lin october_Month = mkN "Oktober" ;
+lin november_Month = mkN "November" ;
+lin december_Month = mkN "Dezember" ;
 
 lin afrikaans_Language = mkLanguage "Afrikaans" ;
 lin amharic_Language = mkLanguage "Amharisch" ;
 lin arabic_Language = mkLanguage "Arabisch" ;
 lin bulgarian_Language = mkLanguage "Bulgarisch" ;
-lin catalan_Language = mkLanguage "Katalanish" ;
+lin catalan_Language = mkLanguage "Katalanisch" ;
 lin chinese_Language = mkLanguage "Chinesisch" ;
 lin danish_Language = mkLanguage "Dänisch" ;
 lin dutch_Language = mkLanguage "Holländisch" ;

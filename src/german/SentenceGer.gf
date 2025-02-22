@@ -15,7 +15,8 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
 	 		"nach mir wurde gedürstet" "*mir wurde gedürstet" 
 			can't think of case of postpositions in subject -}
 
-    PredSCVP sc vp = mkClause sc.s (agrP3 Sg) vp ;
+    PredSCVP sc vp = -- sentential and interrogative subject in commata; but (how?):
+      mkClause (sc.s ++ bindComma) (agrP3 Sg) vp ; -- infinitival subject without commata
 
     ImpVP vp =  let vps = useVP vp in {
       s = \\pol,n => 
@@ -33,7 +34,7 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
                   _ => AgSgP1 -- default, does not occur
                   } ;
           neg  = negation ! pol ;
-          inf  = vp.inf.inpl.p2 ++ verb.inf ;  -- HL .s/.inpl.p2
+          inf  = vp.inf.inpl.p2 ++ verb.inf ++ vp.inf.extr ! agr ;  -- HL .s/.inpl.p2
           obj  = (vp.nn ! agr).p2 ++ (vp.nn ! agr).p3 ++ (vp.nn ! agr).p4 ++ vp.adj
         in
         verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ++ neg ++ obj ++ vp.a2 ++ inf ++ vp.ext
@@ -50,7 +51,7 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
     SlashVP np vp =
       let subj = mkSubject np vp.c1 ;                  -- HL 3/2022: need a mkClSlash to prevent
       in mkClause subj.s subj.a vp ** { c2 = vp.c2 } ; -- reflexives in vp instantiated to np.a
-                                                       -- cf. tests/german/TestLangGer.gf
+
     AdvSlash slash adv = {
       s  = \\m,t,a,b,o => slash.s ! m ! t ! a ! b ! o ++ adv.s ;
       c2 = slash.c2
@@ -82,11 +83,18 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
       c2 = cl.c2
       } ;
 
-    AdvS a s = {s = table {Sub => a.s ++ s.s ! Sub ; o => a.s ++ s.s ! Inv}} ;
+--    AdvS a s = {s = table {Sub => a.s ++ s.s ! Sub ; o => a.s ++ s.s ! Inv}} ;
+    AdvS a s =
+      let comma = if_then_Str (orB a.hasCor a.t) bindComma []
+      in {s = table {Sub => a.cor ++ comma ++ a.s ++ a.cp ++ comma ++ s.s ! Sub ;
+                     Inv => a.cor ++ s.s ! Inv ++ comma ++ a.s ++ a.cp ;
+                     _   => a.s ++ a.cp ++ comma ++ a.cor ++ s.s ! Inv}} ;
+
     ExtAdvS a s = 
       {s = table {Sub => a.s ++ "," ++ s.s ! Sub ; o => a.s ++ "," ++ s.s ! Inv}} ;
 
-    SSubjS a s b = {s = \\o => a.s ! o ++ "," ++ s.s ++ b.s ! Sub} ;
+--    SSubjS a s b = {s = \\o => a.s ! o ++ "," ++ s.s ++ b.s ! Sub} ;
+    SSubjS a s b = {s = \\o => a.s ! o ++ s.cor ++ "," ++ s.s ++ b.s ! Sub} ;
 
     RelS s r = {s = \\o => s.s ! o ++ "," ++ r.s ! RSentence} ; --- "was"
 

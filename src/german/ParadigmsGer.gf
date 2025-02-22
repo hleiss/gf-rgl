@@ -174,15 +174,15 @@ mkN : overload {
     mkLN : (nom,acc,dat,gen : Str) -> Gender -> LN = \nom,acc,dat,gen,g ->
       lin LN {s = \\a => table {Nom => nom ; Acc => acc ; Dat => dat ; Gen => gen} ; 
               g = g ; n = Sg ;
-              hasArt = False}
+              hasDefArt = False}
 
     } ;
 
-  defLN : LN -> LN = \n -> n ** {hasArt = True} ;
+  defLN : LN -> LN = \n -> n ** {hasDefArt = True} ;
 
   mk2LN  : (karolus, karoli : Str) -> Gender -> LN = \karolus, karoli, g -> 
     lin LN {s = \\a => table {Gen => karoli ; _ => karolus} ; g = g ; n = Sg ;
-            hasArt = False} ;
+            hasDefArt = False} ;
   regLN : (horst : Str) -> Gender -> LN = \horst, g -> 
     mk2LN horst (ifTok Tok (Predef.dp 1 horst) "s" horst (horst + "s")) g ;
 
@@ -237,11 +237,16 @@ mkN : overload {
 -- A preposition is formed from a string and a case.
 
   mkPrep : overload {
-    mkPrep : Str -> Case -> Prep ; -- e.g. "durch" + accusative
-    mkPrep : Case -> Str -> Prep ; -- postposition
-    mkPrep : Str -> Case -> Str -> Prep ; -- both sides
-    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg, e.g. "auf" "auf den" "auf die" "aufs" + accusative
     mkPrep : Case -> Prep ;        -- convert case to preposition
+    mkPrep : Str -> Case -> Prep ; -- e.g. "durch" + accusative
+    mkPrep : Case -> Str -> Prep ; -- e.g. genitive + "wegen"
+    mkPrep : Str -> Case -> Str -> Prep ; -- e.g. "um" + accusative + "herum"
+    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg, e.g. "auf" "auf den" "auf die" "aufs" + accusative, and with rpron ! RSentence, e.g. wo-r-auf
+    } ;
+
+  mkCPrep : overload { -- preposition contracting with relative pronoun ! RSentence
+    mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit, wo-r-an
+    mkCPrep : Str -> Case -> Str -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
     } ;
 
 -- Often just a case with the empty string is enough.
@@ -591,7 +596,7 @@ mkV2 : overload {
 
   mkA2 = \a,p -> a ** {c2 = p ; lock_A2 = <>} ;
 
-  mkAdv s = {s = s ; cp,rc = [] ; lock_Adv = <>} ;
+  mkAdv s = {s = s ; cp,cor = [] ; hasCor,t = False ; lock_Adv = <>} ;
 
   mkCAdv = overload {
     mkCAdv : Str -> Str -> CAdv =
@@ -603,17 +608,19 @@ mkV2 : overload {
   mkIAdv s = {s = s ; lock_IAdv = <>} ;
 
   mkPrep = overload {
+    mkPrep : Case -> Prep = \c ->
+      {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase ; lock_Prep = <>} ;
     mkPrep : Str -> Case -> Prep = \s,c ->
       {s = \\_ => s ; s2 = [] ; c = c ; t = isPrep ; lock_Prep = <>} ;
     mkPrep : Case -> Str -> Prep = \c,s ->
       {s = \\_ => [] ; s2 = s ; c = c ; t = isPrep ; lock_Prep = <>} ;
     mkPrep : Str -> Case -> Str -> Prep = \s,c,t ->
-      {s = \\_ => s ; s2 = t ; c = c ; t = isPrep ; lock_Prep = <>} ;
+      {s = table{CAdvPron => s ++ artDef ! GSg Neutr ! c ;
+                 CIPron => s ++ (caselist "was" "was" "wem" "wessen") ! c ;
+                 _ => s} ;
+       s2 = t ; c = c ; t = isPrep ; lock_Prep = <>} ;
     mkPrep : Str -> Str -> Str -> Str -> Case -> Prep = \s,masc,fem,neutr,c ->
-      {s = table{GPl => s ; GSg Masc => masc ; GSg Fem => fem ; GSg Neutr => neutr} ;
-       s2 = [] ; c = c ; t = isPrepDefArt ; lock_Prep = <>} ;
-    mkPrep : Case -> Prep = \c ->
-      {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase ; lock_Prep = <>}
+      mkCPrep s masc fem neutr c ;
     } ;
 
   accPrep = mkPrep accusative ;
@@ -628,6 +635,49 @@ mkV2 : overload {
   anDat_Prep = mkPrep "an" "am" "an der" "am" dative ;
   anAcc_Prep = mkPrep "an" "an den" "an die" "ans" accusative ;
   aufAcc_Prep = mkPrep "auf" "auf den" "auf die" "aufs" accusative ;
+
+  mkCPrep = overload {
+    mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep = \s,masc,fem,neutr,c ->
+      {s = pflist s masc fem neutr ;
+       s2 = [] ; c = c ; t = isContracting ; lock_Prep = <>} ;
+    mkCPrep : Str -> Case -> Prep = \p,c ->
+      {s = case c of {Acc => pflist p (p ++ "den") (p ++ "die") (p ++ "das") ;
+                      Dat => pflist p (p ++ "dem") (p ++ "der") (p ++ "dem") ;
+                      _   => pflist p (p ++ "des") (p ++ "der") (p ++ "des")} ;
+       s2 = [] ; c = c ; t = isContracting ; lock_Prep = <>
+      } ;
+    mkCPrep : Str -> Case -> Str -> Prep = \p,c,post ->
+      {s = let dawo = pronAdvs post ;
+               darauf = dawo.p1 ;
+               worauf = dawo.p2
+         in case c of {
+         Acc => prepForms p (p++"den") (p++"die") (p++"das") darauf worauf ;
+         Dat => prepForms p (p++"dem") (p++"der") (p++"dem") darauf worauf ;
+         _   => prepForms p (p++"des") (p++"der") (p++"des") darauf worauf} ;
+       s2 = post ; c = c ; t = isContracting ; lock_Prep = <>
+      }
+    } ;
+  pronAdvs : Str -> Str * Str = \auf ->    -- da|wo-rauf|mit, des|wes-halb|wegen
+    let
+      rauf : Str   = case auf of {("a" | "i" | "u" | "ü") + _ => "r" + auf ; _ => auf} ;
+      darauf : Str = case rauf of {("ha" | "w") + _ => "des" + rauf ; _ => "da"+ rauf} ;
+      worauf : Str = case rauf of {("ha" | "w") + _ => "wes" + rauf ; _ => "wo"+ rauf} ;
+    in
+    <darauf, worauf> ;
+
+  pflist : (x1,_,_,x4 : Str) -> PrepForm => Str = \auf,m,f,n ->
+    let
+      rauf : Str   = case auf of {("a" | "i" | "u" | "ü") + _ => "r" + auf ; _ => auf} ;
+      darauf : Str = case rauf of {("ha" | "w") + _ => "des" + rauf ; _ => "da"+ rauf} ;
+      worauf : Str = case rauf of {("ha" | "w") + _ => "wes" + rauf ; _ => "wo"+ rauf} ;
+    in
+    prepForms auf m f n darauf worauf ;
+
+  prepForms : (x1,_,_,_,_,x6 : Str) -> PrepForm => Str = \p,m,f,n,da,wo ->
+    table {CPl => p ;
+           CSg Masc => m ; CSg Fem => f ; CSg Neutr => n ;
+           CAdvPron => da ; CIPron => wo} ;
+
 
   mk6V geben gibt gib gab gaebe gegeben = 
     let
@@ -658,7 +708,8 @@ mkV2 : overload {
 
   irregV singen singt sang saenge gesungen = 
     let
-      sing = stemVerb singen ;
+      -- sing = stemVerb singen ;
+      sing = stemVerbImpSg singen singt  -- geben gibt => gib, HL 7/17
     in
     mk6V singen singt sing sang saenge gesungen ;
 
@@ -700,10 +751,10 @@ mkV2 : overload {
   dirV3 v p = mkV3 v accPrep p ;        -- accPrep, datPrep have t=isCase
   accdatV3 v = mkV3 v datPrep accPrep ; -- to fit to Eng ditransitives (no preposition): 
                                         -- give sb(indir) sth(dir) = geben jmdm(dat) etwas(acc)
-  mkVS v = v ** {lock_VS = <>} ;
+  mkVS v = v ** {c2 = accPrep ; cor = [] ; lock_VS = <>} ; -- c2 for correlate, default "es"
   mkVQ v = v ** {lock_VQ = <>} ;
-  mkVV v = v ** {isAux = False ; lock_VV = <>} ;
-  auxVV v = v ** {isAux = True ; lock_VV = <>} ;
+  mkVV v = v ** {c2 = accPrep ; cor = [] ; isAux = False ; lock_VV = <>} ;
+  auxVV v = v ** {c2 = accPrep ; cor = [] ; isAux = True ; lock_VV = <>} ;
 
   V0 : Type = V ;
   AS, A2S, AV : Type = A ;
@@ -713,15 +764,15 @@ mkV2 : overload {
 
   mkV2V = overload { -- default: object-control
     mkV2V : V -> V2V
-      = \v -> dirV2 v ** {isAux = False ; objCtrl = True ; lock_V2V = <>} ;  -- ermahne jmdn, sich zu waschen
+      = \v -> dirV2 v ** {cor=[] ; isAux = False ; objCtrl = True ; lock_V2V = <>} ;  -- ermahne jmdn, sich zu waschen
     mkV2V : V -> Prep -> V2V
-      = \v,p -> prepV2 v p ** {isAux = False ; objCtrl = True ; lock_V2V = <>} ;
+      = \v,p -> prepV2 v p ** {cor=[] ; isAux = False ; objCtrl = True ; lock_V2V = <>} ;
     } ;
   auxV2V = overload {
     auxV2V : V -> V2V
-      = \v -> dirV2 v ** {isAux = True ; objCtrl = True ; lock_V2V = <>} ;  -- lasse jmdn sich waschen
+      = \v -> dirV2 v ** {cor=[] ; isAux = True ; objCtrl = True ; lock_V2V = <>} ;  -- lasse jmdn sich waschen
     auxV2V : V -> Prep -> V2V
-      = \v,p -> prepV2 v p ** {isAux = True ; objCtrl = True ; lock_V2V = <>} ;
+      = \v,p -> prepV2 v p ** {cor=[] ; isAux = True ; objCtrl = True ; lock_V2V = <>} ;
     } ;
   subjV2V v = v ** {objCtrl = False} ;
 
@@ -831,4 +882,10 @@ mkV2 : overload {
 
   mkMU : Str -> MU = \s -> lin MU {s=s; isPre=False} ;
 
+  mkSubj = overload {
+    mkSubj : Str -> Subj =
+      \str -> {s = str ; cor = [] ; hasCor = False ; lock_Subj = <>} ;
+    mkSubj : Str -> Str -> Subj =  -- both non-empty, eg. [deshalb]-weil, HL 29.1.2025
+      \cor,sbj ->  {s = sbj ; cor = cor ; hasCor = True ; lock_Subj = <>} ;
+    } ;
 }

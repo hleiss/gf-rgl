@@ -46,8 +46,8 @@ concrete CatGer of Cat =
 
     -- Adverb
 
-    Adv = {s : Str ; cp : Str ; rc : Str} ;
-    CAdv = {s : Bool => Str * Str ; deg : Degree} ;
+    Adv = ResGer.Adverb ;
+    CAdv = {s : Bool => Str * Str ; deg : Degree} ; -- True to convert to AdN
 
 -- Adjective  (HL 7/23: we need c : Agr => Str * Str to handle reflexive objects, cf ReflA2)
 
@@ -72,7 +72,8 @@ concrete CatGer of Cat =
     Pron = {s : NPForm => Str ; a : Agr ; sp : PossForm => Str} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
-    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
+    DAP = {s,sp : Gender => Case => Str ;            -- add option to drop DefArt ?
+           n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
 
     Quant = {
       s : Bool => GenNum => Case => Str ; -- True if leading DefArtSg is dropped
@@ -100,15 +101,20 @@ concrete CatGer of Cat =
 -- Structural
 
     Conj = {s1,s2 : Str ; n : Number} ;
-    Subj = {s : Str} ;
+--    Subj = {s : Str} ;
+    Subj = {s : Str ; cor : Str ; hasCor : Bool} ; -- with correlate: weil S, deshalb
     Prep = Preposition ;
 
 -- Open lexical classes, e.g. Lexicon
 
-    V, VA, VS, VQ = Verb ; -- = {s : VForm => Str} ;
-    VV = Verb ** {isAux : Bool} ;
+    V, VA, -- VS,
+      VQ = Verb ; -- = {s : VForm => Str} ;
+    VS = Verb ** {c2 : Preposition ; cor : Str} ;
+    -- VV = Verb ** {isAux : Bool} ;
+    VV = Verb ** {c2 : Preposition ; cor : Str ; isAux : Bool} ;
     V2, V2A, V2S, V2Q = Verb ** {c2 : Preposition} ;
-    V2V = Verb ** {c2 : Preposition ; isAux : Bool ; objCtrl : Bool} ;
+    -- V2V = Verb ** {c2 : Preposition ; isAux : Bool ; objCtrl : Bool} ;
+    V2V = Verb ** {c2 : Preposition ; cor : Str ;isAux : Bool ; objCtrl : Bool} ;
     V3 = Verb ** {c2, c3 : Preposition} ;
 
     A  = Adjective ; -- = {s : Degree => AForm => Str} ;
@@ -121,7 +127,7 @@ concrete CatGer of Cat =
     GN = {s : Case => Str; g : Sex} ;
     SN = {s : Sex => Case => Str} ;
     PN = {s : Case => Str; g : Gender; n : Number} ;
-    LN = {s : Adjf => Case => Str; hasArt : Bool; g : Gender; n : Number} ;
+    LN = {s : Adjf => Case => Str; hasDefArt : Bool; g : Gender; n : Number} ;
 
 -- tense with possibility to choose conjunctive forms
 
@@ -132,27 +138,31 @@ concrete CatGer of Cat =
     NP = \np -> np.s ! False ! Nom ++ np.ext ++ np.rc ; -- HL 7/2022 Bool added
     CN = \cn -> cn.s ! Strong ! Sg ! Nom ++ cn.adv ++ cn.ext ++ cn.rc ! Sg ;
 
-    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! GPl ;
-    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! GPl ;
+    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! CPl ;
+    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! CPl ;
 
     VP = \vp -> useInfVP False vp ;
-    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! GPl ++ vps.ext;
+    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! CPl ++ vps.ext;
 
     AP = \ap -> ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ++ ap.ext ;
-    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! GPl ;
+    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! CPl ;
 
     V, VS, VQ, VA = \v -> useInfVP False (predV v) ;
-    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ;
-    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ++ v.c3.s ! GPl;
+    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ;
+    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ++ v.c3.s ! CPl;
 
     VV = \v -> useInfVP v.isAux (predVGen v.isAux v) ;
-    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! GPl ;
+--    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! CPl ;
+
+    N2 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ;
+    N3 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ++ n.c3.s ! CPl ;
 
     Conj = \c -> c.s1 ++ c.s2 ;
 
     Det = \det -> det.s ! False ! Masc ! Nom ;
-    Prep = \prep -> case prep.t of {isPrepDefArt => prep.s ! GSg Masc ;
-                                    _ => prep.s ! GPl } ;
+    Prep = \prep -> case prep.t of {isContracting => prep.s ! CSg Masc ;
+                                    _ => prep.s ! CPl } ;
 
-    Adv = \adv -> adv.s ++ adv.cp ++ adv.rc ;
+    Adv = \adv -> adv.cor ++ (if_then_Str adv.hasCor bindComma []) ++ adv.s ++ adv.cp ;
+    Subj = \sbj -> sbj.cor ++ (if_then_Str sbj.hasCor bindComma []) ++ sbj.s ;
 }

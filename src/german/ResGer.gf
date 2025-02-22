@@ -52,6 +52,7 @@ resource ResGer = ParamX ** open Prelude in {
         AgPl _ | AgPlPol => Pl
       } ;
       numberAgr : VAgr -> Number = \r -> case r of {VAg n _ => n} ;
+      numberAgr : RAgr -> Number = \r -> case r of {RAg n _ => n ; RNoAg => Sg} ;
     } ;
     personAgr = overload {
       personAgr : Agr -> Person = \r -> case r of {
@@ -271,7 +272,7 @@ resource ResGer = ParamX ** open Prelude in {
     g : Gender
     } ;
 
-  NP : Type = { -- HL 7/22: Bool = True if DefArt is dropped to combine with prep of type isPrepDefArt
+  NP : Type = { -- HL 7/22: Bool = True if DefArt is dropped to combine with contracting prep
      s : Bool => Case => Str ;
      rc : Str ;  -- die Frage , [rc die ich gestellt habe]
      ext : Str ; -- die Frage , [sc wo sie schläft] ; die Regel , [vp kein Fleisch zu essen] | [s dass ...]
@@ -323,6 +324,16 @@ resource ResGer = ParamX ** open Prelude in {
        }                              -- to get zweitbeste, am zweitbesten; *zweit am besten
     } ;
 
+-- Adverbs can be lexical, or have comparison parts, or be clausal with or without correlate
+
+    Adverb : Type = {
+      s : Str ;
+      cp : Str ;       -- comparison part, e.g. (schneller) als 130 km/h
+      cor : Str ;      -- correlate of adverbial clause, e.g. deshalb (, weil S)
+      hasCor : Bool ;  -- True = cor is nonempty
+      t : Bool         -- True = clausal adverb, e.g. weil S
+      } ;
+
 -- Verbs need as many as 12 forms, to cover the variations with
 -- suffixes "t" and "st". Auxiliaries like "sein" will have to
 -- make extra cases even for this.
@@ -342,6 +353,7 @@ resource ResGer = ParamX ** open Prelude in {
     let 
       einb : Bool -> Str -> Str = \b,geb -> 
         if_then_Str b (ein + geb) geb ;
+      gebEn : Str = case geben of {an + "tun" => an + "tuen" ; _ => geben} ;
     in
     {s = table {
       VInf False => ein + geben ;
@@ -361,14 +373,14 @@ resource ResGer = ParamX ** open Prelude in {
        VImpfSubj Sg _  => gaebe ;        --# notpresent
        VImpfSubj Pl P2 => gaebe + "t" ;  --# notpresent
        VImpfSubj Pl _  => gaebe + "n" ;  --# notpresent
-       VPresSubj Sg P2 => init geben + "st" ;
-       VPresSubj Sg _  => init geben ;       
-       VPresSubj Pl P2 => init geben + "t" ; 
+       VPresSubj Sg P2 => init gebEn + "st" ;
+       VPresSubj Sg _  => init gebEn ;
+       VPresSubj Pl P2 => init gebEn + "t" ;
        VPresSubj Pl _  => geben             
        }) ;
       VImper Sg        => gib ;
       VImper Pl        => gebt ;
-      VPresPart a      => ein + (regA (geben + "d")).s ! Posit ! a ;
+      VPresPart a      => ein + (regA (gebEn + "d")).s ! Posit ! a ;
       VPastPart a      => ein + (regA gegeben).s ! Posit ! a
       } ;
      prefix = ein ;
@@ -442,45 +454,77 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- Prepositions indicate the case of their complement noun phrase.
 
--- There are three types: (i) cases, (ii) pure pre-, post- and circum-positions, 
--- and (iii) prepositions glued with definite article in singular (using s!(GSg g)).
+-- There are three types: (i) cases, (ii) pure pre-, post- and circum-positions,
+-- and (iii) prepositions contracted with definite article in singular or
+-- demonstrative and interrogative pronoun (pronominal adverbs da/wo/hier+prep).
 
+  -- e.g. in+Dat: in dem CN => im CN ; in da => darin ; in wo => worin
+  --      Gen+wegen: des CN!Gen wegen ; des(sen) wegen => deswegen ; wes(sen) wegen => weswegen
   param
-    PrepType = isCase | isPrep | isPrepDefArt ;                  -- HL 7/2022
+    PrepType = isCase | isPrep | isContracting ;
+    PrepForm = CPl | CSg Gender | CAdvPron | CIPron ;
 
   oper
-    Preposition : Type = {s : GenNum => Str ; s2:Str ; c : Case ; t : PrepType} ;
+    Preposition : Type = {s : PrepForm => Str ; s2:Str ; c : Case ; t : PrepType} ;
 
-  isaCase : Preposition -> Bool = \p -> case p.t of {isCase => True ; _ => False} ;
-  isaPrep : Preposition -> Bool = \p -> case p.t of {isPrep => True ; _ => False} ;
-  isaPrepDefArt : Preposition -> Bool = \p -> case p.t of {isPrepDefArt => True ; _ => False} ;
+  -- auxiliary type for interrogative and relative pronoun
 
--- To apply a preposition to a complement.
+    IP : Type = {s : Bool => Case => Str ; a : GenNum ; isPron : Bool} ;
+    RP : Type = {s : RelGenNum => Case => Str ; a : RAgr} ;
 
-  appPrep : Preposition -> (Case => Str) -> Str = \prep,arg ->
-    prep.s ! GPl ++ arg ! prep.c ++ prep.s2 ;
+  -- To apply a preposition to a noun phrase, interrogative or relative pronoun
 
-  appPrepNP : Preposition -> NP -> Str = \prep,np ->
+    appPrep = overload {
+    appPrep : Preposition -> (Case => Str) -> Str = appPrep0 ;
+    appPrep : Preposition -> NP -> Str = appPrepNP ; -- e.g. in dem CN => im CN
+    appPrep : Preposition -> IP -> Str = appPrepIP ; -- e.g. in was    => worin
+    appPrep : Preposition -> RP -> RelGenNum => Str  -- e.g. in was    => worin
+      = appPrepRP ;
+    -- appPrep : Preposition -> DemPron -> Str = use CAdvPron ; -- e.g. in dem => darin
+    } ;
+
+    appPrep0 : Preposition -> (Case => Str) -> Str = \prep,arg ->
+      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
+
+    appPrepNP : Preposition -> NP -> Str = \prep,np ->
     let
       g : Gender = genderAgr np.a ;
       n : Number = numberAgr np.a ;
-      glues = case <prep.t,n> of {<isPrepDefArt,Sg> => True ; _ => False} ;
-      nps = np.s ! glues ! prep.c
+      b = case <prep.t,n,np.w> of {
+        <isContracting,Sg,WDefArt> => True ; -- e.g. "zum Hof|zur Tür|zum Fenster herein"
+        _ => False} ;                        -- e.g. "auf dem Hof|auf der Tür|auf dem Fenster"
+      f = case b of {True => CSg g ; _ => CPl} ;
     in
-    case <glues, np.w> of {
-        <True, WDefArt> => -- e.g. "zum Hof|zur Tür|zum Fenster herein"
-          prep.s ! (GSg g) ++ nps ++ np.ext ++ prep.s2 ++ np.rc ;
-         _ => prep.s ! GPl ++ nps ++ np.ext ++ prep.s2 ++ np.rc
-         } ;
+    prep.s ! f ++ np.s ! b ! prep.c ++ np.ext ++ prep.s2 ++ np.rc ;
+
+  appPrepIP : Preposition -> IP -> Str = \prep,np ->
+    let
+      g : Gender = genGenNum np.a ;
+      n : Number = numGenNum np.a ;
+      b = case <np.isPron,n,g> of {<True,Sg,Neutr> => True ; _ => False} ;
+      f = case b of {True => CIPron ; _ => CPl} -- e.g. "zu was" => "wozu"
+    in prep.s ! f ++ np.s ! b ! prep.c ++ prep.s2 ;
+
+  appPrepRP : Preposition -> RP -> (RelGenNum => Str) = \prep,np ->
+    let
+      uncontracted : RelGenNum => Str =
+        \\gn => prep.s ! CPl ++ np.s ! gn ! prep.c ++ prep.s2
+    in
+    case <prep.t, np.a> of {
+      <isContracting, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
+                                       -- RGenNum (GSg Neutr) => prep.s ! CIPron ;
+                                       gn => uncontracted ! gn} ;
+      _ => uncontracted
+    } ;
 
 {- -- Simplify to test the effect on grammar compilation complexity (without SlashV2VNP):
-   -- with glues = False: 27096 msec, 3,2M VerbGer.gfo, 854 SentenceGer.gfo
+   --  contracts = False: 27096 msec, 3,2M VerbGer.gfo, 854 SentenceGer.gfo
    --     and SlashV2VNP:102597 msec, 16 M VerbGer.gfo, 854 SentenceGer.gfo (good!)
    appPrepNP : Preposition -> NP -> Str = \prep,np ->
      let
-       glues = False ;
-       nps = np.s ! glues ! prep.c
-     in prep.s ! GPl ++ nps ++ np.ext ++ prep.s2 ++ np.rc ;
+       contracts = False ;
+       nps = np.s ! contracts ! prep.c
+     in prep.s ! CPl ++ nps ++ np.ext ++ prep.s2 ++ np.rc ;
 -}
 
   bigNP : NP -> Str = \np -> np.ext ++ np.rc ;
@@ -494,8 +538,9 @@ resource ResGer = ParamX ** open Prelude in {
 
   PrepNom : Preposition = {s = \\_ => [] ; t = isCase ; c = Nom ; s2 = []} ;
 
-  vonDat  : Preposition = {s=table{GPl => "von" ; GSg Fem => "von der"; _ => "vom"};
-                           s2=[]; c=Dat; t=isPrepDefArt} ;
+  vonDat  : Preposition = {s=table{CPl => "von" ; CSg Fem => "von der" ; CSg _ => "vom" ;
+                                   CAdvPron => "davon" ; CIPron => "wovon"};
+                           s2=[]; c=Dat; t=isContracting} ;
 
 -- To build passive: accusative object -> nom subject; others -> same case or prep
 
@@ -610,6 +655,7 @@ resource ResGer = ParamX ** open Prelude in {
       ext : Str ;             -- sentential complement of V(2)S, V(2)Q, e.g. dass|ob sie kommt
       inf : {inpl: (Agr => Str)*Str ; -- infinitival complement of V(2)V       HL 3/2022
              extr: (Agr => Str)} ;    -- e.g. ihn [] versuchen (lasse) [, ihr zu helfen]
+      cor : Str ;             -- correlate for sentential or infinitival complement
       c1 : Preposition        -- case of subject
      } ;
 
@@ -688,7 +734,7 @@ resource ResGer = ParamX ** open Prelude in {
     isAux = isAux ; ----
     -- default infinitival complement:
     inf = {inpl = <\\_ => [], []>; extr = \\_ => []} ;
-    ext,adj : Str = [] ;
+    ext,adj,cor : Str = [] ;
     c1 = PrepNom
     } ;
 
@@ -742,7 +788,9 @@ resource ResGer = ParamX ** open Prelude in {
      vtype = VAct 
     } ;
 
-  auxVV : Verb -> Verb ** {isAux : Bool} = \v -> v ** {isAux = True} ;
+  auxVV : Verb -> Verb ** {c2 : Preposition ; cor : Str ;
+                           isAux : Bool} = \v -> v ** {c2 = noPreposition Acc ; cor =[] ;
+                                                      isAux = True} ;
 
   negation : Polarity => Str = table {
       Pos => [] ;
@@ -766,7 +814,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertObjNP : NP -> Preposition -> VPSlash -> VPSlash = \np,prep,vp ->
     let obj = appPrepNP prep np ;
-        b : Bool = case prep.t of {isPrep | isPrepDefArt => True ; _ => False} ;
+        b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
         w = np.w ;
         c = prep.c
     in insertObj' obj b w c vp ;
@@ -797,7 +845,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertObjRefl : VPSlash -> VPSlash = \vp -> -- HL 6/2019, to order reflPron < neg < prep+reflPron
     let prep = vp.c2 ;
-        obj : Agr => Str = \\a => prep.s ! GPl ++ reflPron ! a ! prep.c ++ prep.s2
+        obj : Agr => Str = \\a => prep.s ! CPl ++ reflPron ! a ! prep.c ++ prep.s2
     in vp ** {
       nn = \\a =>
         let vpnn = vp.nn ! a in
@@ -811,6 +859,13 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertAdv : Str -> VP -> VP = \adv,vp -> vp ** {
     a2 = vp.a2 ++ adv } ;
+
+  insertSplitAdv : Adverb -> VP -> VP = \adv,vp ->
+    case adv.hasCor of {
+      True => insertAdv (adv.cor ++ embedInCommas (adv.s ++ adv.cp)) vp ;
+      Else => let str = adv.cor ++ adv.s ++ adv.cp ;
+                  advP = if_then_Str adv.t (embedInCommas str) str
+        in insertAdv advP vp } ;
 
   insertExtrapos : Str -> VP -> VP = \ext,vp -> vp ** {
     ext = vp.ext ++ ext } ;
@@ -886,7 +941,7 @@ resource ResGer = ParamX ** open Prelude in {
           obj1  = (vp.nn ! agr).p1 ++ (vp.nn ! agr).p2 ; -- refl ++ pronouns ++ light nps
           obj2  = (vp.nn ! agr).p3 ;                     -- pp-objects and heavy nps
           obj3  = (vp.nn ! agr).p4 ++ vp.adj ++ vp.a2 ;  -- pred.AP|CN|Adv, via useComp HL 6/2019
-          compl = obj1 ++ neg ++ obj2 ++ obj3 ;
+          compl = vp.cor ++ obj1 ++ neg ++ obj2 ++ obj3 ;
           infObjs = (vp.inf.inpl.p1)!agr ;
           infPred = vp.inf.inpl.p2 ;
           -- leave inf-complement of +auxV(2)V in place,

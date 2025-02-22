@@ -160,12 +160,12 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       } ;
     DefArt = {
       s = \\b,gn,c => case <b,gn> of {<True,GSg _> => [] ; _ => artDef ! gn ! c} ;
-      sp = \\gn,c  => case <gn,c> of {
+      sp = \\gn,c  => case <gn,c> of { -- Duden 550                   -
                             <GSg Masc,Gen> => "dessen" ;
-                            <GSg Fem, Gen> => "derer" ;
+                            <GSg Fem, Gen> => "derer" ; -- poss: deren
                             <GSg Neutr,Gen> => "dessen" ;
-                            <GPl,Dat> => "denen" ; -- HL 6/2019
-                            <GPl,Gen> => "derer" ; -- HL 6/2019
+                            <GPl,Dat> => "denen" ;
+                            <GPl,Gen> => "derer" ;
                              _ => artDef ! gn ! c } ;
       a = Weak ;
       isDefArt = True ;
@@ -199,18 +199,18 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       } ;
 
     ComplN2 f x = {
-      s = \\_,n,c => f.s ! n ! c ++ appPrepNP f.c2 x ;
+      s = \\_,n,c => f.s ! n ! c ++ appPrep f.c2 x ;
       g = f.g ;
       rc = \\_ => [] ;
       ext,adv = []
       } ;
 
     ComplN3 f x = {
-      s = \\n,c => f.s ! n ! c ++ appPrepNP f.c2 x ;
-      co = f.co ++ appPrepNP f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
+      s = \\n,c => f.s ! n ! c ++ appPrep f.c2 x ;
+      co = f.co ++ appPrep f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
       uncap = {
-        s = \\n,c => f.uncap.s ! n ! c ++ appPrepNP f.c2 x ;
-        co = f.uncap.co ++ appPrepNP f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
+        s = \\n,c => f.uncap.s ! n ! c ++ appPrep f.c2 x ;
+        co = f.uncap.co ++ appPrep f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
        } ;
       g = f.g ; 
       c2 = f.c3 ;
@@ -263,7 +263,7 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
                      -- det or numeral? np or rather (DefArt +) cn?  drei (einiger Kinder) ?
       let g : Gender = genderAgr np.a
       in {
-        s = \\b,c => det.s ! b ! g ! c ++ appPrepNP vonDat np ;
+        s = \\b,c => det.sp ! b ! g ! c ++ appPrep vonDat np ;
         a = agrgP3 g det.n ;
         w = case det.isDef of { True => WLight ; _ => WHeavy } ;
         rc = np.rc ;
@@ -271,11 +271,12 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       } ;
 
     AdjDAP dap ap = -- the large (one)  -- HL 8/22 der auf dich stolze; die ihm treue; der so dumme, infzu
-      {s, sp  = \\g,c => dap.s ! g ! c ++ ap.c.p1 ++ ap.c.p2 ++ ap.s ! (AMod (gennum g dap.n) c) ++ ap.ext ;
+      {s,sp  = \\g,c => dap.s ! g ! c ++ ap.c.p1 ++ ap.c.p2
+         ++ ap.s ! agrAdj dap.a (gennum g dap.n) c ++ ap.s2 ! c ++ ap.ext ;
        a = dap.a ; n = dap.n ; isDef = dap.isDef ; hasDefArt = dap.hasDefArt } ;
 
     DetDAP det = {
-      s = \\g,c => det.s ! False ! g ! c ;  -- HL 7/22 todo: check
+      s = \\g,c => det.s ! False ! g ! c ;
       sp = \\g,c => det.sp ! False ! g ! c ;
       n = det.n ; a = det.a ; isDef = det.isDef ; hasDefArt = det.hasDefArt
       } ;

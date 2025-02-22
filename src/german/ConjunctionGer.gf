@@ -7,7 +7,10 @@ concrete ConjunctionGer of Conjunction =
 
     ConjS conj ss = conjunctDistrTable Order conj ss ;
 
-    ConjAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2 ; cp,rc = []} ;
+    ConjAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2 ; cp,cor = [] ; hasCor,t = False} ;
+
+    ConjAdV conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2} ;
+    ConjIAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2} ;
 
     ConjNP conj ss = heavyNP (
     {s = \\_ => (conjunctDistrTable Case conj ss).s ;
@@ -31,6 +34,11 @@ concrete ConjunctionGer of Conjunction =
       rc = \\_ => [] ; ext = [] ; adv = [] ; g = ss.g
       } ;
 
+    ConjDet conj ss = {s = \\b,g,c => conj.s1 ++ ss.s1!g!c ++ conj.s2 ++ ss.s2!g!c ;
+                       sp = \\b,g,c => conj.s1 ++ ss.sp1!g!c ++ conj.s2 ++ ss.sp2!g!c ;
+                       n = conj.n ;
+                       a = Weak ; -- guess
+                       isDef,hasDefArt = False} ;
 
 -- These fun's are generated from the list cat's.
 
@@ -43,10 +51,11 @@ concrete ConjunctionGer of Conjunction =
       s2 = xs.s2
       } ;
 
-    BaseAdv x y = {
+    BaseAdv x y = lin Adv {
                 s1 = bigAdv (lin Adv x) ;
 		s2 = bigAdv (lin Adv y) ;
-		rc,cp = [] ; lock_Adv = <>} ;
+		cp,cor = []
+      } ;
     ConsAdv xs x = {
 		s1 = xs.s ++ comma ++ x.s1 ;
 		s2 = x.s2 ;
@@ -87,8 +96,16 @@ concrete ConjunctionGer of Conjunction =
       s2 = xs.s2 ;
       g  = x.g ; --- gender of first CN, used e.g. in articles
       } ; 
+    BaseDAP x y = {
+      s1 = x.s ; sp1 = x.sp ;
+      s2 = y.s ; sp2 = y.sp ;
+      n = y.n ;
+      a = y.a } ;
+    ConsDAP x xs = {s1 = \\g,c => x.s!g!c ++ comma ++ xs.s1!g!c ;
+                    sp1 = \\g,c => x.sp!g!c ++ comma ++ xs.sp1!g!c ;
+                    s2 = xs.s2 ; sp2 = xs.sp2 ;
+                    n = xs.n ; a = xs.a} ;
       
-
   lincat
     [S] = {s1,s2 : Order => Str} ;
     [Adv] = {s1,s2 : Str} ;
@@ -98,6 +115,7 @@ concrete ConjunctionGer of Conjunction =
     [AP] = {s1,s2 : AForm => Str ; isPre : Bool; c : Str * Str ; ext : Str} ;
     [RS] = {s1,s2 : RelGenNum => Str ; c : Case} ;
     [CN] = {s1,s2 : Adjf => Number => Case => Str ; g : Gender} ;
+    [DAP] = {s1,s2,sp1,sp2 : Gender => Case => Str ; n : Number ; a : Adjf} ;
 
   oper
     bigAP : AP -> AForm => Str = \ap ->                                         -- HL 1/23: not always ok:
@@ -105,5 +123,5 @@ concrete ConjunctionGer of Conjunction =
     bigCN : CN -> Adjf => Number => Case => Str = \cn ->
 		\\a,n,c => cn.s ! a ! n ! c ++ cn.adv ++ cn.ext ++ cn.rc ! n ;
 		
-    bigAdv : CatGer.Adv -> Str = \adv -> adv.s ++ adv.cp ++ adv.rc ;
+    bigAdv : CatGer.Adv -> Str = \adv -> adv.cor ++ adv.s ++ adv.cp ;
 }

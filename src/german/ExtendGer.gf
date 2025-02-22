@@ -2,20 +2,21 @@
 
 concrete ExtendGer of Extend =
   CatGer ** ExtendFunctor
-  - [ -- remove the default implementations of:
+  - [ -- remove the default implementations and add a new implementation of:
       GenNP, EmptyRelSlash,
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
       ICompAP, IAdvAdv, CompIQuant, PrepCN,
-      PastPartAP, PastPartAgentAP,
-      PassVPSlash, PassAgentVPSlash,
+      PastPartAP, PastPartAgentAP, PassVPSlash, PassAgentVPSlash,
       AdvIsNP,
       ComplDirectVS, ComplDirectVQ,
-      RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, Conj_RNP,
+      RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, ConjRNP,
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
       CompoundN, DetNPMasc, DetNPFem, UseDAP, UseDAPMasc, UseDAPFem,
       CardCNCard,
-      InOrderToVP
+        InOrderToVP,
+        -- to avoid spurious ambiguities, unimplement the default implementations of:
+        iFem_Pron, UseComp_estar, UseComp_ser
     ]
   with
     (Grammar = GrammarGer) **
@@ -143,23 +144,39 @@ concrete ExtendGer of Extend =
 
 -- Conjunction of copula complements
 
+  lincat
+    [Comp] = {s1,s2 : Agr => Str} ; --ListTable Agr ;
+  lin
+    BaseComp x y = {s1 = \\a => x.s ! a ++ x.ext ; s2 = \\a => y.s ! a ++ y.ext} ;
+    ConsComp x xs = {s1 = \\a => x.s ! a ++ x.ext ++ comma ++ xs.s1 ! a ; s2 = xs.s2} ;
+
+    ConjComp conj ss = {s = \\a => conj.s1 ++ ss.s1 ! a ++ conj.s2 ++ ss.s2 ! a ; ext = []} ;
+
 -- Conjunction of imperatives
 
+  lincat
+    [Imp] = {s1,s2 : Polarity => ImpForm => Str} ;
+  lin
+    BaseImp x y = {s1 = \\p,f => x.s ! p ! f ; s2 = \\p,f => y.s!p!f} ;
+    ConsImp x xs = {s1 = \\p,f => x.s ! p ! f ++ comma ++ xs.s1 ! p ! f ; s2 = xs.s2} ;
+    ConjImp conj xs = {s = \\p,f => conj.s1 ++ xs.s1 ! p ! f ++ conj.s2 ++ xs.s2 ! p ! f} ;
+
+  lin
     ICompAP ap = {
       s = \\_ => "wie" ++ ap.s ! APred ;
-      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext
+      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom ;
       } ;
 
     IAdvAdv adv = {s = "wie" ++ adv.s} ;
 
     CompIQuant iq = {
-      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a))! Nom ;
+      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a)) ! Nom ;
       ext = ""
       } ;
 
     PrepCN prep cn = {
-      s = prep.s ! GPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ;
-      cp, rc = []} ;
+      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ;
+      cp,cor = [] ; hasCor,t = False} ;
 
   -- fronted/focal constructions, only for main clauses
 
@@ -181,7 +198,7 @@ concrete ExtendGer of Extend =
       in {
       s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3
                   ++ vp.a2 ++ agent ++ vp.adj ++ vp.inf.inpl.p2
-                  ++ vp.c2.s ! GPl                     -- junk if not TV
+                  ++ vp.c2.s ! CPl                     -- junk if not TV
                   ++ vp.ext ++ (vp.inf.extr ! a) ++ vp.s.s ! VPastPart af ;
       s2 = \\_ => [] ;
       isPre = True ;
@@ -220,9 +237,9 @@ concrete ExtendGer of Extend =
 -- object S without "that"
 
     ComplDirectVS vs utt =
-      AdvVP (UseV <lin V vs : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,rc=[]}) ;
+      AdvVP (UseV <lin V vs : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,t = False}) ;
     ComplDirectVQ vq utt =
-      AdvVP (UseV <lin V vq : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,rc=[]}) ;
+      AdvVP (UseV <lin V vq : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,t = False}) ;
 
 -- front the extraposed part
 
@@ -284,7 +301,7 @@ concrete ExtendGer of Extend =
                        d = case pred.c.k of {NoCase => c ; PredCase k => k} ;
         in case rnp.isPron of {
           True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! Dat ;
-          _ => pred.s ! n ! genderAgr a ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
+          _ => pred.s ! n ! g ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
       ext = rnp.ext ; rc = rnp.rc ;
       isPron = False} ;
       -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir
@@ -398,7 +415,7 @@ concrete ExtendGer of Extend =
 
 
     InOrderToVP vp = {s = "um" ++ useInfVP False vp ;
-      cp, rc = []} ;
+      cp,cor = [] ; hasCor = False ; t = True} ;
 
   oper
     insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
@@ -407,7 +424,7 @@ concrete ExtendGer of Extend =
     insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
       \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
       let
-        obj : Agr => Str = \\a => prep.s ! GPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
+        obj : Agr => Str = \\a => prep.s ! CPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
       in vp ** {
         nn = \\a =>
           let vpnn = vp.nn ! a in

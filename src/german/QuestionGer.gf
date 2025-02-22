@@ -18,9 +18,6 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
         let
           who = appPrep vp.c1 ip.s ;
           cl = (mkClause who (agrP3 ip.n) vp).s ! m ! t ! a ! p ;
-          n = ip.n
-          -- n = numGenNum ip.a ;
-          -- cl = (mkClause who (agrP3 n) vp).s ! m ! t ! a ! p
         in table {
             QDir   => cl ! Main ;
             QIndir => cl ! Sub

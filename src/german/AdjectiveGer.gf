@@ -43,7 +43,7 @@ concrete AdjectiveGer of Adjective = CatGer ** open ResGer, Prelude in {
 
     ComplA2 a np =
       let
-        obj = appPrepNP a.c2 np
+        obj = appPrep a.c2 np
       in {
         s = a.s ! Posit ;
         s2 = \\_ => [] ;
@@ -65,7 +65,7 @@ concrete AdjectiveGer of Adjective = CatGer ** open ResGer, Prelude in {
 
     SentAP ap sc = ap ** {
       isPre = False ;
-      ext = ap.ext ++ sc.s
+      ext = embedInCommas (ap.ext ++ sc.s)
       } ;
 
     AdAP ada ap = ap ** {s = \\a => ada.s ++ ap.s ! a} ;

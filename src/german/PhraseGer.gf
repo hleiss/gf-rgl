@@ -15,7 +15,8 @@ concrete PhraseGer of Phrase = CatGer ** open Prelude, ResGer in {
     UttIAdv iadv = iadv ;
     UttNP np = {s = np.s ! False ! Nom ++ bigNP np} ;
     UttVP vp = {s = useInfVP True vp} ;  -- without zu
-    UttAdv adv = {s = adv.s ++ adv.rc ++ adv.cp} ;
+    UttAdv adv = let comma = if_then_Str adv.hasCor bindComma []
+      in {s = adv.cor ++ comma ++ adv.s ++ adv.cp} ;
     UttCN n = {s = n.s ! Strong ! Sg ! Nom ++ n.adv ++ n.ext ++ n.rc ! Sg} ;
     UttCard n = {s = n.s ! AMod (GSg Neutr) Nom} ;
     UttAP ap = {s = ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom} ;
