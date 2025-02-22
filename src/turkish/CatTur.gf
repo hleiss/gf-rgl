@@ -4,18 +4,26 @@ concrete CatTur of Cat = CommonX - [CAdv,AdN] ** open ResTur, HarmonyTur, Prelud
 
   lincat
 
-    S  = {s, subord : Str} ;
+    -- Tensed/Untensed
+    S  = {s : Str} ;
+    RS = {s : Agr => Str} ;
 
-    Cl = {s : Tense => Str; subord : Str} ;
-
+    -- Sentence
+    Cl = {s : Tense => Anteriority => Polarity => Str} ;
+    Imp = {s : Polarity => Number => Str} ;
 
     -- Noun
     CN = {s : Number => Case => Str; gen : Number => Agr => Str; h : Harmony} ;
     NP = {s : Case => Str ; h : Harmony; a : Agr} ;
 
-    VP = Verb ;
-    VPSlash = VP ** {c : Prep} ;
-    Comp = VP ;
+    -- Relative
+    RCl = {s : Tense => Anteriority => Polarity => Agr => Str} ;
+    RP = {s : Agr => Str} ;
+
+    -- Verb
+    VP = {s : Aspect => VForm => Str; compl : Str} ;
+    VPSlash = Verb ** {compl : Str; c : Prep} ;
+    Comp = {s : Aspect => VForm => Str; compl : Str} ;
 
     Pron = ResTur.Pron ;
     Det = {s : Str; n : Number; useGen : UseGen} ;
@@ -58,7 +66,7 @@ concrete CatTur of Cat = CommonX - [CAdv,AdN] ** open ResTur, HarmonyTur, Prelud
 
 
 linref
-    V = \v -> v.s ! VInfinitive ;
-    V2 = \v -> v.s ! VInfinitive ++ v.c.s ;
+    V2 = \v -> v.s ++ v.c.s ;
+    VP = \vp -> vp.compl ++ vp.s ! Perf ! VInf Pos ;
 
 }

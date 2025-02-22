@@ -1,4 +1,4 @@
-concrete NamesAra of Names = CatAra ** open ResAra, Prelude in { 
+concrete NamesAra of Names = CatAra ** open ResAra, Prelude, (N=NounAra), (A=AdverbAra), (S=StructuralAra) in { 
 
 lin GivenName, MaleSurname, FemaleSurname, PlSurname = \n -> emptyNP ** {
       s = n.s ;
@@ -9,9 +9,10 @@ lin FullName gn sn = emptyNP ** {
       a = {pgn = Per3 gn.g Sg ; isPron = False} ;
       } ;
 
-lin UseLN pn = emptyNP ** {
-      s = pn.s ;
-      a = {pgn = Per3 pn.g Sg ; isPron = False} ;
-      } ;
+lin UseLN ln = ln ;
+
+lin PlainLN ln = ln ;
+
+lin InLN n = A.PrepNP S.in_Prep n ; ---- TODO: alternative prepositions
 
 }

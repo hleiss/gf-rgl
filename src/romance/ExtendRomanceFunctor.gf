@@ -68,6 +68,18 @@ incomplete concrete ExtendRomanceFunctor of Extend =
       } ;
     ConjVPS = conjunctDistrTable3 Mood Agr Bool ;
 
+    RelVPS rp vpi = {
+      s = \\m, agr => rp.s ! False ! complAgr agr ! Nom ++ vpi
+                      .s ! m ! (Ag rp.a.g rp.a.n P3) ! False ;
+      c = Nom
+      } ;
+
+    SubjunctRelCN cn rs = let g = cn.g in {
+      s = \\n => cn.s ! n ++ rs.s ! Conjunct ! agrP3 g n ; --- mood
+      g = g
+      } ;
+
+
     MkVPI vp = variants {} ;     -- Temp -> Pol -> VP -> VPI ; -- to sleep / hasn't slept
     ConjVPI = variants {} ;     -- Conj -> [VPI] -> VPI ; -- has walked and won't sleep
     ComplVPIVV = variants {} ;     -- VV -> VPI -> VP ; -- want to sleep and to walk
@@ -319,7 +331,7 @@ incomplete concrete ExtendRomanceFunctor of Extend =
 
     pastPartAP : VPSlash -> Str -> AP ;
     pastPartAP vps agent = lin AP {
-      s = \\af => vps.comp ! (aform2aagr af ** {p = P3}) ++ vps.s.s ! VPart (aform2gender af) (aform2number af) ++ agent ;
+      s = \\af => vps.s.s ! VPart (aform2gender af) (aform2number af) ++ vps.comp ! (aform2aagr af ** {p = P3}) ++ agent ;
       isPre = False ;
       copTyp = serCopula
       } ;

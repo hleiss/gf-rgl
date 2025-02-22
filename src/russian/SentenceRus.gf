@@ -41,7 +41,7 @@ lin
     adv=vps.adv ! np.a ;  -- ??
     verb=vps.verb ;
     dep=vps.dep ;
-    compl=\\p => vps.compl ! p ! np.a ;  -- ??
+    compl=\\p => vps.compl1 ! p ! np.a ++ vps.compl2 ! p ! np.a;  -- ??
     a=np.a ;
     c=vps.c
   } ;
@@ -81,7 +81,7 @@ lin
   -- : VP -> Imp ;             -- love yourselves
   ImpVP vp = {
     s = \\polarity, gn =>
-      let pol = case polarity of {Neg => PNeg; Pos => PPos} in
+      let pol = case (R.orPol vp.p polarity) of {Neg => PNeg; Pos => PPos} in
       let a = Ag gn P2 in
         (R.verbEnvAgr "" "" vp.verb Imperative Pres a pol)
         ++ vp.dep

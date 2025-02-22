@@ -144,7 +144,8 @@ lin
       ++ verbRefl vps.verb
       ++ case temp.t of {Cond => "бы" ; _ => []}
       ++ vps.dep
-      ++ vps.compl ! pol.p ! Ag (GSg Neut) P3
+      ++ vps.compl1 ! pol.p ! Ag (GSg Neut) P3
+      ++ vps.compl2 ! pol.p ! Ag (GSg Neut) P3
       ++ vps.c.s
       )
     } ;
@@ -157,7 +158,8 @@ lin
       ++ verbRefl vps.verb
       ++ case temp.t of {Cond => "бы" ; _ => []}
       ++ vps.dep
-      ++ vps.compl ! pol.p ! Ag (GSg Neut) P3
+      ++ vps.compl1 ! pol.p ! Ag (GSg Neut) P3
+      ++ vps.compl2 ! pol.p ! Ag (GSg Neut) P3
       ++ vps.c.s
       ++ endComma
     } ;
@@ -167,6 +169,19 @@ lin
 
   -- : NP -> Comp ;            -- (Париж) - столица Франции
   CompNomNP np = {s=\\a=>np.s ! Nom ; adv=[] ; cop=NomCopula} ;
+
+  -- : NP -> Adv -> Cl ;       -- у них есть дети
+  ExistsNPAdv np adv = {
+    subj=[] ;
+    adv=adv.s ;
+    verb=copulaFull ;
+    dep=[] ;
+    compl=table {
+      Pos => np.s ! Nom ;
+      Neg => np.s ! Gen
+      } ;
+    a=np.a
+    } ;
 
 oper
   est_V : V = lin V {
@@ -188,6 +203,7 @@ oper
     -- refl=NonReflexive;
     -- tran=Transitive
   } ;
+
   est_ell_V = est_V ** {prsg1, prsg2, prsg3, prpl1, prpl2, prpl3=""} ;
   be_ell_V = est_ell_V ** {inf=""} ;
   net_V : V = lin V {

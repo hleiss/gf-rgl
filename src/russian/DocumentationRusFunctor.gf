@@ -29,7 +29,12 @@ lin
                      Fem  => "(ж.р.)" ;
                      Neut => "(ср.р.)"
                    }) ;
-    s2 = inflNoun noun
+    s2 = inflNoun noun ++
+         case noun.rt of {
+           GenType => [] ;
+           AdjType => heading1 (heading adjective_Category) ++
+                      inflAdj noun.rel
+         }
     } ;
 
   InflectionPN = \pn -> {
@@ -41,15 +46,15 @@ lin
                      Neut => "(ср.р.)"
                    }) ;
     s2 = frameTable (
-          tr (th (heading nominative_Parameter) ++ td (pn.snom)) ++
-          tr (th (heading genitive_Parameter) ++ td (pn.sgen)) ++ 
-          tr (th (heading dative_Parameter) ++ td (pn.sdat)) ++ 
-          tr (th (heading accusative_Parameter) ++ td (pn.sacc)) ++ 
-          tr (th ("творительный") ++ td (pn.sins)) ++ 
-          tr (th ("предложный") ++ td (pn.sprep)) ++ 
-          tr (th (heading partitive_Parameter) ++ td (pn.sptv)) ++
-          tr (th ("местный") ++ td (pn.sloc)) ++
-          tr (th ("звательный") ++ td (pn.svoc))
+          tr (th (heading nominative_Parameter) ++ td (pn.s!Nom)) ++
+          tr (th (heading genitive_Parameter) ++ td (pn.s!Gen)) ++ 
+          tr (th (heading dative_Parameter) ++ td (pn.s!Dat)) ++ 
+          tr (th (heading accusative_Parameter) ++ td (pn.s!Acc)) ++ 
+          tr (th ("творительный") ++ td (pn.s!Ins)) ++ 
+          tr (th ("предложный") ++ td (pn.s!Pre)) ++ 
+          tr (th (heading partitive_Parameter) ++ td (pn.s!Ptv)) ++
+          tr (th ("местный") ++ td (pn.s!Loc)) ++
+          tr (th ("звательный") ++ td (pn.s ! VocRus))
           ) ;
     } ;
 
@@ -114,14 +119,7 @@ lin
   InflectionA, InflectionA2 = \adj -> {
     t  = "пр" ;
     s1 = heading1 (heading adjective_Category) ;
-    s2 = heading2 (heading feminine_Parameter) ++
-         inflNoun (makeNFFromAF adj Fem Inanimate) ++
-         heading2 (heading masculine_Parameter) ++
-         inflNoun (makeNFFromAF adj Masc Inanimate) ++
-         heading2 (heading neuter_Parameter) ++
-         inflNoun (makeNFFromAF adj Neut Inanimate) ++
-         heading2 (heading comparative_Parameter) ++
-         frameTable (tr (tr (adj.comp)))
+    s2 = inflAdj adj
     } ;
 
   InflectionAdv, InflectionAdV, InflectionAdA, InflectionAdN = \adv -> {
@@ -237,6 +235,16 @@ oper
           tr (th ("местный") ++ td (nf.sloc) ++ td ("-")) ++
           tr (th ("звательный") ++ td (nf.svoc) ++ td ("-"))
           ) ;
+
+  inflAdj : AdjForms -> Str = \adj ->
+    heading2 (heading masculine_Parameter) ++
+    inflNoun (makeNFFromAF adj Masc Inanimate) ++
+    heading2 (heading feminine_Parameter) ++
+    inflNoun (makeNFFromAF adj Fem Inanimate) ++
+    heading2 (heading neuter_Parameter) ++
+    inflNoun (makeNFFromAF adj Neut Inanimate) ++
+    heading2 (heading comparative_Parameter) ++
+    frameTable (tr (tr (adj.comp))) ;
 
 lin
   -- : String -> Definition ;

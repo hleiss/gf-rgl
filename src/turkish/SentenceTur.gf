@@ -1,20 +1,18 @@
 concrete SentenceTur of Sentence = CatTur ** open Prelude, ResTur in {
 
   lin
-
-    PredVP np vp = mkClause (np.s ! Nom) np.a vp ;
+    PredVP np vp = {s = \\t,a,p => np.s ! Nom ++ vp.compl ++ vp.s ! Perf ! VFin t a p np.a} ;
 
     PredSCVP sc vp = variants {} ;
 
     -- TODO: Check how correct this is.
-    EmbedVP vp = {s = (vp.s ! Gerund Sg Acc)} ;
+    EmbedVP vp = variants {} ; -- {s = (vp.s ! Gerund Sg Acc)} ;
 
-    -- TODO: rudimentary implementation; revise this.
-    UseCl temp pol cl = {s = temp.s ++ cl.s ! temp.t; subord=cl.subord} ;
+    UseCl temp pol cl = {s = temp.s ++ pol.s ++ cl.s ! temp.t ! temp.a ! pol.p} ;
 
     UseQCl _ _ = variants {} ;
 
-    UseRCl _ _ _ = variants {} ;
+    UseRCl temp pol cl = {s = \\agr => temp.s ++ pol.s ++ cl.s ! temp.t ! temp.a ! pol.p ! agr} ;
 
     SlashVP _ _ = variants {} ;
     AdvSlash _ _ = variants {} ;
@@ -23,11 +21,14 @@ concrete SentenceTur of Sentence = CatTur ** open Prelude, ResTur in {
 
     EmbedQS _ = variants {} ;
     EmbedS _ = variants {} ;
-    
-    ImpVP _ = variants {} ;
-    
-    AdvS _ _ = variants {} ;
-    
+
+    ImpVP vp = {s = \\p,n => vp.compl ++ vp.s ! Perf ! VImp p n
+               } ;
+
+    AdvS adv s = {
+       s = adv.s ++ s.s
+    } ;
+
     UseSlash _ = variants {} ;
 
 }

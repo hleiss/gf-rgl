@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common:../../prelude
 
-concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, Prelude in {
+concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, ParamX, Prelude in {
 
   flags optimize=all_subs ;
 
@@ -10,7 +10,11 @@ concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, Prelude
         case det.useGen of {
           NoGen => \\c => det.s ++ cn.s ! det.n ! c ;
           YesGen a => \\c => det.s ++ cn.gen ! det.n ! a ;
-          UseIndef => \\c => det.s ++ cn.s ! det.n ! c
+          UseIndef => \\c => let c' = case c of {
+                                        Acc => Nom ;
+                                        c   => c
+                                      }
+                             in det.s ++ cn.s ! det.n ! c'
         } ;
       h   = cn.h ;
       a = agrP3 det.n
@@ -104,6 +108,11 @@ concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, Prelude
             s = \\_,_ => "TODO";
             gen = \\_, _ => "TODO";
             h = f.h
+          };
+          Instr => {
+            s = \\_,_ => "TODO";
+            gen = \\_, _ => "TODO";
+            h = f.h
           }
         };
 
@@ -185,7 +194,9 @@ concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, Prelude
     } ;
 
     PPartNP np v2 = {
-      s = \\c => np.s ! c ++ v2.s ! (VPast np.a);
+      s = \\c => np.s ! c
+                 ++ mkVerbForms v2 ! Perf ! VFin Past Simul Pos np.a   --# notpresent
+                 ;
       h = np.h ;
       a = np.a
     } ;
@@ -220,19 +231,16 @@ concrete NounTur of Noun = CatTur ** open ResTur, SuffixTur, HarmonyTur, Prelude
       h   = cn.h
     } ;
 
-    -- TODO: currently not able to generate trees.
     RelCN cn rs = {
-      s   = \\n,c => "(TODO: RelCN)" ;
-      gen = cn.gen ;
+      s   = \\n,c => rs.s ! {n=n; p=P3} ++ cn.s ! n ! c ;
+      gen = \\n,c => rs.s ! {n=n; p=P3} ++ cn.gen ! n ! c ;
       h   = cn.h
     } ;
 
     RelNP np rs = {
-      s   = \\c => "(TODO: RelNP)" ;
-      gen = np.gen ;
+      s   = \\c => rs.s ! np.a ++ np.s ! c ;
       h   = np.h ;
-      a   = np.a ;
-      c   = np.c
+      a   = np.a
     } ;
 
 }

@@ -1,7 +1,10 @@
 --# -path=alltenses:../common:../abstract:../romance
 concrete ExtendIta of Extend = CatIta ** ExtendRomanceFunctor  -
    [
-   PassVPSlash, PassAgentVPSlash
+   GenRP,
+   PassVPSlash, PassAgentVPSlash,
+   ExistsNP
+
    ]
   -- don't forget to put the names of your own
                        -- definitions here
@@ -13,8 +16,22 @@ concrete ExtendIta of Extend = CatIta ** ExtendRomanceFunctor  -
   MorphoIta,
   Coordination,
   Prelude,
-  ParadigmsIta in {
+  ParadigmsIta,
+  IrregIta in {
     -- put your own definitions here
+
+lin
+    GenRP nu cn = {
+      s = \\_b,_aagr,_c => "di cui" ++ num ++ cn.s ! n ;
+      a = aagr g n ;
+      hasAgr = True
+      } where {
+        g = cn.g ;
+        n = nu.n ;
+        num = if_then_Str nu.isNum (nu.s ! g) []
+      } ;
+
+
 
 
 lin PassVPSlash vps = passVPSlash vps [] ;
@@ -30,5 +47,14 @@ oper
          agr = auxvp.agr ;
          comp  = \\a => vps.comp ! a ++ (let agr = complAgr a in vps.s.s ! VPart agr.g agr.n) ++ agent ;
         } ;
+
+
+lin
+    ExistsNP np =
+      mkClause [] True False np.a
+      (insertComplement (\\_ => (np.s ! Nom).ton)
+         (predV esistere_V)) ;
+
+
 
 }

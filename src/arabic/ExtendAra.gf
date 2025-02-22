@@ -6,7 +6,9 @@ concrete ExtendAra of Extend =
     EmptyRelSlash, PredAPVP,
     ComplDirectVS, ComplDirectVQ, -- because of Utt
     VPS, MkVPS, PredVPS, BaseVPS, ConsVPS, ConjVPS,
-    EmbedSSlash, AdjAsNP, GerundNP
+    EmbedSSlash, AdjAsNP, GerundNP,
+    PassVPSlash, ---- bogus implementation, see below
+    CompoundN, UseDAP, UseDAPMasc, UseDAPFem
 ]
   with (Grammar=GrammarAra)
   ** open
@@ -90,5 +92,44 @@ lin
   PredVPS np vps = {
     s = \\_ => np.s ! Nom ++ vps.s ! np.a.pgn -- first quick version with order always Nominal.
     } ;                                       -- if necessary, change VPS into {s : PerGenNum => Order => {before,after : Str}}
+
+
+-- AR 24-02-08
+    PassVPSlash vpslash = vpslash ** {s = \\pgn, vpf => vpslash.s ! pgn ! vpf} ;
+    ---- vpf does not have passive forms left,
+    ---- so this function is not possible with the current lincat of VP and VPSlash
+
+    ---- very unsure about this as well
+    CompoundN a b = b ** {
+      s  = \\n, s, c => b.s ! n ! Const ! c ++ a.s ! n ! s ! c ;
+      s2 = \\n, s, c => b.s2 ! n ! Const ! c ++ a.s2 ! n ! s ! c
+      } ;
+
+lin UseDAP dap = case dap.isEmpty of {
+      True => case <dap.d,dap.n> of {  -- if the s field is empty, make up some other determiner
+                <Def,One>   => it_Pron ;
+                <Def,_>     => they_Pron ;
+                <Indef,One> => emptyNP ** {s = someSg_Det.s ! NoHum ! Masc} ;
+                _           => emptyNP ** {s = somePl_Det.s ! NoHum ! Masc}
+              } ;
+      False => emptyNP ** {s = dap.s ! NoHum ! Masc} } ;
+
+lin UseDAPMasc dap = case dap.isEmpty of {
+      True => case <dap.d,dap.n> of {  -- if the s field is empty, make up some other determiner
+                <Def,One>   => it_Pron ;
+                <Def,_>     => theyMasc_Pron ;
+                <Indef,One> => emptyNP ** {s = someSg_Det.s ! NoHum ! Masc} ;
+                _           => emptyNP ** {s = somePl_Det.s ! NoHum ! Masc}
+              } ;
+      False => emptyNP ** {s = dap.s ! NoHum ! Masc} } ;
+
+lin UseDAPFem dap = case dap.isEmpty of {
+      True => case <dap.d,dap.n> of {  -- if the s field is empty, make up some other determiner
+                <Def,One>   => it_Pron ;
+                <Def,_>     => theyFem_Pron ;
+                <Indef,One> => emptyNP ** {s = someSg_Det.s ! NoHum ! Fem} ;
+                _           => emptyNP ** {s = somePl_Det.s ! NoHum ! Fem}
+              } ;
+      False => emptyNP ** {s = dap.s ! NoHum ! Fem} } ;
 
 }

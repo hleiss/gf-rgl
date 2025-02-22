@@ -20,7 +20,6 @@ concrete AdverbGer of Adverb = CatGer ** open ResGer, Prelude in {
 
     PositAdAAdj a = {s = a.s ! Posit ! APred ; cp,cor = [] ; hasCor,t = False} ;
 
---    SubjS subj s = {s = subj.s ++ s.s ! Sub ; cp,cor = [] ; hasCor = False} ;
     SubjS subj s = {s = subj.s ++ s.s ! Sub ; cp = [] ;
                     cor = subj.cor ; hasCor = subj.hasCor ; t = True} ;
 

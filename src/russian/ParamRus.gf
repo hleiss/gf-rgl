@@ -1,4 +1,4 @@
-resource ParamRus = ParamX, CommonX [Temp] ** open Prelude, Maybe in {
+resource ParamRus = ParamX - [mkAdV, AdV], CommonX [Temp] ** open Prelude, Maybe in {
   -- Mostly follows https://en.wikipedia.org/wiki/List_of_glossing_abbreviations
   -- see theory.txt
 
@@ -33,6 +33,9 @@ param
   CopulaType = NomCopula | InsCopula | EllCopula | ExplicitCopula ;
   SpecialFuture = NormalFuture | BeFuture | BeFuture2 | CanFuture | WantFuture | NullFuture ;
   DetType = NormalDet | EmptyDef | EmptyIndef ; -- artificial parameter to side-step DetNP parsing issues
+  NRelType = GenType | AdjType ;
+  AForm ;
+
 oper
   MaybeAgr = Maybe Agr ;
   MaybeNumber = Maybe Number ;
@@ -60,7 +63,9 @@ oper
     snom, sgen, sdat, sacc, sins, sprep,
     pnom, pgen, pdat, pacc, pins, pprep : Str ;
     g : Gender ;
-    anim : Animacy
+    anim : Animacy ;
+    rel : AdjForms ;
+    rt : NRelType ;
   } ;
 
   AdjForms : Type = {

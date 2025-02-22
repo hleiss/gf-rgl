@@ -45,6 +45,7 @@ lin
     verb=copulaEll ;
     dep=[] ;
     compl=\\p,a => (timeunitAdv card year_Timeunit).s;
+    p = Pos
     } ;
 
   -- : NP -> QCl ;          -- how old is x / quanti anni ha x (Ita)
@@ -173,9 +174,9 @@ lin
   monthN month = month ;
 
   -- : Weekday -> PN ; -- Monday (is free)
-  weekdayPN wd = wd ;
+  weekdayPN wd = {s = (nounFormsNoun wd).s ! Sg; g = Neut; anim = Inanimate; n=Sg} ;
   -- : Month -> PN ;   -- March (is cold)
-  monthPN month = month ;
+  monthPN month = {s = (nounFormsNoun month).s ! Sg; g = Neut; anim = Inanimate; n=Sg} ;
 
   -- : Card -> CN -> A -> AP ;  -- x inches long
   n_units_AP card cn a =

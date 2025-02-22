@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common
 concrete DocumentationTur of Documentation = CatTur ** open
-  ResTur,
+  ResTur, Prelude,
   HTML in {
 
 lincat
@@ -71,7 +71,8 @@ lin
                      Gen     => "tamlayan" ;
                      Loc     => "bulunma" ;
                      Ablat   => "ayrılma" ;
-                     Abess _ => ""
+                     Abess _ => "" ;
+                     Instr   => ""
                    }) ;
     s3= ""
     } ;
@@ -96,47 +97,39 @@ lin
 oper
   inflVerb : Verb -> Str = \v ->
     (heading2 ("Şimdiki zaman") ++
-     finite VPres ++
-     tag "br" ++
-     finite VProg ++
-     heading2 ("Geçmiş zaman") ++
-     finite VPast ++
-     heading2 ("Gelecek zaman") ++
-     finite VFuture ++
+     finite Perf Pres ++
+     finite Imperf Pres ++
+     heading2 ("Geçmiş zaman") ++     --# notpresent
+     finite Perf Past ++              --# notpresent
+     finite Imperf Past ++            --# notpresent
+     heading2 ("Gelecek zaman") ++    --# notpresent
+     finite Perf Fut ++               --# notpresent
      heading2 ("Emir kipi") ++
-     paragraph (v.s ! VImperative) ++
+     frameTable (
+        tr (th "tekil" ++
+            th "çoğul") ++
+        tr (td (tbl ! Perf ! VImp Pos Sg) ++
+            td (tbl ! Perf ! VImp Pos Pl))
+      ) ++
      heading2 ("Eylemlik") ++
-     paragraph (v.s ! VInfinitive) ++
-     heading2 ("Ulaç") ++
-     nounForm Gerund ++
-     heading2 ("Ad") ++
-     nounForm VNoun)
+     paragraph (tbl ! Perf ! VInf Pos))
   where {
-    finite : (Agr -> VForm) -> Str = \f ->
+    tbl : Aspect => VForm => Str = mkVerbForms v ;
+
+    finite : Aspect -> Tense -> Str = \asp,t ->
       frameTable (
         tr (th "" ++
             th "tekil" ++
             th "çoğul") ++
         tr (th "1." ++ 
-            td (v.s ! f {n=Sg; p=P1}) ++ 
-            td (v.s ! f {n=Pl; p=P1})) ++
+            td (tbl ! asp ! VFin t Simul Pos {n=Sg; p=P1}) ++
+            td (tbl ! asp ! VFin t Simul Pos {n=Pl; p=P1})) ++
         tr (th "2." ++ 
-            td (v.s ! f {n=Sg; p=P2}) ++
-            td (v.s ! f {n=Pl; p=P2})) ++
+            td (tbl ! asp ! VFin t Simul Pos {n=Sg; p=P2}) ++
+            td (tbl ! asp ! VFin t Simul Pos {n=Pl; p=P2})) ++
         tr (th "3." ++
-            td (v.s ! f {n=Sg; p=P3}) ++
-            td (v.s ! f {n=Pl; p=P3}))
-      ) ;
-
-    nounForm : (Number -> Case -> VForm) -> Str = \f ->
-      frameTable (
-        tr (th ""         ++ th "tekil"            ++ th "çoğul") ++
-        tr (th "yalın"    ++ td (v.s ! f Sg Nom)   ++ td (v.s ! f Pl Nom)) ++
-        tr (th "belirtme" ++ td (v.s ! f Sg Acc)   ++ td (v.s ! f Pl Acc)) ++
-        tr (th "yönelme"  ++ td (v.s ! f Sg Dat)   ++ td (v.s ! f Pl Dat)) ++
-        tr (th "bulunma"  ++ td (v.s ! f Sg Loc)   ++ td (v.s ! f Pl Loc)) ++
-        tr (th "ayrılma"  ++ td (v.s ! f Sg Ablat) ++ td (v.s ! f Pl Ablat)) ++
-        tr (th "tamlayan" ++ td (v.s ! f Sg Gen)   ++ td (v.s ! f Pl Gen))
+            td (tbl ! asp ! VFin t Simul Pos {n=Sg; p=P3}) ++
+            td (tbl ! asp ! VFin t Simul Pos {n=Pl; p=P3}))
       ) ;
    } ;
 }
