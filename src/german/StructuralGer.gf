@@ -7,11 +7,13 @@ concrete StructuralGer of Structural = CatGer **
     coding=utf8 ;
 
   oper
-    mkCPrep : overload {
+    mkCPrep : overload { -- preposition contracting with defArtSg, IP/RP and relPron ! RSentence
+      mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep, mascSg, femSg, neutrSg, case
       mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit, wo-r-an
       mkCPrep : Str -> Case -> Str -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
       } ;
     mkCPrep = overload {
+      mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep = P.mkCPrep ;
       mkCPrep : Str -> Case -> Prep = P.mkCPrep ;
       mkCPrep : Str -> Case -> Str -> Prep = P.mkCPrep ;
       } ;

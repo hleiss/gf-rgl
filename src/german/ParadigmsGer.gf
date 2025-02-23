@@ -241,10 +241,12 @@ mkN : overload {
     mkPrep : Str -> Case -> Prep ; -- e.g. "durch" + accusative
     mkPrep : Case -> Str -> Prep ; -- e.g. genitive + "wegen"
     mkPrep : Str -> Case -> Str -> Prep ; -- e.g. "um" + accusative + "herum"
-    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg, e.g. "auf" "auf den" "auf die" "aufs" + accusative, and with rpron ! RSentence, e.g. wo-r-auf
+    mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg,
+    -- e.g. "auf" "auf den" "auf die" "aufs" + accusative, and with rpron ! RSentence, e.g. wo-r-auf
     } ;
 
-  mkCPrep : overload { -- preposition contracting with relative pronoun ! RSentence
+  mkCPrep : overload { -- preposition contracting with defArtSg, IP/RP and relPron ! RSentence
+    mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep, mascSg, femSg, neutrSg, case
     mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit, wo-r-an
     mkCPrep : Str -> Case -> Str -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
     } ;
