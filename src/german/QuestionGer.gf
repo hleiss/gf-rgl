@@ -17,7 +17,8 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
       s = \\m,t,a,p =>
         let
           who = appPrep vp.c1 ip.s ;
-          cl = (mkClause who (agrP3 ip.n) vp).s ! m ! t ! a ! p ;
+          n = numGenNum ip.a ;
+          cl = (mkClause who (agrP3 n) vp).s ! m ! t ! a ! p ;
         in table {
             QDir   => cl ! Main ;
             QIndir => cl ! Sub
@@ -59,14 +60,14 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
               }
       } ;
 
-    PrepIP p ip = {
-      s = appPrep p ip.s ;
-      -- s = appPrepIP p ip ; -- todo: mit was => womit ; an was => woran  etc
+    PrepIP p ip = ip ** {
+      -- s = appPrep p ip.s ;
+      s = appPrepIP p ip ; -- todo: mit was => womit ; an was => woran  etc
       } ;
 
-    AdvIP ip adv = {
+    AdvIP ip adv = ip ** {
       s = \\c => ip.s ! c ++ adv.s ;
-      n = ip.n
+      -- n = ip.n
       -- isPron = False ;
       -- a = ip.a
       } ;
@@ -78,9 +79,9 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
       in {
 --      s = \\c => idet.s ! g ! c ++ cn.s ! Weak ! n ! c ; 
         s = \\c => idet.s ! g ! c ++ cn.s ! idet.a ! n ! c ++ cn.adv ++ cn.rc ! n ++ cn.ext ; 
-        n = n
-      -- isPron = False ;
-      -- a = case n of {Sg => GSg g ; _ => GPl} 
+        -- n = n
+      isPron = False ;
+      a = case n of {Sg => GSg g ; _ => GPl}
       } ;
 
     IdetIP idet = 
@@ -89,10 +90,10 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
         n = idet.n
       in {
         s = idet.s ! g ;
-        n = n ;
-      -- isPron = False ;
-      -- a = case n of {Sg => GSg g ; _ => GPl}
-        a = idet.a 
+        --n = n ;
+        isPron = False ;
+        a = case n of {Sg => GSg g ; _ => GPl}
+        -- a = idet.a
       } ;
 
     IdetQuant iquant num = 

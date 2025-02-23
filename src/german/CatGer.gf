@@ -26,10 +26,10 @@ concrete CatGer of Cat =
 -- Question
 
     QCl = {s : Mood => ResGer.Tense => Anteriority => Polarity => QForm => Str} ;
-    IP = {s : Case => Str ; n : Number} ;
+--    IP = {s : Case => Str ; n : Number} ;
 -- HL 1/2024: [welch(er|e|es) CN]:IP nutzt:V2 (seine|ihre|ihre)!ip.a Vorteile?
---    IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ; 
-    IComp = {s : Agr => Str ; ext : Str} ; 
+    IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ; 
+    IComp = {s : Agr => Str ; ext : Str} ;
     IDet = {s : Gender => Case => Str ; n : Number ; a : Adjf} ;
     IQuant = {s : GenNum => Case => Str ; a : Adjf} ;
 

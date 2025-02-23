@@ -6,22 +6,10 @@ concrete StructuralGer of Structural = CatGer **
   flags optimize=all ;
     coding=utf8 ;
 
-  oper
-    mkCPrep : overload { -- preposition contracting with defArtSg, IP/RP and relPron ! RSentence
-      mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep, mascSg, femSg, neutrSg, case
-      mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit, wo-r-an
-      mkCPrep : Str -> Case -> Str -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
-      } ;
-    mkCPrep = overload {
-      mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep = P.mkCPrep ;
-      mkCPrep : Str -> Case -> Prep = P.mkCPrep ;
-      mkCPrep : Str -> Case -> Str -> Prep = P.mkCPrep ;
-      } ;
-
   lin
 
-  above_Prep = mkCPrep "über" P.dative ;
-  after_Prep = mkCPrep "nach" P.dative ;
+  above_Prep = P.mkCPrep "über" P.dative ;
+  after_Prep = P.mkCPrep "nach" P.dative ;
 --  all_Predet = {s = appAdj (regA "all") ; c = noCase ; a = PAgNone} ;
   all_Predet = {s = appAdj (regA "all") ; c = noCase ; a = PAg Pl} ; -- HL 5/2022
   almost_AdA, almost_AdN = ss "fast" ;
@@ -29,13 +17,13 @@ concrete StructuralGer of Structural = CatGer **
   always_AdV = ss "immer" ;
   and_Conj = {s1 = [] ; s2 = "und" ; n = Pl} ;
   because_Subj = P.mkSubj "weil" ;
-  before_Prep = mkCPrep "vor" P.dative ;
+  before_Prep = P.mkCPrep "vor" P.dative ;
   behind_Prep = mkPrep "hinter" P.dative ;
-  between_Prep = mkCPrep "zwischen" P.dative ;
+  between_Prep = P.mkCPrep "zwischen" P.dative ;
   both7and_DConj = sd2 "sowohl" "als auch" ** {n = Sg} ;
   but_PConj = ss "aber" ;
-  by8agent_Prep = mkCPrep "durch" P.accusative ;
-  by8means_Prep = mkCPrep "mit" P.dative ;
+  by8agent_Prep = P.mkCPrep "durch" P.accusative ;
+  by8means_Prep = P.mkCPrep "mit" P.dative ;
   can8know_VV, can_VV = MorphoGer.auxVV
       (mkV  -- modal verb has no imperative forms "könne,könn(e)t" HL 12/2024
         "können" "kann" "kannst" "kann" "könnt" "könne"
@@ -54,8 +42,8 @@ concrete StructuralGer of Structural = CatGer **
     s,sp = \\_,g,c => "wenig" + adjEnding ! (gennum g Pl) ! c ;
     n = Pl ; a = Strong ; isDef = False ; hasDefArt = False} ;
 ----  first_Ord = {s = (regA "erst").s ! Posit} ;
-  for_Prep = mkCPrep "für" P.accusative ;
-  from_Prep = mkCPrep "aus" P.dative ;
+  for_Prep = P.mkCPrep "für" P.accusative ;
+  from_Prep = P.mkCPrep "aus" P.dative ;
   he_Pron = mkPronPers "er" "ihn" "ihm" "seiner" "sein"  Masc Sg P3 ;
   here7to_Adv = P.mkAdv "hierher" ;
   here7from_Adv = P.mkAdv "hieraus" ;
@@ -64,7 +52,7 @@ concrete StructuralGer of Structural = CatGer **
   how8much_IAdv = ss "wieviel" ;
   how8many_IDet = {s = \\g,c => "wie viel" + detEnding ! (gennum g Pl) ! c ; n = Pl ; a = Strong} ;
   if_Subj = P.mkSubj "wenn" ; --- no variants in the RGL! | ss "falls" ;
-  in8front_Prep = mkCPrep "vor" P.dative ;
+  in8front_Prep = P.mkCPrep "vor" P.dative ;
   i_Pron = mkPronPers "ich" "mich" "mir" "meiner" "mein" Masc Sg P1 ;
   in_Prep = P.inDat_Prep ; 
   it_Pron = mkPronPers "es" "es" "ihm" "seiner" "sein"  Neutr Sg P3 ;
@@ -95,7 +83,7 @@ concrete StructuralGer of Structural = CatGer **
   only_Predet = {s = \\_,_,_ => "nur" ; c = noCase ; a = PAgNone} ;
   no_Utt = ss "nein" ;
 ---b  no_Phr = ss "nein" ;
-  on_Prep = mkCPrep "auf" P.dative ;
+  on_Prep = P.mkCPrep "auf" P.dative ;
   or_Conj = {s1 = [] ; s2 = "oder" ; n = Sg} ;
   otherwise_PConj = ss "sonst" ;
   part_Prep = P.von_Prep ;    -- obsolete, better use PartNP cn np
@@ -129,10 +117,10 @@ concrete StructuralGer of Structural = CatGer **
     in {s = \\_ => dieser ; sp = dieser ; a = Weak ; isDefArt, delCardOne = False} ;
 ---b  this_NP = nameNounPhrase Neutr {s = caselist "dies" "dies" "diesem" "dieses"} ; ----
 ---b  those_NP = {s = caselist "jene" "jene" "jenen" "jener" ; a = agrP3 Pl} ;
-  through_Prep = mkCPrep "durch" P.accusative ;
+  through_Prep = P.mkCPrep "durch" P.accusative ;
   too_AdA = ss "zu" ;
-  to_Prep = mkCPrep "nach" P.dative ;
-  under_Prep = mkCPrep "unter" P.dative ;
+  to_Prep = P.mkCPrep "nach" P.dative ;
+  under_Prep = P.mkCPrep "unter" P.dative ;
   very_AdA = ss "sehr" ;
   want_VV = MorphoGer.auxVV
       (mkV  -- modal verb, has no imperative forms "wolle,woll(e)t" HL 12/2024
@@ -143,24 +131,24 @@ concrete StructuralGer of Structural = CatGer **
   we_Pron = mkPronPers "wir" "uns"  "uns"   "unser"  "unser" Fem Pl P1 ;
 
   whatSg_IP = {s = caselist "was" "was" "was" "wessen" ;
-               n = Sg} ;
-               -- a = GSg Neutr ; isPron = True} ; -- todo: mit was => womit
+               -- n = Sg} ;
+               a = GSg Neutr ; isPron = True} ; -- todo: mit was => womit
   whatPl_IP = {s = caselist "was alles" "was alles" "was allem" "wessen allem" ;
-               n = Sg} ;
-               -- a = GSg Neutr ; isPron = True} ; -- Duden 563
+               -- n = Sg} ;
+               a = GSg Neutr ; isPron = True} ; -- Duden 563
 
   when_IAdv = ss "wann" ;
   when_Subj = P.mkSubj "wenn" ;
   where_IAdv = ss "wo" ;
   which_IQuant = {s = \\gn,c => "welch" + detEnding ! gn ! c ; a = Weak} ;
-  whoSg_IP = {s = caselist "wer" "wen" "wem" "wessen" ; -- a = GSg Masc ; isPron = True} ; -- Duden 563
-              n = Sg} ;
+  whoSg_IP = {s = caselist "wer" "wen" "wem" "wessen" ; a = GSg Masc ; isPron = True} ; -- Duden 563
+--              n = Sg} ;
   whoPl_IP = {s = caselist "wer alles" "wen alles" "wem alles" "wessen alles" ;
-              n = Sg} ;
-              -- a = GSg Masc ; isPron = True} ; -- Duden 563
+              a = GSg Masc ; isPron = True} ; -- Duden 563
+--              n = Sg} ;
   why_IAdv = ss "warum" ;
   without_Prep = mkPrep "ohne" P.accusative ;
-  with_Prep = mkCPrep "mit" P.dative ;
+  with_Prep = P.mkCPrep "mit" P.dative ;
   youSg_Pron = mkPronPers "du" "dich" "dir" "deiner" "dein" Fem Sg P2 ;
   youPl_Pron = mkPronPers "ihr" "euch" "euch" "eurer" "euer" Fem Pl P2 ; ---- poss
   youPol_Pron = mkPronPers "Sie" "Sie" "Ihnen" "Ihrer" "Ihr" Fem Pl P3 ** {a = AgPlPol} ;

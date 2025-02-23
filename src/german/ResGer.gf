@@ -469,7 +469,8 @@ resource ResGer = ParamX ** open Prelude in {
 
   -- auxiliary type for interrogative and relative pronoun
 
-    IP : Type = {s : Bool => Case => Str ; a : GenNum ; isPron : Bool} ;
+--    IP : Type = {s : Bool => Case => Str ; a : GenNum ; isPron : Bool} ;
+    IP : Type = {s : Case => Str ; a : GenNum ; isPron : Bool} ; -- 2/2025 HL
     RP : Type = {s : RelGenNum => Case => Str ; a : RAgr} ;
 
   -- To apply a preposition to a noun phrase, interrogative or relative pronoun
@@ -497,13 +498,13 @@ resource ResGer = ParamX ** open Prelude in {
     in
     prep.s ! f ++ np.s ! b ! prep.c ++ np.ext ++ prep.s2 ++ np.rc ;
 
-  appPrepIP : Preposition -> IP -> Str = \prep,np ->
+  appPrepIP : Preposition -> IP -> Str = \prep,ip ->
     let
-      g : Gender = genGenNum np.a ;
-      n : Number = numGenNum np.a ;
-      b = case <np.isPron,n,g> of {<True,Sg,Neutr> => True ; _ => False} ;
+      g : Gender = genGenNum ip.a ;
+      n : Number = numGenNum ip.a ;
+      b = case <ip.isPron,n,g> of {<True,Sg,Neutr> => True ; _ => False} ;
       f = case b of {True => CIPron ; _ => CPl} -- e.g. "zu was" => "wozu"
-    in prep.s ! f ++ np.s ! b ! prep.c ++ prep.s2 ;
+    in prep.s ! f ++ ip.s ! prep.c ++ prep.s2 ;
 
   appPrepRP : Preposition -> RP -> (RelGenNum => Str) = \prep,np ->
     let
