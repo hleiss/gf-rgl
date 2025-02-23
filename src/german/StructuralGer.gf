@@ -8,8 +8,8 @@ concrete StructuralGer of Structural = CatGer **
 
   oper
     mkCPrep : overload {
-      mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit
-      mkCPrep : Str -> Str -> Case -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
+      mkCPrep : Str -> Case -> Prep ;        -- preposition contracting with IP/RP, e.g. wo-mit, wo-r-an
+      mkCPrep : Str -> Case -> Str -> Prep ; -- circumposition contracting with IP, e.g. von wo-her
       } ;
     mkCPrep = overload {
       mkCPrep : Str -> Case -> Prep = P.mkCPrep ;
