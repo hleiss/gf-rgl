@@ -1,15 +1,15 @@
---# -path=.:../abstract:../common:../prelude:               HL 19/06/2019
+--# -path=.:../abstract:../common:../prelude:               HL 19/06/2019, 01/2024
 -- Some english interpretations of the verbs in TestLexiconGerAbs to test
 -- translations and corresponding c2,c3,c4-objects under Slash?V3, Slash?V4.
 
 concrete TestLexiconEng of TestLexiconGerAbs = 
-  LexiconEng ** open (R=ResEng), (P=Prelude), ParadigmsEng, (I=IrregEng)
+  LexiconEng, ExtraGerEng[V4,NV] ** open (R=ResEng), (P=Prelude), ParadigmsEng, (I=IrregEng)
 in {
 
   -- Verbs
 
-lincat 
-  V4 = R.Verb ** {c2,c3,c4 : Str} ;
+-- lincat
+--   V4 = R.Verb ** {c2,c3,c4 : Str} ;
 
 oper
   reflV2 : V -> Prep -> V2 ;         -- reflexive, with prep-object
@@ -30,12 +30,14 @@ lin
   anstrengen_rV = let v : R.Verb = (irregV "make" "made" "made") ; 
                       compl : Str = "an effort" 
     in {s = \\vf => v.s!vf ++ compl ; isRefl = P.False ; p = []} ;
+  geschehen_V = regV "happen" ;
 
   gedenken_gen_V2  = dirV2 (regV "remember") ;
   bedienen_gen_rV2 = dirV2 (regV "use") ;
   stuetzen_auf_rV2 = mkV2 (irregV "rely" "relied" "relied") (mkPrep "on") ;
   ergeben_dat_rV2 = mkV2 (regV "surrender") (mkPrep "to") ;
   merken_rV2 = dirV2 (regV "remember") ;
+  erstaunen_sV2 = dirV2 (mkV "astonish" "astonishes" "astonished" "astonished" "astonishing") ;
 
   anklagen_gen_V3 = dirV3 (regV "accuse") (mkPrep "of") ;
   erklaeren_dat_V3 = dirV3 (regV "explain") (mkPrep "to") ;
@@ -56,6 +58,9 @@ lin
 
   wagen_VV = mkVV (regV "dare") ;                       -- typ=VVInf
   versuchen_VV = mkVV (irregV "try" "tried" "tried") ;  -- typ=VVInf
+--  denken_an_VV = mkVV (irregV "think" "thought" "thought") ;
+  denken_an_VV = ingVV (irregV "think" "thought" "thought") ** {p = "about"} ;
+
   helfen_V2V = defaultV2V (regV "help") ;
   warnen_V2V = defaultV2V (regV "warn") ;               -- typ=VVInf
   versprechen_dat_V2V = defaultV2V (regV "promise") ;   -- typ=VVInf
@@ -70,6 +75,7 @@ lin
 
   ander_A = compoundA (mkA "other") ; -- from DictEng other_A
   froh_A = mkA "glad" "gladder" ;     -- from DictEng glad_A
+
   neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
   treu_A2 = mkA2 (compoundA (mkA "faithful")) (mkPrep "to") ;
   stolz_A2 = mkA2 (mkA "proud" "prouder") (mkPrep "of") ;
@@ -88,6 +94,10 @@ lin
   neither7nor_DConj = mkConj "neither" "nor" singular ;
   notonly_butalso_Conj = mkConj "not only" "but also" singular ;
 
+  -- Subjunctions
+
+  even_though_Subj = mkSubj "even though" ;
+
   -- Prepositions
 
   fuer_Prep = mkPrep "for" ;
@@ -103,13 +113,31 @@ lin
 
   idea_N = mkN "idea" ;
   intention_N = mkN "intention" ;
+  alp_N = mkN "alp" ;
+
+  hope_NV = mkNV (mkN "hope") "in" ;
+  intention_NV = lin NV (regN "intention" ** {g = R.Neutr ; c2 = []});
 
   -- Proper name
 
   mary_PN = mkPN "Mary" ;
 
+  -- Location name
+
+  switzerland_LN = mkLN "Switzerland" ;
+
   -- Determiner
 
   how8much_IDet = {s = "how much" ; n = R.Sg} ;
+
+  beide_Det = {s = "both" ; sp = \\_,_,_ => "both" ; n = R.Pl ; hasNum = P.False} ;
+
+  -- Grammar rule (test)
+
+  SentN2 n2 sc = {s = \\n,c => n2.s ! n ! c ++ sc.s ; g = n2.g} ;
+  PositSentA2 a2 sc = {s = table {_ => a2.s ! R.AAdj R.Posit R.Nom ++ a2.c2 ++ sc.s} ; isPre = P.False} ;
   
+  oper
+    mkNV : N -> Str -> NV = \n,p -> lin NV {s = n.s ; g = n.g ; c2 = p} ;
+
 }

@@ -228,7 +228,7 @@ lin
   wine_N = mkN "Wein" ;
   win_V2 = dirV2 Irreg.gewinnen_V ;
   woman_N = reg2N "Frau" "Frauen" feminine ;
-  wonder_VQ = mkVQ (reflV (regV "wundern") accusative) ;
+  wonder_VQ = mkVQ (reflV (regV "wundern") accusative) (mkCPrep "über" accusative) ;
   wood_N = reg2N "Holz" "Hölzer" neuter ;
   write_V2 = dirV2 Irreg.schreiben_V ;
   yellow_A = regA "gelb" ;

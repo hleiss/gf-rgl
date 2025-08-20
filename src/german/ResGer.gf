@@ -328,10 +328,10 @@ resource ResGer = ParamX ** open Prelude in {
 
     Adverb : Type = {
       s : Str ;
-      cp : Str ;       -- comparison part, e.g. (schneller) als 130 km/h
-      cor : Str ;      -- correlate of adverbial clause, e.g. deshalb (, weil S)
-      hasCor : Bool ;  -- True = cor is nonempty
-      t : Bool         -- True = clausal adverb, e.g. weil S
+      cp : Str ;        -- comparison part, e.g. (schneller) als 130 km/h
+      cor : Str ;       -- correlate of adverbial clause, e.g. deshalb (, weil S)
+      hasCor : Bool ;   -- True = cor is nonempty
+      isClause : Bool   -- True = clausal adverb, e.g. weil S
       } ;
 
 -- Verbs need as many as 12 forms, to cover the variations with
@@ -863,10 +863,12 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertSplitAdv : Adverb -> VP -> VP = \adv,vp ->
     case adv.hasCor of {
-      True => insertAdv (adv.cor ++ embedInCommas (adv.s ++ adv.cp)) vp ;
-      Else => let str = adv.cor ++ adv.s ++ adv.cp ;
-                  advP = if_then_Str adv.t (embedInCommas str) str
-        in insertAdv advP vp } ;
+      True => insertExtrapos (bindComma ++ adv.s) (insertAdv (adv.cor ++ adv.cp) vp) ;
+      Else =>
+        let str = adv.s ++ adv.cor ;
+            advP = if_then_Str adv.isClause (embedInCommas str) str
+        in insertExtrapos adv.cp (insertAdv advP vp)
+        } ;
 
   insertExtrapos : Str -> VP -> VP = \ext,vp -> vp ** {
     ext = vp.ext ++ ext } ;
@@ -942,7 +944,7 @@ resource ResGer = ParamX ** open Prelude in {
           obj1  = (vp.nn ! agr).p1 ++ (vp.nn ! agr).p2 ; -- refl ++ pronouns ++ light nps
           obj2  = (vp.nn ! agr).p3 ;                     -- pp-objects and heavy nps
           obj3  = (vp.nn ! agr).p4 ++ vp.adj ++ vp.a2 ;  -- pred.AP|CN|Adv, via useComp HL 6/2019
-          compl = vp.cor ++ obj1 ++ neg ++ obj2 ++ obj3 ;
+          compl = obj1 ++ neg ++ obj2 ++ obj3 ;
           infObjs = (vp.inf.inpl.p1)!agr ;
           infPred = vp.inf.inpl.p2 ;
           -- leave inf-complement of +auxV(2)V in place,
@@ -967,9 +969,9 @@ resource ResGer = ParamX ** open Prelude in {
           extra = vp.inf.extr!agr ++ vp.ext ;
         in
         case o of {
-	  Main => subj ++ verb.fin ++ compl ++ infCompl ++ pred.inf ++ extra ;
-	  Inv  => verb.fin ++ subj ++ compl ++ infCompl ++ pred.inf ++ extra ;
-	  Subj =>             subj ++ compl ++   pred.infComplfin   ++ extra
+	  Main => subj ++ verb.fin ++ compl ++ infCompl ++ vp.cor ++ pred.inf ++ extra ;
+	  Inv  => verb.fin ++ subj ++ compl ++ infCompl ++ vp.cor ++ pred.inf ++ extra ;
+	  Subj =>             subj ++ compl ++ vp.cor ++ pred.infComplfin   ++ extra
         }
     } ;
 
@@ -1013,7 +1015,7 @@ resource ResGer = ParamX ** open Prelude in {
     -> { objs:(Agr => Str) ; pred:Str ; inpl:(Agr=>Str)*Str ; extr:(Agr=>Str) } =
       \isAux, ant, pol, vp -> let vps = useVP vp in
       {
-        objs = \\agr => (vp.nn ! agr).p1 ++ (vp.nn ! agr).p2 ++ negation ! pol ++ (vp.nn ! agr).p3
+        objs = \\agr => vp.cor ++ (vp.nn ! agr).p1 ++ (vp.nn ! agr).p2 ++ negation ! pol ++ (vp.nn ! agr).p3
           ++ vp.a2 ++ (vp.nn ! agr).p4 ;  -- objects + predicative A|CN|NP
         pred = vp.a1 ++ vp.adj ++ (vps.s ! (notB isAux) ! vagrP3 Sg ! VPInfinit ant).inf ;
         -- inplace and extracted parts of vp.inf:

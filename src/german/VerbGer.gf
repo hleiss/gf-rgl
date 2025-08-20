@@ -113,7 +113,12 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
     CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ; ext = ap.s2 ! Nom ++ ap.ext} ;
 
     CompNP np = {s = \\_ => np.s ! False ! Nom ++ np.rc ; ext = np.ext} ;
-    CompAdv a = {s = \\_ => a.s ; ext = []} ;
+--    CompAdv a = {s = \\_ => a.s ; ext = []} ;
+    -- not useful for adverbial clauses:
+    CompAdv adv = let cor = case adv.hasCor of {True => adv.cor ++ comma ; _ => adv.cor} ;
+                      str = case adv.isClause of {True => "so" ;
+                                                  False => cor ++ adv.s ++ adv.cp}
+      in {s = \\_ => str ; ext = []} ;
 
     CompCN cn = {s = \\a => case numberAgr a of {
         Sg => "ein" + pronEnding ! GSg cn.g ! Nom ++ cn.s ! Strong ! Sg ! Nom ++ cn.rc ! Sg ; ---
@@ -126,7 +131,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
     AdvVP vp adv = case adv.hasCor of {
       True => insertAdv (adv.cor ++ embedInCommas (adv.s ++ adv.cp)) vp ;
       False => let str = (adv.s ++ adv.cp ++ adv.cor) ;
-                   advs = if_then_Str adv.t (embedInCommas str) str -- clausal/non-clausal
+                   advs = if_then_Str adv.isClause (embedInCommas str) str
         in insertAdv advs vp
     } ;
 

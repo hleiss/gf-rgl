@@ -73,7 +73,7 @@ lin InLN ln = let d = ln.hasDefArt in {
              w = case d of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
              rc, ext = []
         } ;
-      cp,cor = [] ; hasCor,t = False
+      cp,cor = [] ; hasCor,isClause = False
       } ;
 
 -- AdjLN : AP -> LN -> LN ;

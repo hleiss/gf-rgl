@@ -7,7 +7,8 @@ concrete ConjunctionGer of Conjunction =
 
     ConjS conj ss = conjunctDistrTable Order conj ss ;
 
-    ConjAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2 ; cp,cor = [] ; hasCor,t = False} ;
+    ConjAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2 ;
+                       cp,cor = [] ; hasCor,isClause = False} ;
 
     ConjAdV conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2} ;
     ConjIAdv conj ss = {s = conj.s1 ++ ss.s1 ++ conj.s2 ++ ss.s2} ;

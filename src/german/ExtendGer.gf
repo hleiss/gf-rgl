@@ -7,7 +7,7 @@ concrete ExtendGer of Extend =
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
       ICompAP, IAdvAdv, CompIQuant, PrepCN,
-      PastPartAP, PastPartAgentAP, PassVPSlash, PassAgentVPSlash,
+      PresPartAP, PastPartAP, PastPartAgentAP, PassVPSlash, PassAgentVPSlash,
       AdvIsNP,
       ComplDirectVS, ComplDirectVQ,
       RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, ConjRNP,
@@ -221,11 +221,21 @@ concrete ExtendGer of Extend =
 
     PrepCN prep cn = {
       s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ;
-      cp,cor = [] ; hasCor,t = False} ;
+      cp,cor = [] ; hasCor,isClause = False} ;
 
   -- fronted/focal constructions, only for main clauses
 
   -- participle constructions
+
+    PresPartAP vp =
+      let a = agrP3 Sg in {
+        s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3 ++ vp.a2 ++ vp.adj
+                    ++ vp.inf.inpl.p2 ++ (vp.inf.extr ! a) ++ vp.s.s ! VPresPart af ;
+        s2 = \\_ => [] ;
+        isPre = True ;
+        c = <[],[]> ;
+        ext = vp.ext
+      } ;
 
     PastPartAP vp =
       let a = agrP3 Sg in {
@@ -282,9 +292,9 @@ concrete ExtendGer of Extend =
 -- object S without "that"
 
     ComplDirectVS vs utt =
-      AdvVP (UseV <lin V vs : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,t = False}) ;
+      AdvVP (UseV <lin V vs : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,isClause = False}) ;
     ComplDirectVQ vq utt =
-      AdvVP (UseV <lin V vq : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,t = False}) ;
+      AdvVP (UseV <lin V vq : V>) (lin Adv {s = ":" ++ quoted utt.s ; cp,cor=[] ; hasCor,isClause = False}) ;
 
 -- front the extraposed part
 
@@ -460,7 +470,7 @@ concrete ExtendGer of Extend =
 
 
     InOrderToVP vp = {s = "um" ++ useInfVP False vp ;
-      cp,cor = [] ; hasCor = False ; t = True} ;
+      cp,cor = [] ; hasCor = False ; isClause = True} ;
 
   oper
     insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022

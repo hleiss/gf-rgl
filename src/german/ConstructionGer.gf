@@ -92,7 +92,7 @@ lin
     timeunitRange l u time =
       {s = l.s ! R.AMod (R.gennum R.Masc l.n) R.Nom ++ "bis"
          ++ u.s ! R.AMod (R.gennum R.Masc u.n) R.Nom ++ time.s ! R.Pl ! R.Nom ;
-      cp,cor = [] ; hasCor,t = False} ;
+      cp,cor = [] ; hasCor,isClause = False} ;
 
   oper
     mkHour : Str -> Str -> Str -> Hour

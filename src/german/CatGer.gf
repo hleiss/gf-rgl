@@ -107,14 +107,14 @@ concrete CatGer of Cat =
 
 -- Open lexical classes, e.g. Lexicon
 
-    V, VA, -- VS,
-      VQ = Verb ; -- = {s : VForm => Str} ;
-    VS = Verb ** {c2 : Preposition ; cor : Str} ;
+    V, VA = Verb ; -- = {s : VForm => Str} ; 
+    VS, VQ = Verb ** {c2 : Preposition ; cor : Str} ;  -- glaube (daran , dass s | an np)
     -- VV = Verb ** {isAux : Bool} ;
-    VV = Verb ** {c2 : Preposition ; cor : Str ; isAux : Bool} ;
-    V2, V2A, V2S, V2Q = Verb ** {c2 : Preposition} ;
+    VV = Verb ** {isAux : Bool ; c2 : Preposition ; cor : Str} ; -- hoffe darauf , zu tun
+    V2, V2A = Verb ** {c2 : Preposition} ; -- , V2S, V2Q
+    V2S, V2Q = Verb ** {c2,c3 : Preposition ; isAux : Bool ; cor : Str} ;
     -- V2V = Verb ** {c2 : Preposition ; isAux : Bool ; objCtrl : Bool} ;
-    V2V = Verb ** {c2 : Preposition ; cor : Str ;isAux : Bool ; objCtrl : Bool} ;
+    V2V = Verb ** {c2,c3 : Preposition ; isAux : Bool ; objCtrl : Bool ; cor : Str} ;
     V3 = Verb ** {c2, c3 : Preposition} ;
 
     A  = Adjective ; -- = {s : Degree => AForm => Str} ;
@@ -142,7 +142,7 @@ concrete CatGer of Cat =
     ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! CPl ;
 
     VP = \vp -> useInfVP False vp ;
-    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! CPl ++ vps.ext;
+    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! CPl ; --++ vps.ext;
 
     AP = \ap -> ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ++ ap.ext ;
     A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! CPl ;

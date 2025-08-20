@@ -35,14 +35,17 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
                   } ;
           neg  = negation ! pol ;
           inf  = vp.inf.inpl.p2 ++ verb.inf ++ vp.inf.extr ! agr ;  -- HL .s/.inpl.p2
+          cor  = vp.cor ;
           obj  = (vp.nn ! agr).p2 ++ (vp.nn ! agr).p3 ++ (vp.nn ! agr).p4 ++ vp.adj
         in
-        verb.fin ++ ps.p2 ++ (vp.nn ! agr).p1 ++ vp.a1 ++ neg ++ obj ++ vp.a2 ++ inf ++ vp.ext
+        verb.fin ++ ps.p2 ++ cor ++ (vp.nn ! agr).p1 ++ vp.a1 ++ neg ++ obj ++ vp.a2 ++ inf ++ vp.ext
     } ;
 
-    AdvImp adv imp = {
-      s = \\pol,impform => adv.s ++ imp.s ! pol ! impform
-    } ;
+    AdvImp adv imp =
+      let comma = if_then_Str (orB adv.hasCor adv.isClause) bindComma []
+      in {
+        s = \\pol,impform => adv.s ++ adv.cp ++ adv.cor ++ comma ++ imp.s ! pol ! impform
+      } ;
 
 -- to save compile time: HL 7/22, comment SlashVP out:
 -- + SlashV2VNP 199065600 (46080,240)
@@ -85,13 +88,16 @@ concrete SentenceGer of Sentence = CatGer ** open ResGer, Prelude in {
 
 --    AdvS a s = {s = table {Sub => a.s ++ s.s ! Sub ; o => a.s ++ s.s ! Inv}} ;
     AdvS a s =
-      let comma = if_then_Str (orB a.hasCor a.t) bindComma []
+      let comma = if_then_Str (orB a.hasCor a.isClause) bindComma []
       in {s = table {Sub => a.cor ++ comma ++ a.s ++ a.cp ++ comma ++ s.s ! Sub ;
                      Inv => a.cor ++ s.s ! Inv ++ comma ++ a.s ++ a.cp ;
                      _   => a.s ++ a.cp ++ comma ++ a.cor ++ s.s ! Inv}} ;
 
-    ExtAdvS a s = 
-      {s = table {Sub => a.s ++ "," ++ s.s ! Sub ; o => a.s ++ "," ++ s.s ! Inv}} ;
+    ExtAdvS a s =
+      let comma = if_then_Str (orB a.hasCor a.isClause) bindComma []
+      in
+      {s = table {Sub => a.cor ++ comma ++ a.s ++ "," ++ s.s ! Sub ;
+                  o => a.cor ++ comma ++ a.s ++ "," ++ s.s ! Inv}} ;
 
 --    SSubjS a s b = {s = \\o => a.s ! o ++ "," ++ s.s ++ b.s ! Sub} ;
     SSubjS a s b = {s = \\o => a.s ! o ++ s.cor ++ "," ++ s.s ++ b.s ! Sub} ;
