@@ -54,31 +54,39 @@ concrete ConjunctionGer of Conjunction =
 		s2 = x.s2 ;
 		a = conjAgr xs.a x.a } ;
     BaseAP x y = lin AP {
-		s1 = bigAP x ;
-		s2 = bigAP y ;
+		s1 = bigAP (lin AP x) ;
+		s2 = bigAP (lin AP y) ;
 		isPre = andB x.isPre y.isPre ;
 		c = <[],[]> ;
 	  	ext = []} ;
    ConsAP xs x = lin AP {
-		s1 = \\a => (bigAP xs) ! a ++ comma ++ x.s1 ! a ;
+		s1 = \\a => (bigAP (lin AP xs)) ! a ++ comma ++ x.s1 ! a ;
 		s2 = x.s2 ;
 		isPre = andB x.isPre xs.isPre ;
 		c = <[],[]> ;
 	  	ext = []} ;
     BaseRS x y = twoTable RelGenNum x y ** {c = y.c} ;
     ConsRS xs x = consrTable RelGenNum comma xs x ** {c = xs.c} ;
-    BaseCN x y = lin CN {
-      s1 = bigCN x ;
-      s2 = bigCN y ;
+    BaseCN x y = {
+      s1 = bigCN (lin CN x) ;
+      s2 = bigCN (lin CN y) ;
       g  = x.g ; --- gender of first CN, used e.g. in articles
       } ; 
-    ConsCN x xs = lin CN {
-      s1 = \\a,n,c => bigCN x ! a ! n ! c ++ comma ++ xs.s1 ! a ! n ! c ;
+    ConsCN x xs = {
+      s1 = \\a,n,c => bigCN (lin CN x) ! a ! n ! c ++ comma ++ xs.s1 ! a ! n ! c ;
       s2 = xs.s2 ;
       g  = x.g ; --- gender of first CN, used e.g. in articles
       } ; 
+    BaseDAP x y = {
+      s1 = x.s ; sp1 = x.sp ;
+      s2 = y.s ; sp2 = y.sp ;
+      n = y.n ;
+      a = y.a } ;
+    ConsDAP x xs = {s1 = \\g,c => x.s!g!c ++ comma ++ xs.s1!g!c ;
+                    sp1 = \\g,c => x.sp!g!c ++ comma ++ xs.sp1!g!c ;
+                    s2 = xs.s2 ; sp2 = xs.sp2 ;
+                    n = xs.n ; a = xs.a} ;
       
-
   lincat
     [S] = {s1,s2 : Order => Str} ;
     [Adv] = {s1,s2 : Str} ;
@@ -86,6 +94,7 @@ concrete ConjunctionGer of Conjunction =
     [AP] = {s1,s2 : AForm => Str ; isPre : Bool; c : Str * Str ; ext : Str} ;
     [RS] = {s1,s2 : RelGenNum => Str ; c : Case} ;
     [CN] = {s1,s2 : Adjf => Number => Case => Str ; g : Gender} ;
+    [DAP] = {s1,s2,sp1,sp2 : Gender => Case => Str ; n : Number ; a : Adjf} ;
 
   oper
     bigAP : AP -> AForm => Str = \ap ->                                         -- HL 1/23: not always ok:

@@ -27,9 +27,11 @@ concrete CatGer of Cat =
 
     QCl = {s : Mood => ResGer.Tense => Anteriority => Polarity => QForm => Str} ;
     IP = {s : Case => Str ; n : Number} ;
+-- HL 1/2024: [welch(er|e|es) CN]:IP nutzt:V2 (seine|ihre|ihre)!ip.a Vorteile?
+--    IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ; 
     IComp = {s : Agr => Str ; ext : Str} ; 
-    IDet = {s : Gender => Case => Str ; n : Number} ;
-    IQuant = {s : GenNum => Case => Str} ;
+    IDet = {s : Gender => Case => Str ; n : Number ; a : Adjf} ;
+    IQuant = {s : GenNum => Case => Str ; a : Adjf} ;
 
 -- Relative
 
@@ -65,7 +67,8 @@ concrete CatGer of Cat =
     Pron = {s : NPForm => Str ; a : Agr ; sp : PossForm => Str} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
-    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
+    DAP = {s,sp : Gender => Case => Str ;            -- add option to drop DefArt ?
+           n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
 
     Quant = {
       s : Bool => GenNum => Case => Str ; -- True if leading DefArtSg is dropped
@@ -114,7 +117,7 @@ concrete CatGer of Cat =
     GN = {s : Case => Str; g : Sex} ;
     SN = {s : Sex => Case => Str} ;
     PN = {s : Case => Str; g : Gender; n : Number} ;
-    LN = {s : Adjf => Case => Str; hasArt : Bool; g : Gender; n : Number} ;
+    LN = {s : Adjf => Case => Str; hasDefArt : Bool; g : Gender; n : Number} ;
 
 -- tense with possibility to choose conjunctive forms
 
@@ -125,26 +128,29 @@ concrete CatGer of Cat =
     NP = \np -> np.s ! False ! Nom ++ np.ext ++ np.rc ; -- HL 7/2022 Bool added
     CN = \cn -> cn.s ! Strong ! Sg ! Nom ++ cn.adv ++ cn.ext ++ cn.rc ! Sg ;
 
-    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! GPl ;
-    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! GPl ;
+    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! CPl ;
+    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! CPl ;
 
     VP = \vp -> useInfVP False vp ;
-    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! GPl ++ vps.ext;
+    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! CPl ++ vps.ext;
 
     AP = \ap -> ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ++ ap.ext ;
-    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! GPl ;
+    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! CPl ;
 
     V, VS, VQ, VA = \v -> useInfVP False (predV v) ;
-    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ;
-    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ++ v.c3.s ! GPl;
+    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ;
+    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ++ v.c3.s ! CPl;
 
     VV = \v -> useInfVP v.isAux (predVGen v.isAux v) ;
-    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! GPl ;
+--    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! CPl ;
+
+    N2 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ;
+    N3 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ++ n.c3.s ! CPl ;
 
     Conj = \c -> c.s1 ++ c.s2 ;
 
     Det = \det -> det.s ! False ! Masc ! Nom ;
-    Prep = \prep -> case prep.t of {isPrepDefArt => prep.s ! GSg Masc ;
-                                    _ => prep.s ! GPl } ;
+    Prep = \prep -> case prep.t of {isContracting => prep.s ! CSg Masc ;
+                                    _ => prep.s ! CPl } ;
 
 }

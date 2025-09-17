@@ -5,9 +5,10 @@ concrete TestLangGer of TestLang =
   GrammarGer - [SlashVP,RelSlash,QuestSlash,AdvSlash,SlashPrep,SlashVS,UseSlash]
   , TestLexiconGer
   , ConstructionGer
-  , ExtraGer[RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP
-               ,RNPList,ConjRNP --,Base_rr_RNP,Base_nr_RNP,Base_rn_RNP,Cons_rr_RNP,Cons_nr_RNP
-    ]
+  , ExtendGer - [PassVPSlash,PastPartAP,
+                   -- Compilerproblem in Compile/GrammarToPGF.hs 220
+                   AdvIsNP,AdvIsNPAP,AdvRAP,BaseComp--,BaseImp
+  ]
   ** open ResGer,Prelude,(P=ParadigmsGer) in {
 
   flags startcat = Phr ; unlexer = text ; lexer = text ;
@@ -31,15 +32,15 @@ concrete TestLangGer of TestLang =
       (insertObjRefl (predVc v3) ** {c2 = v3.c3}); 
 
     PassV2Q v q =
-      let c = case <v.c2.c, isaPrep v.c2> of {
-            <Acc, False> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+      let c = case <v.c2.c, v.c2.t> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
           vp = insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass)
             ** { c1 = v.c2 ** {c = c} }
       in insertExtrapos (bindComma ++ q.s ! QIndir) vp ;
 
     PassV2S v s =
-      let c = case <v.c2.c, isaPrep v.c2> of {
-            <Acc, False> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+      let c = case <v.c2.c, v.c2.t> of {
+            <Acc, isCase> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
           vp = insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass)
             ** { c1 = v.c2 ** {c = c} }
       in insertExtrapos (bindComma ++ conjThat ++ s.s ! Sub) vp ;
@@ -47,15 +48,15 @@ concrete TestLangGer of TestLang =
     PassV2V v vp = 
       let
           inf = mkInf v.isAux Simul Pos vp ;             -- ok for v.isAux=False, v.c2.c=Acc
-          c = case <v.c2.c, isaPrep v.c2> of {           --        v.objCtrl=True   HL 3/22
-            <Acc, False> => Nom ; _ => v.c2.c} ; -- acc;pcase object -> nom;pcase subject
+          c = case <v.c2.c, v.c2.t> of {           --        v.objCtrl=True   HL 3/22
+            <Acc, isCase> => Nom ; _ => v.c2.c} ;  -- acc;pcase object -> nom;pcase subject
           vp2 = insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass)
             ** { c1 = subjPrep v.c2 } ;
         in insertInf inf vp2 ;                           -- v=lassen needs in-place inf instead
 
     PassVPSlash vp = 
-      let c = case <vp.c2.c, isaPrep vp.c2> of {
-            <Acc, False> => Nom ; _ => vp.c2.c} ;
+      let c = case <vp.c2.c, vp.c2.t> of {
+            <Acc, isCase> => Nom ; _ => vp.c2.c} ;
           ctrl = case vp.objCtrl of { True => False ; _ => True }  -- always False?
       in -- insertObj (\\_ => (PastPartAP vp).s ! APred) (predV werdenPass ** {c1 = vp.c2 ** {c = c}})
           insertObj (\\_ => vp.s.s ! (VPastPart APred))

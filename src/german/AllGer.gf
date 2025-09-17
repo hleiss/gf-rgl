@@ -1,8 +1,10 @@
---# -path=.:../abstract:../common:../api:../prelude
+--# -path=.:../abstract:../common:../api:../prelude:../../tests/german:
 
 concrete AllGer of AllGerAbs =
   LangGer,
-  IrregGer,
-  ExtendGer
-  ** open ExtraGer in {} ---- to force compilation
+  -- IrregGer,
+  ExtendGer,
+  ExtraGer,
+  TestLexiconGer
+  ** {}
   ;

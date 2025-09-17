@@ -4,8 +4,8 @@ concrete RelativeGer of Relative = CatGer ** open ResGer, Prelude in {
 
   lin
 
-    RelCl cl = {  --- no comma before derart
-      s = \\m,t,a,b,_ => "derart" ++ Predef.BIND ++ "," ++ conjThat ++ cl.s ! m ! t ! a ! b ! Sub ;
+    RelCl cl = {
+      s = \\m,t,a,b,_ => "derart" ++ conjThat ++ cl.s ! m ! t ! a ! b ! Sub ;
       c = Nom
       } ;
 
@@ -28,7 +28,7 @@ concrete RelativeGer of Relative = CatGer ** open ResGer, Prelude in {
 
     RelSlash rp slash = {
       s = \\m,t,a,p,gn => 
-          appPrep slash.c2 (rp.s ! gn) ++ slash.s ! m ! t ! a ! p ! Sub ;
+        (appPrep slash.c2 rp) ! gn ++ slash.s ! m ! t ! a ! p ! Sub ;
       c = slash.c2.c
       } ;
 
