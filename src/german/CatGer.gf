@@ -27,11 +27,9 @@ concrete CatGer of Cat =
 
     QCl = {s : Mood => ResGer.Tense => Anteriority => Polarity => QForm => Str} ;
     IP = {s : Case => Str ; n : Number} ;
--- HL 1/2024: [welch(er|e|es) CN]:IP nutzt:V2 (seine|ihre|ihre)!ip.a Vorteile?
---    IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ; 
     IComp = {s : Agr => Str ; ext : Str} ; 
-    IDet = {s : Gender => Case => Str ; n : Number ; a : Adjf} ;
-    IQuant = {s : GenNum => Case => Str ; a : Adjf} ;
+    IDet = {s : Gender => Case => Str ; n : Number} ;
+    IQuant = {s : GenNum => Case => Str} ;
 
 -- Relative
 
@@ -67,8 +65,7 @@ concrete CatGer of Cat =
     Pron = {s : NPForm => Str ; a : Agr ; sp : PossForm => Str} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
-    DAP = {s,sp : Gender => Case => Str ;            -- add option to drop DefArt ?
-           n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
+    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
 
     Quant = {
       s : Bool => GenNum => Case => Str ; -- True if leading DefArtSg is dropped

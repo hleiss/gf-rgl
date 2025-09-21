@@ -2,21 +2,18 @@
 
 concrete ExtendGer of Extend =
   CatGer ** ExtendFunctor
-  - [ -- remove the default implementations and add a new implementation of:
-      GenNP, EmptyRelSlash,
+  - [ -- remove the default implementations of:
+      GenNP, GenRP, EmptyRelSlash,
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
       ICompAP, IAdvAdv, CompIQuant, PrepCN,
       PastPartAP, PastPartAgentAP, PassVPSlash, PassAgentVPSlash,
       AdvIsNP,
-      ComplDirectVS, ComplDirectVQ,
-      RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, ConjRNP,
+      RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, Conj_RNP,
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
       CompoundN, DetNPMasc, DetNPFem, UseDAP, UseDAPMasc, UseDAPFem,
       CardCNCard,
-        InOrderToVP,
-        -- to avoid spurious ambiguities, unimplement the default implementations of:
-        iFem_Pron, UseComp_estar, UseComp_ser
+      InOrderToVP
     ]
   with
     (Grammar = GrammarGer) **
@@ -38,6 +35,13 @@ concrete ExtendGer of Extend =
           delCardOne = False
       } ;
 
+    GenRP nu cn = {
+      s = \\gn,c => relPron ! gn ! Gen ++ cn.s ! Weak ! nu.n ! c ;
+      a = RAg nu.n P3
+      } ;
+
+
+
     EmptyRelSlash slash = {
       s = \\m,t,a,p,gn =>
         appPrep slash.c2 (relPron ! gn) ++ slash.s ! m ! t ! a ! p ! Sub ;
@@ -48,15 +52,50 @@ concrete ExtendGer of Extend =
   lincat
     VPI   = {s : Bool => Str} ;
     [VPI] = {s1,s2 : Bool => Str} ;
-    VPS   = {s : Order => Agr => Str} ;
-    [VPS] = {s1,s2 : Order => Agr => Str} ;
+    VPS   = {s : Order => Agr => {verb, compl : Str}} ;
+    [VPS] = {s : Order => Agr => {s1, s2, s3 : Str}} ; -- liebe, (ich) dich, (und) bin glücklich
 
   lin
     BaseVPI = twoTable Bool ;
     ConsVPI = consrTable Bool comma ;
 
-    BaseVPS = twoTable2 Order Agr ;
-    ConsVPS = consrTable2 Order Agr comma ;
+    BaseVPS v w = {
+      s = \\ord, agr =>
+        let
+	  vs = v.s ! ord ! agr ;
+	  ws = w.s ! ord ! agr ;
+	in {
+	  s1 = vs.verb ;
+	  s2 = vs.compl ;
+	  s3 = case ord of {
+	    Sub => ws.compl ++ ws.verb ;
+	    _ => ws.verb ++ ws.compl
+	    }
+	  }
+       } ;
+	  
+    ConsVPS v vv = {
+      s = \\ord, agr =>
+        let
+	  vs = v.s ! ord ! agr ;
+	  vvs = vv.s ! ord ! agr ;
+	in {
+	  s1 = vs.verb ;
+	  s2 = vs.compl ++ comma ++ vvs.s1 ++ vvs.s2 ;
+	  s3 = vvs.s3
+	  }
+      } ;
+
+    ConjVPS conj vv = {
+      s = \\ord, agr =>
+         let
+           vvs = vv.s ! ord ! agr
+         in {
+	   verb = vvs.s1 ;
+	   compl = conj.s1 ++ vvs.s2 ++ conj.s2 ++ vvs.s3
+	   }
+      } ;
+
 
     MkVPS tm p vp = 
       let vps = useVP vp in {
@@ -107,26 +146,29 @@ concrete ExtendGer of Extend =
               } ;
            extra = vp.inf.extr!agr ++ vp.ext ;
         in
+	--- AR 22/7/2024 as the subject comes to a wrong place in PredVPS Inv
+	{verb = verb.fin ; compl = compl ++ infCompl ++ pred.inf ++ extra} 
+	{-
         case o of {
-	  Main => subj ++ verb.fin ++ compl ++ infCompl ++ pred.inf ++ extra ;
+	  Main => verb.fin ++ compl ++ infCompl ++ pred.inf ++ extra ;
 	  Inv  => verb.fin ++ subj ++ compl ++ infCompl ++ pred.inf ++ extra ;
 	  Subj =>             subj ++ compl ++   pred.infComplfin   ++ extra
         }
+	-}
     } ;
 
-    ConjVPS = conjunctDistrTable2 Order Agr ;
 
-    PredVPS np vpi =
+    PredVPS np vps =
       let
         subj = np.s ! False ! Nom ++ bigNP np ;
         agr  = np.a ;
       in {
         s = \\o =>
-          let verb = vpi.s ! o ! agr
+          let verb = vps.s ! o ! agr
           in case o of {
-            Main => subj ++ verb ;
-            Inv  => verb ++ subj ;   ---- älskar henne och sover jag
-            Sub  => subj ++ verb
+            Main => subj ++ verb.verb ++ verb.compl ;
+            Inv  => verb.verb ++ subj ++ verb.compl ;   -- älskar jag henne och sover
+            Sub  => subj ++ verb.compl ++ verb.verb     --- not quite correct in ConjVPS
             }
         } ;
 
@@ -144,24 +186,8 @@ concrete ExtendGer of Extend =
 
 -- Conjunction of copula complements
 
-  lincat
-    [Comp] = {s1,s2 : Agr => Str} ; --ListTable Agr ;
-  lin
-    BaseComp x y = {s1 = \\a => x.s ! a ++ x.ext ; s2 = \\a => y.s ! a ++ y.ext} ;
-    ConsComp x xs = {s1 = \\a => x.s ! a ++ x.ext ++ comma ++ xs.s1 ! a ; s2 = xs.s2} ;
-
-    ConjComp conj ss = {s = \\a => conj.s1 ++ ss.s1 ! a ++ conj.s2 ++ ss.s2 ! a ; ext = []} ;
-
 -- Conjunction of imperatives
 
-  lincat
-    [Imp] = {s1,s2 : Polarity => ImpForm => Str} ;
-  lin
-    BaseImp x y = {s1 = \\p,f => x.s ! p ! f ; s2 = \\p,f => y.s!p!f} ;
-    ConsImp x xs = {s1 = \\p,f => x.s ! p ! f ++ comma ++ xs.s1 ! p ! f ; s2 = xs.s2} ;
-    ConjImp conj xs = {s = \\p,f => conj.s1 ++ xs.s1 ! p ! f ++ conj.s2 ++ xs.s2 ! p ! f} ;
-
-  lin
     ICompAP ap = {
       s = \\_ => "wie" ++ ap.s ! APred ;
       ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom ;
@@ -175,8 +201,7 @@ concrete ExtendGer of Extend =
       } ;
 
     PrepCN prep cn = {
-      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ;
-      cp,cor = [] ; hasCor,t = False} ;
+      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ++ prep.s2} ;
 
   -- fronted/focal constructions, only for main clauses
 
@@ -296,7 +321,7 @@ concrete ExtendGer of Extend =
                        d = case pred.c.k of {NoCase => c ; PredCase k => k} ;
         in case rnp.isPron of {
           True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! Dat ;
-          _ => pred.s ! n ! g ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
+          _ => pred.s ! n ! genderAgr a ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
       ext = rnp.ext ; rc = rnp.rc ;
       isPron = False} ;
       -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir

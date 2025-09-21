@@ -1,4 +1,4 @@
-concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
+concrete QuestionGer of Question = CatGer ** open ResGer in {
 
   flags optimize=all_subs ;
 
@@ -17,7 +17,7 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
       s = \\m,t,a,p =>
         let
           who = appPrep vp.c1 ip.s ;
-          cl = (mkClause who (agrP3 ip.n) vp).s ! m ! t ! a ! p ;
+          cl = (mkClause who (agrP3 ip.n) vp).s ! m ! t ! a ! p
         in table {
             QDir   => cl ! Main ;
             QIndir => cl ! Sub
@@ -61,14 +61,11 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
 
     PrepIP p ip = {
       s = appPrep p ip.s ;
-      -- s = appPrepIP p ip ; -- todo: mit was => womit ; an was => woran  etc
       } ;
 
     AdvIP ip adv = {
       s = \\c => ip.s ! c ++ adv.s ;
       n = ip.n
-      -- isPron = False ;
-      -- a = ip.a
       } ;
 
     IdetCN idet cn = 
@@ -76,11 +73,8 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
         g = cn.g ;
         n = idet.n
       in {
---      s = \\c => idet.s ! g ! c ++ cn.s ! Weak ! n ! c ; 
-        s = \\c => idet.s ! g ! c ++ cn.s ! idet.a ! n ! c ++ cn.adv ++ cn.rc ! n ++ cn.ext ; 
+        s = \\c => idet.s ! g ! c ++ cn.s ! Weak ! n ! c ++ cn.adv ++ cn.rc ! n ++ cn.ext ; 
         n = n
-      -- isPron = False ;
-      -- a = case n of {Sg => GSg g ; _ => GPl} 
       } ;
 
     IdetIP idet = 
@@ -89,20 +83,15 @@ concrete QuestionGer of Question = CatGer ** open ResGer, Prelude in {
         n = idet.n
       in {
         s = idet.s ! g ;
-        n = n ;
-      -- isPron = False ;
-      -- a = case n of {Sg => GSg g ; _ => GPl}
-        a = idet.a
+        n = n
       } ;
 
     IdetQuant iquant num =
       let
-        n = num.n ;
-        a = iquant.a
+        n = num.n
       in {
-        s = \\g,c => let gn = gennum g n in iquant.s ! gn ! c ++ num.s ! agrAdj a gn c ;
-        n = n ;
-        a = a
+        s = \\g,c => let gn = gennum g n in iquant.s ! gn ! c ++ num.s ! AMod gn c ;
+        n = n
       } ;
 
     AdvIAdv i a = {s = i.s ++ a.s} ;

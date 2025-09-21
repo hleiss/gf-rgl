@@ -5,10 +5,9 @@ concrete TestLangGer of TestLang =
   GrammarGer - [SlashVP,RelSlash,QuestSlash,AdvSlash,SlashPrep,SlashVS,UseSlash]
   , TestLexiconGer
   , ConstructionGer
-  , ExtendGer - [PassVPSlash,PastPartAP,
-                   -- Compilerproblem in Compile/GrammarToPGF.hs 220
-                   AdvIsNP,AdvIsNPAP,AdvRAP,BaseComp--,BaseImp
-  ]
+  , ExtraGer[RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP
+               ,RNPList,ConjRNP --,Base_rr_RNP,Base_nr_RNP,Base_rn_RNP,Cons_rr_RNP,Cons_nr_RNP
+    ]
   ** open ResGer,Prelude,(P=ParadigmsGer) in {
 
   flags startcat = Phr ; unlexer = text ; lexer = text ;

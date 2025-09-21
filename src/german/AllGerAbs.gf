@@ -1,9 +1,7 @@
---# -path=.:../abstract:../common:../prelude:../tests/german:
+--# -path=.:../abstract:../common:../prelude
 
 abstract AllGerAbs = 
   Lang,
-  -- IrregGerAbs,
-  Extend,
-  ExtraGerAbs,
-  TestLexiconGerAbs
+  IrregGerAbs,
+  Extend
   ** {} ;

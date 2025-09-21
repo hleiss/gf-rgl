@@ -8,7 +8,7 @@ oper
   mkSubj : Str -> Subj = \x -> 
     {s = x ; lock_Subj = <>} ;
   mkIQuant : Str -> IQuant = \s ->
-    {s = \\_,_ => s ; a = Strong ; lock_IQuant = <>} ; ----
+    {s = \\_,_ => s ; lock_IQuant = <>} ;
 
   mkPredet = overload {
     mkPredet : A -> Predet = \a ->
@@ -35,5 +35,13 @@ oper
    s = \\b,gn,c => q.s ! b ! gn ! c + a.s ! Posit ! agrAdj q.a gn c ;
    sp = \\gn,c => q.s ! False ! gn ! c + a.s ! Posit ! agrAdj q.a gn c
    } ;
+
+ mkStrongDet : Str -> Number -> Det = \adj, n -> lin Det {
+    s,sp = \\_,g,c => adj + adjEnding ! (gennum g Pl) ! c ;
+    n = n ; a = Strong ; isDef = False ; hasDefArt = False} ;
+
+ mkWeakDet : Str -> Number -> Det = \adj, n -> lin Det {
+    s,sp = \\_,g,c => adj + adjEnding ! (gennum g Pl) ! c ;
+    n = n ; a = Weak ; isDef = False ; hasDefArt = False} ;
 
 }

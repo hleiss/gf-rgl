@@ -266,13 +266,6 @@ mkN : overload {
   inAcc_Prep  : Prep ; -- in + accusative, with contraction ins
   aufAcc_Prep : Prep ; -- auf + accusative, with contraction aufs
 
---2 Conjunctions
-
-  mkConj : overload {
-    mkConj : Str -> Conj ;
-    mkConj : Str -> Str -> Conj ;  -- weder x noch y
-    } ;
-
 --2 Verbs
 
 mkV : overload {
@@ -542,11 +535,6 @@ mkV2 : overload {
        g = g ; n = Sg ; lock_PN = <>} 
     } ;
 
-  mkConj = overload {
-    mkConj : Str -> Conj = \s -> lin Conj {s1 = s ; s2 = [] ; n = Pl} ;
-    mkConj : Str -> Str -> Conj = \s,t -> lin Conj {s1 = s ; s2 = t ; n = Pl} ;
-    } ;
-
   mk2PN  : (karolus, karoli : Str) -> Gender -> PN ; -- karolus, karoli
   regPN : (Johann : Str) -> Gender -> PN ;  
     -- Johann, Johanns ; Johannes, Johannes
@@ -708,8 +696,8 @@ mkV2 : overload {
 
   irregV singen singt sang saenge gesungen = 
     let
-      -- sing = stemVerb singen ;
-      sing = stemVerbImpSg singen singt  -- geben gibt => gib, HL 7/17
+      sing = stemVerb singen ;
+      -- sing = stemVerbImpSg singen singt  -- geben gibt => gib, HL 7/17
     in
     mk6V singen singt sing sang saenge gesungen ;
 
