@@ -9,7 +9,14 @@ concrete NounGla of Noun = CatGla ** open ResGla, Prelude in {
 -- : Det -> CN -> NP
     DetCN det cn = emptyNP ** {
       art = det.s ! cn.g ;
-      s = \\c => cn.s ! getNForm det.dt c ;
+      s = \\c => case det.dt of {
+                   DDef n sp => cn.s ! c ! sp  ! n ;
+                   DPoss n _ => cn.s ! c ! Def ! n    -- ????????????????
+                 } ;
+      voc = case det.dt of {
+              DDef n sp => cn.voc ! n ;  -- ???????????????? guessed
+              DPoss n _ => cn.voc ! n    -- ????????????????
+            } ;
       a = NotPron det.dt ;
       } ;
 
@@ -20,7 +27,7 @@ concrete NounGla of Noun = CatGla ** open ResGla, Prelude in {
   -- : Pron -> NP ;
   -- Assuming that lincat Pron = lincat NP
   UsePron pron = emptyNP ** pron ** {
-    s = \\c => pron.s ! npc2cc c ;
+    s = pron.s ;
     a = IsPron pron.a
     } ;
 {-
@@ -58,7 +65,7 @@ concrete NounGla of Noun = CatGla ** open ResGla, Prelude in {
 -}
   -- MassNP : CN -> NP ;
     MassNP cn = emptyNP ** {
-      s = \\c => cn.s ! getNForm (DDef Sg Indefinite) c -- no article, singular indefinite forms, open for cases+mutations
+      s = \\c => cn.s ! c ! Indef ! Sg -- no article, singular indefinite forms, open for cases+mutations
       } ;
 
 
@@ -132,16 +139,23 @@ concrete NounGla of Noun = CatGla ** open ResGla, Prelude in {
   DefArt = ResGla.defArt ;
 
   -- : Quant
-  IndefArt = mkQuant [] (QDef Indefinite) ;
-
+  IndefArt = {
+    s = \\_ => [] ;
+    sp = [] ;
+    qt = QDef Indef ;
+    } ;
 
   -- : Pron -> Quant        -- my
-  PossPron pron = mkQuant pron.poss (QPoss pron.a) ;
+  PossPron pron = {
+    s = \\_ => pron.poss ;
+    sp = pron.poss ;
+    qt = QPoss pron.a ;
+    } ;
 
 --2 Common nouns
 
   -- : N -> CN
-  UseN = useN ;
+  UseN n = n ;
 
 {-
   -- : N2 -> CN ;
@@ -158,10 +172,14 @@ concrete NounGla of Noun = CatGla ** open ResGla, Prelude in {
 
   -- : N3 -> N2 ;          -- distance (to Paris)
   Use3N3 n3 = lin N2 n3 ;
-
+-}
   -- : AP -> CN -> CN
-  AdjCN ap cn =
-
+  AdjCN ap cn = {
+    s = \\c,s,n => cn.s ! c ! s ! n ++ ap.s ! aform c n cn.g ;
+    voc = \\n => cn.voc ! n ++ ap.voc ! cn.g ;
+    g = cn.g
+  } ;
+{-
   -- : CN -> RS -> CN ;
   RelCN cn rs =
 
