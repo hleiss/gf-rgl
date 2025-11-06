@@ -46,7 +46,7 @@ lin UseLN ln = {
                      False => ln.s ! Strong ! c
                    } ;
       a = agrgP3 ln.g ln.n ;
-      w = case d of {True => WDefArt ; _ => WLight} ; -- enable contraction with prep, e.g. zur Schweiz
+      w = WLight ;
       rc, ext = []
       } ;
 
@@ -70,19 +70,17 @@ lin InLN ln = {
                             False => ln.s ! Strong ! c
                           } ;
              a = agrgP3 ln.g ln.n ;
-             w = case d of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
+             w = WLight ;
              rc, ext = []
-        } ;
-      cp,cor = [] ; hasCor,t = False
+      }
       } ;
 
 -- AdjLN : AP -> LN -> LN ;
 lin AdjLN ap ln = ln ** {
-      s = \\a,c => case ap.isPre of {
-        True => (ap.c.p1 ++ ap.c.p2 ++ ap.s ! agrAdj a (gennum ln.g ln.n) c ++
-                   ln.s ! a ! c ++ ap.s2 ! c ++ ap.ext) ;
-        False => ln.s ! a ! c ++
-          embedInCommas (ap.c.p1 ++ ap.c.p2 ++ ap.s ! APred ++ ap.s2 ! c ++ ap.ext)} ;
+      s = \\a,c =>
+               preOrPost ap.isPre
+                 (ap.c.p1 ++ ap.c.p2 ++ ap.s ! agrAdj a (gennum ln.g ln.n) c ++ ap.ext)
+                 (ln.s ! a ! c) ;
       } ;
 
 }

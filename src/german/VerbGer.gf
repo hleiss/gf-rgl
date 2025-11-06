@@ -37,7 +37,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
         insertInf inf vps) ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
 
     SlashV2A v ap =
-      insertAdj (ap.s ! APred ++ appPrep v.c2 ap.s2) ap.c ap.ext (predV v) ** {c2 = v.c2; objCtrl = False} ;
+      insertAdj (ap.s ! APred ++ ap.s2 ! Nom) ap.c ap.ext (predV v) ** {c2 = v.c2; objCtrl = False} ;
 
     ComplSlash vps np =
       -- IL 24/04/2018 force reflexive in the VPSlash to take the agreement of np.
@@ -95,7 +95,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
    --     insertObjNP np v.c2 (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl}) ;
      let prep = v.c2 ;
          obj = appPrep prep (np.s!False) ; -- simplify: no glueing of prep+DefArt, HL 8/22
-         b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
+         b : Bool = case prep.t of {isPrep | isPrepDefArt => True ; _ => False} ;
          c = prep.c ;
          w = np.w ;
          vps = (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl})
@@ -109,14 +109,9 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
 
     UseCopula = predV sein_V ;
 
--- Inari SummerSchool 25
-    -- CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ; ext = \\_ => ap.s2 ! Nom ++ ap.ext} ;
-    -- CompNP np = {s = \\_ => np.s ! False ! Nom ; ext = \\_ => np.rc ++ np.ext} ;
-    -- CompAdv a = {s = \\_ => a.s ; ext = \\_ => []} ;
--- Really move ap.s2 and np.rc to ext ?
-    CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ; ext = \\_ => ap.ext} ;
-    CompNP np = {s = \\_ => np.s ! False ! Nom ++ np.rc ; ext = \\_ => np.ext} ;
-    CompAdv a = {s = \\_ => a.s ; ext = \\ =>  []} ;
+    CompAP ap = {s = \\_ => ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ; ext = \\_ => ap.s2 ! Nom ++ ap.ext} ;
+    CompNP np = {s = \\_ => np.s ! False ! Nom ; ext = \\_ => np.rc ++ np.ext} ;
+    CompAdv a = {s = \\_ => a.s ; ext = \\_ => []} ;
 
     CompCN cn = {
       s = let

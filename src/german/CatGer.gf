@@ -126,29 +126,26 @@ concrete CatGer of Cat =
     NP = \np -> np.s ! False ! Nom ++ np.ext ++ np.rc ; -- HL 7/2022 Bool added
     CN = \cn -> cn.s ! Strong ! Sg ! Nom ++ cn.adv ++ cn.ext ++ cn.rc ! Sg ;
 
-    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! CPl ;
-    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! CPl ;
+    SSlash = \ss -> ss.s ! Main ++ ss.c2.s ! GPl ;
+    ClSlash = \cls -> cls.s ! MIndic ! Pres ! Simul ! Pos ! Main ++ cls.c2.s ! GPl ;
 
     VP = \vp -> useInfVP False vp ;
-    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! CPl ++ vps.ext;
+    VPSlash = \vps -> useInfVP False vps ++ vps.c2.s ! GPl ++ vps.ext;
 
     AP = \ap -> ap.c.p1 ++ ap.s ! APred ++ ap.c.p2 ++ ap.s2 ! Nom ++ ap.ext ;
-    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! CPl ;
+    A2 = \a2 -> a2.s ! Posit ! APred ++ a2.c2.s ! GPl ;
 
     V, VS, VQ, VA = \v -> useInfVP False (predV v) ;
-    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ;
-    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! CPl ++ v.c3.s ! CPl;
+    V2, V2A, V2Q, V2S = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ;
+    V3 = \v -> useInfVP False (predV v) ++ v.c2.s ! GPl ++ v.c3.s ! GPl;
 
     VV = \v -> useInfVP v.isAux (predVGen v.isAux v) ;
---    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! CPl ;
-
-    N2 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ;
-    N3 = \n -> n.s ! Sg ! Nom ++ n.c2.s ! CPl ++ n.c3.s ! CPl ;
+    V2V = \v -> useInfVP v.isAux (predVGen v.isAux v) ++ v.c2.s ! GPl ;
 
     Conj = \c -> c.s1 ++ c.s2 ;
 
     Det = \det -> det.s ! False ! Masc ! Nom ;
-    Prep = \prep -> case prep.t of {isContracting => prep.s ! CSg Masc ;
-                                    _ => prep.s ! CPl } ;
+    Prep = \prep -> case prep.t of {isPrepDefArt => prep.s ! GSg Masc ;
+                                    _ => prep.s ! GPl } ;
 
 }

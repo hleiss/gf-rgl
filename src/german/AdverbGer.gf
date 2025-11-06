@@ -12,7 +12,7 @@ concrete AdverbGer of Adverb = CatGer ** open ResGer, Prelude in {
 
     PrepNP prep np = {s = appPrepNP prep np} ;
 
-    AdAdv ada adv = adv ** {s = ada.s ++ adv.s} ;
+    AdAdv = cc2 ;
 
     PositAdAAdj a = {s = a.s ! Posit ! APred} ;
 
