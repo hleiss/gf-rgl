@@ -83,7 +83,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
       in {
       s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3
                   ++ vp.a2 ++ agent ++ vp.adj ++ vp.inf.inpl.p2
-                  ++ vp.c2.s ! GPl                      -- junk if not TV
+                  ++ vp.c2.s ! CPl                      -- junk if not TV
                   ++ vp.ext ++ (vp.inf.extr ! a) ++ vp.s.s ! VPastPart af ;
       s2 = \\_ => [] ;
       isPre = True ;
@@ -273,7 +273,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
       \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
       let
-        obj : Agr => Str = \\a => prep.s ! GPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
+        obj : Agr => Str = \\a => prep.s ! CPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
       in vp ** {
         nn = \\a =>
           let vpnn = vp.nn ! a in
@@ -332,11 +332,10 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 
   lin
     VPass v =
-      let vp = predV werdenPass
-      in vp ** {subj = esSubj ;
-		inf = vp.inf ** {s = v.s ! VPastPart APred } } ; -- construct the formal clause
+      let vp = predV werdenPass -- construct the formal clause
+      in (insertObj (\\_ => v.s ! VPastPart APred) vp) ** {subj = esSubj} ;
 
-    AdvFor adv fcl = fcl ** {a2 = adv.s} ;
+    AdvFor adv fcl = fcl ** {a2 = fcl.a2 ++ adv.s} ;
 	
     FtoCl cl =
       let subj = mkSubject cl.subj cl.c1
@@ -366,7 +365,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
           verb  = vps.s  ! ord ! agr2vagr agr ! VPFinite m t a ;
           neg   = vp.a1 ++ negation ! b ; -- HL 8/19 vp.a1 ! b ;
           obj1  = (vp.nn ! agr).p1 ;
-          obj2  = (vp.nn ! agr).p2 ++ (vp.nn ! agr).p3 ;
+          obj2  = (vp.nn ! agr).p2 ++ (vp.nn ! agr).p3 ++ (vp.nn ! agr).p4 ;
           compl = obj1 ++ neg  ++ vp.adj ++ obj2 ++ vp.a2 ; -- adj added
           inf = vp.inf.inpl.p2 ++ verb.inf ;  -- not used for linearisation of Main/Inv
           infExt = vp.inf.extr ! agr ;

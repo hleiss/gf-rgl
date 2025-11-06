@@ -7,8 +7,7 @@ concrete ExtendGer of Extend =
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
       ICompAP, IAdvAdv, CompIQuant, PrepCN,
-      PastPartAP, PastPartAgentAP,
-      PassVPSlash, PassAgentVPSlash,
+      PastPartAP, PastPartAgentAP, PassVPSlash, PassAgentVPSlash,
       AdvIsNP,
       RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, ConjRNP,
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
@@ -192,18 +191,18 @@ concrete ExtendGer of Extend =
 
     ICompAP ap = {
       s = \\_ => "wie" ++ ap.s ! APred ;
-      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext
+      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom ;
       } ;
 
     IAdvAdv adv = {s = "wie" ++ adv.s} ;
 
     CompIQuant iq = {
-      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a))! Nom ;
+      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a)) ! Nom ;
       ext = ""
       } ;
 
     PrepCN prep cn = {
-      s = prep.s ! GPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext} ;
+      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext ++ prep.s2} ;
 
   -- fronted/focal constructions, only for main clauses
 
@@ -225,7 +224,7 @@ concrete ExtendGer of Extend =
       in {
       s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3
                   ++ vp.a2 ++ agent ++ vp.adj ++ vp.inf.inpl.p2
-                  ++ vp.c2.s ! GPl                     -- junk if not TV
+                  ++ vp.c2.s ! CPl                     -- junk if not TV
                   ++ vp.ext ++ (vp.inf.extr ! a) ++ vp.s.s ! VPastPart af ;
       s2 = \\_ => [] ;
       isPre = True ;
@@ -445,7 +444,7 @@ concrete ExtendGer of Extend =
     insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
       \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
       let
-        obj : Agr => Str = \\a => prep.s ! GPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
+        obj : Agr => Str = \\a => prep.s ! CPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
       in vp ** {
         nn = \\a =>
           let vpnn = vp.nn ! a in
