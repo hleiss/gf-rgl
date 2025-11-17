@@ -24,7 +24,7 @@ concrete StructuralGer of Structural = CatGer **
   but_PConj = ss "aber" ;
   by8agent_Prep = P.mkCPrep "durch" P.accusative ;
   by8means_Prep = P.mkCPrep "mit" P.dative ;
-  can8know_VV, can_VV = MorphoGer.auxVV
+  can8know_VV, can_VV = P.auxVV
       (mkV  -- modal verb has no imperative forms "könne,könn(e)t" HL 12/2024
         "können" "kann" "kannst" "kann" "könnt" "könne"
         "konnte" "konntest" "konnten" "konntet"
@@ -74,7 +74,7 @@ concrete StructuralGer of Structural = CatGer **
     sp = \\_,g,c => "viel" + detEnding ! (gennum g Sg) ! c ;  ---- (GSg _ Sg) ! Gen ?
     n = Sg ; a = Strong ; isDef = False ; hasDefArt = False} ;
 
-  must_VV = MorphoGer.auxVV
+  must_VV = P.auxVV
       (mkV  -- modal verb, has no imperative forms "müsse,müsst" HL 12/2024
         "müssen" "muss" "musst" "muss" "müsst" "müsse"
         "musste" "musstest" "mussten" "musstet"
@@ -124,7 +124,7 @@ concrete StructuralGer of Structural = CatGer **
   under_Prep = P.mkCPrep "unter" P.dative ;
   very_AdA = ss "sehr" ;
 
-  want_VV = MorphoGer.auxVV
+  want_VV = P.auxVV
       (mkV  -- modal verb, has no imperative forms "wolle,woll(e)t" HL 12/2024
         "wollen" "will" "willst" "will" "wollt" "wolle"
         "wollte" "wolltest" "wollten" "wolltet"
@@ -133,7 +133,7 @@ concrete StructuralGer of Structural = CatGer **
   we_Pron = mkPronPers "wir" "uns"  "uns"   "unser"  "unser" Fem Pl P1 ;
 
   whatSg_IP = {s = caselist "was" "was" "was" "wessen" ;
-               a = GSg Neutr ; isPron = True} ; -- todo: mit was => womit
+               a = GSg Neutr ; isPron = True} ; -- TODO: mit was => womit
   whatPl_IP = {s = caselist "was alles" "was alles" "was allem" "wessen allem" ;
                a = GSg Neutr ; isPron = True} ; -- Duden 563
 

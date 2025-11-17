@@ -20,14 +20,14 @@ lin
   apartment_N = mkN "Wohnung" ;
   apple_N = reg2N "Apfel" "Äpfel" masculine  ;
   art_N = reg2N "Kunst" "Künste" feminine ;
-  ask_V2Q = mkV2Q (regV "fragen") accPrep ;
+  ask_V2Q = mkV2Q (regV "fragen") accPrep (mkCPrep "nach" dative) ;
   baby_N = reg2N "Baby" "Babies" neuter ; ---- "Kleinkind"
   bad_A = regA "schlecht" ;
   bank_N = reg2N "Bank" "Banken" feminine ;
   beautiful_A = regA "schön" ;
   become_VA = mkVA Irreg.werden_V ;
   beer_N = reg2N "Bier" "Biere" neuter ;
-  beg_V2V = mkV2V (mk6V "bitten" "bittet" "bitte" "bat" "bäte" "gebeten") accPrep ;
+  beg_V2V = mkV2V (mk6V "bitten" "bittet" "bitte" "bat" "bäte" "gebeten") accPrep (mkCPrep "um" accusative);
   big_A = mk3A "groß" "größer" "größte" ;
   bike_N = reg2N "Fahrrad" "Fahrräder" neuter ;
   bird_N = reg2N "Vogel" "Vögel" masculine ;
@@ -101,7 +101,7 @@ lin
   hat_N = reg2N "Hut" "Hüte" masculine ;
   hear_V2 = dirV2 (regV "hören") ;
   hill_N = mkN "Hügel" ;
-  hope_VS = mkVS (regV "hoffen") ;
+  hope_VS = mkVS (regV "hoffen") ** {c2 = aufAcc_Prep} ;
   horse_N = reg2N "Pferd" "Pferde" neuter ;
   hot_A = regA "heiß" ;
   house_N = reg2N "Haus" "Häuser" neuter ;
@@ -228,7 +228,7 @@ lin
   wine_N = mkN "Wein" ;
   win_V2 = dirV2 Irreg.gewinnen_V ;
   woman_N = reg2N "Frau" "Frauen" feminine ;
-  wonder_VQ = mkVQ (reflV (regV "wundern") accusative) ;
+  wonder_VQ = mkVQ (reflV (regV "wundern") accusative) (mkCPrep "über" accusative) ;
   wood_N = reg2N "Holz" "Hölzer" neuter ;
   write_V2 = dirV2 Irreg.schreiben_V ;
   yellow_A = regA "gelb" ;

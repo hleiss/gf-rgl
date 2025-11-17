@@ -133,8 +133,8 @@ oper
     -- NOrd (AMod (GSg Masc) Nom): 0ter,1ter,...,19ter, 20ster,21ster,...,99ster, 100ster
     --                                101ter,...,119ter,120ster,...             , 200ster
     IIDig d i =
-      let isPld : Bool = case d.n of {Sg => False ; _ => True} ;
-          i = lin Digits i ; -- suppress warning missing lock_Digits
+      let i = lin Digits i ; -- suppress warning missing lock_Digits
+          isPld : Bool = case d.n of {Sg => False ; _ => True} ;
           b : Bool = case i.isDig of {True => isPld ; _ => notB i.tail1to19} ;
           i' : Digits = case b of {True => IDig (mkDig (i.s ! invNum ++ BIND ++ "s")) ;
                                    _  => i}

@@ -2,12 +2,13 @@
 -- use the modified files in gf-rgl/src/german
 
 concrete TestLangGer of TestLang = 
-  GrammarGer - [SlashVP,RelSlash,QuestSlash,AdvSlash,SlashPrep,SlashVS,UseSlash]
+  GrammarGer - [RelSlash,AdvSlash,SlashPrep,SlashVS,UseSlash] -- SlashVP,QuestSlash,
   , TestLexiconGer
   , ConstructionGer
-  , ExtraGer[RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP
-               ,RNPList,ConjRNP --,Base_rr_RNP,Base_nr_RNP,Base_rn_RNP,Cons_rr_RNP,Cons_nr_RNP
-    ]
+  , ExtendGer - [PassVPSlash,PastPartAP,
+                   -- Compilerproblem in Compile/GrammarToPGF.hs 220
+                   AdvIsNP,AdvIsNPAP,AdvRAP,BaseComp--,BaseImp
+  ]
   ** open ResGer,Prelude,(P=ParadigmsGer) in {
 
   flags startcat = Phr ; unlexer = text ; lexer = text ;
@@ -179,7 +180,7 @@ gr -tr (PredVP (UsePron ?) (ComplSlash (SlashV2V lassen_V2V (ReflVP (SlashV2a wa
           cls.s ! m ! t ! a ! p ! Sub ! gn ;
       c = cls.c2.c
       } ;
-
+{- old version, new in QuestionGer ?
     QuestSlash ip slash = let gn : GenNum = case ip.n of {Sg => GSg Masc ; _ => GPl} in {
       s = \\m,t,a,p => 
             let 
@@ -190,7 +191,7 @@ gr -tr (PredVP (UsePron ?) (ComplSlash (SlashV2V lassen_V2V (ReflVP (SlashV2a wa
               QIndir => who ++ cls ! Sub ! (RGenNum gn)
               }
       } ;
-
+-}
     AdvSlash slash adv = {
       s  = \\m,t,a,b,o,gn => slash.s ! m ! t ! a ! b ! o ! gn ++ adv.s ;
       c2 = slash.c2

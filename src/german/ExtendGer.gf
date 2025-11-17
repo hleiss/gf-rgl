@@ -14,7 +14,9 @@ concrete ExtendGer of Extend =
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
       CompoundN, DetNPMasc, DetNPFem, UseDAP, UseDAPMasc, UseDAPFem,
       CardCNCard,
-      InOrderToVP
+        InOrderToVP,
+        -- to avoid spurious ambiguities, unimplement the default implementations of:
+        iFem_Pron, UseComp_estar, UseComp_ser
     ]
   with
     (Grammar = GrammarGer) **
@@ -188,17 +190,33 @@ concrete ExtendGer of Extend =
 
 -- Conjunction of copula complements
 
+  lincat
+    [Comp] = {s1,s2 : Agr => Str} ; --ListTable Agr ;
+  lin
+    BaseComp x y = {s1 = \\a => x.s ! a ++ x.ext ! (numberAgr a) ; s2 = \\a => y.s ! a ++ y.ext ! (numberAgr a)} ;
+    ConsComp x xs = {s1 = \\a => x.s ! a ++ x.ext ! (numberAgr a) ++ comma ++ xs.s1 ! a ; s2 = xs.s2} ;
+
+    ConjComp conj ss = {s = \\a => conj.s1 ++ ss.s1 ! a ++ conj.s2 ++ ss.s2 ! a ; ext = \\_ => []} ;
+
 -- Conjunction of imperatives
 
+  lincat
+    [Imp] = {s1,s2 : Polarity => ImpForm => Str} ;
+  lin
+    BaseImp x y = {s1 = \\p,f => x.s ! p ! f ; s2 = \\p,f => y.s!p!f} ;
+    ConsImp x xs = {s1 = \\p,f => x.s ! p ! f ++ comma ++ xs.s1 ! p ! f ; s2 = xs.s2} ;
+    ConjImp conj xs = {s = \\p,f => conj.s1 ++ xs.s1 ! p ! f ++ conj.s2 ++ xs.s2 ! p ! f} ;
+
+  lin
     ICompAP ap = {
       s = \\_ => "wie" ++ ap.s ! APred ;
-      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext
+      ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom ;
       } ;
 
     IAdvAdv adv = {s = "wie" ++ adv.s} ;
 
     CompIQuant iq = {
-      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a))! Nom ;
+      s = \\a => iq.s ! (gennum (genderAgr a) (numberAgr a)) ! Nom ;
       ext = ""
       } ;
 

@@ -28,6 +28,7 @@ concrete CatGer of Cat =
     QCl = {s : Mood => ResGer.Tense => Anteriority => Polarity => QForm => Str} ;
 
     IP = {s : Case => Str ; a : GenNum ; isPron : Bool} ;
+    -- HL 1/2024: [welch(er|e|es) CN]:IP nutzt:V2 (seine|ihre|ihre)!ip.a Vorteile?
     IComp = {s : Agr => Str ; ext : Str} ; 
     IDet = {s : Gender => Case => Str ; n : Number ; a : Adjf} ;
     IQuant = {s : GenNum => Case => Str ; a : Adjf} ;
@@ -99,11 +100,13 @@ concrete CatGer of Cat =
 
 -- Open lexical classes, e.g. Lexicon
 
-    V, VA, VS, VQ = Verb ; -- = {s : VForm => Str} ;
-    VV = Verb ** {isAux : Bool} ;
-    V2, V2A, V2S, V2Q = Verb ** {c2 : Preposition} ;
-    V2V = Verb ** {c2 : Preposition ; isAux : Bool ; objCtrl : Bool} ;
+    V, VA = Verb ; -- = {s : VForm => Str} ;
+    V2, V2A = Verb ** {c2 : Preposition} ;
+    VS, VQ = Verb ** {c2 : Preposition} ;  -- glaube (dar-an , dass s | an np)
+    VV = Verb ** {isAux : Bool ; c2 : Preposition} ; -- hoffe dar-auf , zu tun
     V3 = Verb ** {c2, c3 : Preposition} ;
+    V2S, V2Q = Verb ** {c2,c3 : Preposition ; isAux : Bool} ;
+    V2V = Verb ** {c2,c3 : Preposition ; isAux : Bool ; objCtrl : Bool} ;
 
     A  = Adjective ; -- = {s : Degree => AForm => Str} ;
     A2 = Adjective ** {c2 : Preposition} ;

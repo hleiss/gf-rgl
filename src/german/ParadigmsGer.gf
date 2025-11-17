@@ -236,7 +236,7 @@ mkN : overload {
     mkPrep : Case -> Str -> Prep ;        -- postposition, e.g. genitive + "wegen"
     mkPrep : Str -> Case -> Str -> Prep ; -- circumposition, e.g. "um" + accusative + "herum"
     mkPrep : Str -> Str -> Str -> Str -> Case -> Prep ; -- prep contracted with defArtSg
-    -- e.g. "auf" "auf den" "auf die" "aufs" + accusative
+    -- e.g. "auf" "auf den" "auf die" "aufs" + accusative, and with RP.s ! RSentence, e.g. wo-r-auf
     } ;
 
   mkCPrep : overload { -- preposition contracting with relative pronoun ! RSentence
@@ -260,6 +260,13 @@ mkN : overload {
   inDat_Prep  : Prep ; -- in + dative, with contraction im
   inAcc_Prep  : Prep ; -- in + accusative, with contraction ins
   aufAcc_Prep : Prep ; -- auf + accusative, with contraction aufs
+
+--2 Conjunctions
+
+  mkConj : overload {
+    mkConj : Str -> Conj ;
+    mkConj : Str -> Str -> Conj ;  -- weder x noch y
+    } ;
 
 --2 Verbs
 
@@ -375,10 +382,12 @@ mkV2 : overload {
   mkV2S : overload {
     mkV2S : V -> V2S ;          -- e.g. antworte jmdm, dass S
     mkV2S : V -> Prep -> V2S ;  -- e.g. berichte an jmdn, dass S
+    mkV2S : V -> Prep -> Prep -> V2S ;  -- e.g. berichte an jmdn, [da-von , dass S | von NP]
     } ;
   mkV2Q : overload {
     mkV2Q : V -> V2Q ;          -- e.g. frage jmdn, ob S
-    mkV2Q : V -> Prep -> V2Q ;
+    mkV2Q : V -> Prep -> V2Q ;          -- e.g. erkundige mich bei jmdm, ob S
+    mkV2Q : V -> Prep -> Prep -> V2Q ;  -- e.g. erkundige mich bei jmdm da-nach, ob S
     } ;
 
 
@@ -390,7 +399,10 @@ mkV2 : overload {
     mkVA : V -> Prep -> VA ;
     } ;
     
-  mkVQ  : V -> VQ ;              -- e.g. frage mich, ob S
+  mkVQ  : overload {
+    mkVQ : V -> VQ ;              -- e.g. frage mich, ob S
+    mkVQ : V -> Prep -> VQ ;      -- e.g. wundere mich darüber , weshalb S
+    } ;
 
 
   mkAS  : A -> AS ; --%
@@ -655,6 +667,11 @@ mkV2 : overload {
            CAdvPron => da ; CIPron => wo} ;
 
 
+  mkConj = overload {
+    mkConj : Str -> Conj = \s -> lin Conj {s1 = s ; s2 = [] ; n = Pl} ;
+    mkConj : Str -> Str -> Conj = \s,t -> lin Conj {s1 = s ; s2 = t ; n = Pl} ;
+    } ;
+
   mk6V geben gibt gib gab gaebe gegeben = 
     let
       geb   = stemVerb geben ;
@@ -726,10 +743,15 @@ mkV2 : overload {
   dirV3 v p = mkV3 v accPrep p ;        -- accPrep, datPrep have t=isCase
   accdatV3 v = mkV3 v datPrep accPrep ; -- to fit to Eng ditransitives (no preposition): 
                                         -- give sb(indir) sth(dir) = geben jmdm(dat) etwas(acc)
-  mkVS v = v ** {lock_VS = <>} ;
-  mkVQ v = v ** {lock_VQ = <>} ;
-  mkVV v = v ** {isAux = False ; lock_VV = <>} ;
-  auxVV v = v ** {isAux = True ; lock_VV = <>} ;
+  mkVS v = v ** {c2 = accPrep ; lock_VS = <>} ;
+  mkVQ = overload {
+    mkVQ : V -> VQ
+      = \v -> v ** {c2 = accPrep ; lock_VQ = <>} ;
+    mkVQ : V -> Prep -> VQ
+      = \v,p -> v ** {c2 = p ; lock_VQ = <>} ;
+    } ;
+  mkVV v = v ** {c2 = accPrep ; isAux = False ; lock_VV = <>} ;
+  auxVV v = v ** {c2 = accPrep ; isAux = True ; lock_VV = <>} ;
 
   V0 : Type = V ;
   AS, A2S, AV : Type = A ;
@@ -739,15 +761,17 @@ mkV2 : overload {
 
   mkV2V = overload { -- default: object-control
     mkV2V : V -> V2V
-      = \v -> dirV2 v ** {isAux = False ; objCtrl = True ; lock_V2V = <>} ;  -- ermahne jmdn, sich zu waschen
+      = \v -> dirV2 v ** {c3 = accPrep ; isAux = False ; objCtrl = True ; lock_V2V = <>} ;  -- ermahne jmdn, sich zu waschen
     mkV2V : V -> Prep -> V2V
-      = \v,p -> prepV2 v p ** {isAux = False ; objCtrl = True ; lock_V2V = <>} ;
+      = \v,p -> prepV2 v p ** {c3 = accPrep ; isAux = False ; objCtrl = True ; lock_V2V = <>} ;
+    mkV2V : V -> Prep -> Prep -> V2V
+      = \v,p,q -> prepV2 v p ** {c3 = q ; isAux = False ; objCtrl = True ; lock_V2V = <>} ;
     } ;
   auxV2V = overload {
     auxV2V : V -> V2V
-      = \v -> dirV2 v ** {isAux = True ; objCtrl = True ; lock_V2V = <>} ;  -- lasse jmdn sich waschen
+      = \v -> dirV2 v ** {c3 = accPrep ; isAux = True ; objCtrl = True ; lock_V2V = <>} ;  -- lasse jmdn sich waschen
     auxV2V : V -> Prep -> V2V
-      = \v,p -> prepV2 v p ** {isAux = True ; objCtrl = True ; lock_V2V = <>} ;
+      = \v,p -> prepV2 v p ** {c3 = accPrep ; isAux = True ; objCtrl = True ; lock_V2V = <>} ;
     } ;
   subjV2V v = v ** {objCtrl = False} ;
 
@@ -758,15 +782,19 @@ mkV2 : overload {
     } ;
   mkV2S = overload {
     mkV2S : V -> V2S 
-      = \v -> dirV2 v ** {isAux = False ; lock_V2S = <>} ;
+      = \v -> dirV2 v ** {c3 = accPrep ; isAux = False ; lock_V2S = <>} ;
     mkV2S : V -> Prep -> V2S
-      = \v,p -> prepV2 v p ** {isAux = False ; lock_V2S = <>} ;
+      = \v,p -> prepV2 v p ** {c3 = accPrep ; isAux = False ; lock_V2S = <>} ;
+    mkV2S : V -> Prep -> Prep -> V2S
+      = \v,p,q -> prepV2 v p ** {c3 = q ; isAux = False ; lock_V2S = <>} ;
     } ;
   mkV2Q = overload {
     mkV2Q : V -> V2Q
-      = \v -> dirV2 v ** {isAux = False ; lock_V2Q = <>} ;
+      = \v -> dirV2 v ** {c3 = accPrep ; isAux = False ; lock_V2Q = <>} ;
     mkV2Q : V -> Prep -> V2Q
-      = \v,p -> prepV2 v p ** {isAux = False ; lock_V2Q = <>} ;
+      = \v,p -> prepV2 v p ** {c3 = accPrep ; isAux = False ; lock_V2Q = <>} ;
+    mkV2Q : V -> Prep -> Prep -> V2Q
+      = \v,p,q -> prepV2 v p ** {c3 = q ; isAux = False ; lock_V2Q = <>} ;
     } ;
 
   mkVA = overload {

@@ -142,28 +142,6 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
             <Acc, isCase> => Nom ; _ => v.c2.c}
       in insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass) ** { c1 = v.c2 ** {c = c} } ;
 
-{- HL: The construction VPSlashPrep : VP -> Prep -> VPSlash does not exist
-   in German. In abstract/Verb.gf, the example
-
-    VPSlashPrep : VP -> Prep -> VPSlash ;  -- live in (it)
-
-   (with live_V:V) indicates that, here, you consider Prep=AdvSlash,
-   so to speak, for building a compact version of relative clauses:
-
-        the city we live in : NP
-
-   from  "we live (in the city : Adv) : Cl"
-
-   In German we cannot move the NP part of an Adv, we only have the
-   full relative clauses like
-
-        die Stadt, in der wir leben,
-        die Stadt, worin wir leben,    --contracted Prep+Rel
-
-   But: VPSlashPrep is used to parse "sie ist mit mir verheiratet", 
-              (ist verheiratet:VP mit:Prep):VPSlash,
-        ComplA2 is used to parse "sie ist verheiratet mit mir"
--}
     VPSlashPrep vp prep = vp ** {c2 = prep ; objCtrl = False} ;
 
 }

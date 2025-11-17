@@ -1,12 +1,13 @@
---# -path=.:../../src/abstract:../../src/common:../../src/api:../../src/prelude:../../src/english
--- --# -path=.:../abstract:../common:../api:../prelude
+--# -path=.:../../src/abstract:../../src/common:../../src/api:../../src/prelude:../../src/english:../../src/german:
 
 concrete TestLangEng of TestLang = 
   GrammarEng
   , TestLexiconEng
   , ConstructionEng
-  , ExtendEng[PastPartAP,PassVPSlash,
-              RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP,AdvRNP,ReflA2RNP,PossPronRNP,ReflPossPron]
+  , ExtendEng[
+    PresPartAP,PastPartAP,PastPartAgentAP,PassVPSlash
+      ,RNP,ReflRNP,ReflPron,ReflPoss,PredetRNP,AdvRNP,ReflA2RNP,PossPronRNP,ReflPossPron
+    ]
   ** open (R=ResEng), (P=ParadigmsEng), Prelude --, (E=ExtendEng)
   in {
 
