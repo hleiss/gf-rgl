@@ -151,7 +151,7 @@ concrete CatGer of Cat =
     Conj = \c -> c.s1 ++ c.s2 ;
 
     Det = \det -> det.s ! False ! Masc ! Nom ;
-    Prep = \prep -> case prep.t of {isContracting => prep.s ! CSg Masc ;
-                                    _ => prep.s ! CPl } ;
+    Prep = \prep -> case prep.t of {isPrep => prep.s ! CSg Masc ++ "..." ++ prep.s2 ;
+                                    _ => prep.s ! CPl ++ "..." ++ prep.s2} ;
 
 }

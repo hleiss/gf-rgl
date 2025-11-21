@@ -168,11 +168,18 @@ lin
 --  mit_Prep   = mkPrep "mit" dative ;
   wegen_Prep = mkCPrep "wegen" dative ;
   wegen2_Prep = mkCPrep [] genitive "wegen" ;          -- postposition
+{-
   entlang_Prep  = mkPrep "entlang" genitive ;
   entlang2_Prep = mkPrep accusative "entlang" ;
   ueber3_Prep   = mkPrep accusative "über" ;
   um_herum_Prep = mkPrep "um" accusative "herum" ; -- circumposition
   von_aus_Prep  = mkPrep "von" dative "aus" ;
+-}
+  entlang_Prep  = mkCPrep "entlang" genitive ;
+  entlang2_Prep = mkCPrep accusative "entlang" ;
+  ueber3_Prep   = mkCPrep accusative "über" ;
+  um_herum_Prep = mkCPrep "um" accusative "herum" ; -- circumposition
+  von_aus_Prep  = mkCPrep "von" dative "aus" ;
 
   -- Contracted Prepositions (Relativparticle, Duden 610, RAdv)
 
@@ -192,7 +199,7 @@ lin
   -- in_Prep = mkCPrep "in" "im" "in der" "im" dative ;
   -- ins_Prep = mkCPrep "in" "in den" "in die" "ins" accusative ;
   ins_Prep = {s = prepForms "in" "in den" "in die" "ins" "darein" "worein" ;
-              s2 = [] ; c = accusative ; t = R.isContracting} ;
+              s2 = [] ; c = accusative ; t = R.isPrep} ; -- isContracting
   in_hinein_Prep = mkCPrep "in" accusative "hinein" ;
   mit_Prep = mkCPrep "mit" dative ;
   nach_Prep = mkCPrep "nach" dative ;

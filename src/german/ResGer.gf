@@ -454,7 +454,7 @@ resource ResGer = ParamX ** open Prelude in {
   -- e.g. in+Dat: in dem CN => im CN ; in da => darin ; in wo => worin
   --      Gen+wegen: des CN!Gen wegen ; des(sen) wegen => deswegen ; wes(sen) wegen => weswegen
   param
-    PrepType = isCase | isPrep | isContracting ;
+    PrepType = isCase | isPrep ;
     PrepForm = CPl | CSg Gender | CAdvPron | CIPron ;
 
   oper
@@ -484,7 +484,7 @@ resource ResGer = ParamX ** open Prelude in {
       g : Gender = genderAgr np.a ;
       n : Number = numberAgr np.a ;
       b = case <prep.t,n,np.w> of {
-        <isContracting,Sg,WDefArt> => True ; -- e.g. "zum Hof|zur Tür|zum Fenster herein"
+        <isPrep,Sg,WDefArt> => True ; -- e.g. "zum Hof|zur Tür|zum Fenster herein"
         _ => False} ;                        -- e.g. "auf dem Hof|auf der Tür|auf dem Fenster"
       f = case b of {True => CSg g ; _ => CPl} ;
     in
@@ -504,7 +504,7 @@ resource ResGer = ParamX ** open Prelude in {
         \\gn => prep.s ! CPl ++ np.s ! gn ! prep.c ++ prep.s2
     in
     case <prep.t, np.a> of {
-      <isContracting, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
+      <isPrep, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
                                        -- RGenNum (GSg Neutr) => prep.s ! CIPron ;
                                        gn => uncontracted ! gn} ;
       _ => uncontracted
@@ -533,7 +533,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   vonDat  : Preposition = {s=table{CPl => "von" ; CSg Fem => "von der" ; CSg _ => "vom" ;
                                    CAdvPron => "davon" ; CIPron => "wovon"};
-                           s2=[]; c=Dat; t=isContracting} ;
+                           s2=[]; c=Dat; t=isPrep} ;
 
 -- To build passive: accusative object -> nom subject; others -> same case or prep
 
@@ -780,7 +780,7 @@ resource ResGer = ParamX ** open Prelude in {
      vtype = VAct 
     } ;
 
-  auxVV : Verb -> Verb ** {isAux : Bool} = \v -> v ** {isAux = True} ;
+--  auxVV : Verb -> Verb ** {isAux : Bool} = \v -> v ** {isAux = True} ;
 
   negation : Polarity => Str = table {
       Pos => [] ;
@@ -804,7 +804,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertObjNP : NP -> Preposition -> VPSlash -> VPSlash = \np,prep,vp ->
     let obj = appPrepNP prep np ;
-        b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
+        b : Bool = case prep.t of {isPrep => True ; _ => False} ;
         w = np.w ;
         c = prep.c
     in insertObj' obj b w c vp ;

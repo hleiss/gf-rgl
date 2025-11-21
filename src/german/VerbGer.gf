@@ -95,7 +95,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
    --     insertObjNP np v.c2 (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl}) ;
      let prep = v.c2 ;
          obj = appPrep prep (np.s!False) ; -- simplify: no glueing of prep+DefArt, HL 8/22
-         b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
+         b : Bool = case prep.t of {isPrep => True ; _ => False} ;
          c = prep.c ;
          w = np.w ;
          vps = (ComplVV v vp ** {c2 = vp.c2 ; objCtrl = vp.objCtrl})

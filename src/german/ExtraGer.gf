@@ -345,7 +345,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
 
   oper
     mkCor : Preposition -> Str = \p ->
-      case p.t of {isContracting => p.s ! CAdvPron ; _ => "es" } ; -- | "das"} ;
+      case p.t of {isPrep => p.s ! CAdvPron ; _ => "es" } ; -- | "das"} ;
   lin
     -- correlate for sentential subject (SC)
     CorPredSCVP sc vp = mkClause "es" (agrP3 Sg) (insertExtrapos sc.s vp) ;
@@ -529,7 +529,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
     NS, NQ, NV = Noun ** {c2 : Preposition} ; -- to replace SentCN : CN -> SC -> CN
   oper
     mkCorN : Preposition -> Str = \p ->
-      case p.t of {isContracting => p.s ! CAdvPron ; _ => "" } ;
+      case p.t of {isPrep => p.s ! CAdvPron ; _ => "" } ;
   lin
     -- Constructions for sentential complementations of nouns
     UseNS ns = {
@@ -673,7 +673,7 @@ concrete ExtraGer of ExtraGerAbs = CatGer **
       isPre = False -- True?
     } ;
   CorSentA2 a2 sc =
-    let cor : Str = case a2.c2.t of {isContracting => a2.c2.s ! CAdvPron ; _ => []}
+    let cor : Str = case a2.c2.t of {isPrep => a2.c2.s ! CAdvPron ; _ => []}
     in {
       s = \\a => cor ++ a2.s ! Posit ! a ;
       ext = comma ++ sc.s ;

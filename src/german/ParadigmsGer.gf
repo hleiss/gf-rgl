@@ -559,7 +559,7 @@ mkV2 : overload {
 
 -- If only the genitive differs, two strings are needed.
 
-    mkSN : (nom,gen : Str) -> SN = \nom,gen -> lin SN {s = \\_ => (mk2PN nom gen Masc).s} ;  -- name with other genitive
+    mkSN : (nom,gen : Str) -> SN = \nom,gen -> lin SN {s = \\_ => (mk2PN nom gen Masc).s} ;  -- name  with other genitive
 
 -- In the worst case, all four forms are needed.
 
@@ -598,15 +598,21 @@ mkV2 : overload {
   mkPrep = overload {
     mkPrep : Case -> Prep = \c ->
       {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase ; lock_Prep = <>} ;
-    mkPrep : Str -> Case -> Prep = \s,c ->
-      {s = \\_ => s ; s2 = [] ; c = c ; t = isPrep ; lock_Prep = <>} ;
-    mkPrep : Case -> Str -> Prep = \c,s ->
-      {s = \\_ => [] ; s2 = s ; c = c ; t = isPrep ; lock_Prep = <>} ;
-    mkPrep : Str -> Case -> Str -> Prep = \s,c,t ->
-      {s = table{CAdvPron => s ++ artDef ! GSg Neutr ! c ;
-                 CIPron => s ++ (caselist "was" "was" "wem" "wessen") ! c ;
-                 _ => s} ;
-       s2 = t ; c = c ; t = isPrep ; lock_Prep = <>} ;
+    mkPrep : Str -> Case -> Prep = \p,c ->
+      {s = case c of {Acc => prepForms p (p ++ "den") (p ++ "die") (p ++ "das") [] [] ;
+                      Dat => prepForms p (p ++ "dem") (p ++ "der") (p ++ "dem") [] [] ;
+                      _Gen => prepForms p (p ++ "des") (p ++ "der") (p ++ "des") [] [] } ;
+       s2 = [] ; c = c ; t = isPrep ; lock_Prep = <>} ;
+    mkPrep : Str -> Case -> Str -> Prep = \p,c,q ->
+      {s = case c of {Acc => prepForms p (p ++ "den") (p ++ "die") (p ++ "das") ("da"+q) ("wo"+q) ;
+                      Dat => prepForms p (p ++ "dem") (p ++ "der") (p ++ "dem") [] [] ;
+                      _Gen => prepForms p (p ++ "des") (p ++ "der") (p ++ "des") [] [] } ;
+       s2 = q ; c = c ; t = isPrep ; lock_Prep = <>} ;
+    mkPrep : Case -> Str -> Prep = \c,q -> -- TODO
+      {s = case c of {Acc => prepForms q "den" "die" "das" ("da"+q) ("wo"+q) ; -- da-entlang
+                      Dat => prepForms q "dem" "der" "dem" [] [] ;
+                      _Gen => prepForms q "des" "der" "des" [] [] } ;  -- ; des-wegen
+       s2 = q ; c = c ; t = isPrep ; lock_Prep = <>} ;
     mkPrep : Str -> Str -> Str -> Str -> Case -> Prep = \s,masc,fem,neutr,c ->
       mkCPrep s masc fem neutr c ;
     } ;
@@ -627,12 +633,12 @@ mkV2 : overload {
   mkCPrep = overload {
     mkCPrep : Str -> Str -> Str -> Str -> Case -> Prep = \s,masc,fem,neutr,c ->
       {s = pflist s masc fem neutr ;
-       s2 = [] ; c = c ; t = isContracting ; lock_Prep = <>} ;
+       s2 = [] ; c = c ; t = isPrep ; lock_Prep = <>} ;
     mkCPrep : Str -> Case -> Prep = \p,c ->
       {s = case c of {Acc => pflist p (p ++ "den") (p ++ "die") (p ++ "das") ;
                       Dat => pflist p (p ++ "dem") (p ++ "der") (p ++ "dem") ;
                       _   => pflist p (p ++ "des") (p ++ "der") (p ++ "des")} ;
-       s2 = [] ; c = c ; t = isContracting ; lock_Prep = <>
+       s2 = [] ; c = c ; t = isPrep ; lock_Prep = <>
       } ;
     mkCPrep : Str -> Case -> Str -> Prep = \p,c,post ->
       {s = let dawo = pronAdvs post ;
@@ -642,7 +648,13 @@ mkV2 : overload {
          Acc => prepForms p (p++"den") (p++"die") (p++"das") darauf worauf ;
          Dat => prepForms p (p++"dem") (p++"der") (p++"dem") darauf worauf ;
          _   => prepForms p (p++"des") (p++"der") (p++"des") darauf worauf} ;
-       s2 = post ; c = c ; t = isContracting ; lock_Prep = <>
+       s2 = post ; c = c ; t = isPrep ; lock_Prep = <>
+      } ;
+    mkCPrep : Case -> Str -> Prep = \c,p ->
+      {s = case c of {Acc => prepForms [] "den" "die" "das" [] [] ;
+                      Dat => prepForms [] "dem" "der" "dem" [] [] ;
+                      _   => prepForms [] "des" "der" "des" ("des"+p) ("wes"+p)} ;
+       s2 = p ; c = c ; t = isPrep ; lock_Prep = <>
       }
     } ;
   pronAdvs : Str -> Str * Str = \auf ->    -- da|wo-rauf|mit, des|wes-halb|wegen
