@@ -780,7 +780,7 @@ resource ResGer = ParamX ** open Prelude in {
      vtype = VAct 
     } ;
 
---  auxVV : Verb -> Verb ** {isAux : Bool} = \v -> v ** {isAux = True} ;
+  auxVV : Verb -> Verb ** {isAux : Bool} = \v -> v ** {isAux = True} ;
 
   negation : Polarity => Str = table {
       Pos => [] ;

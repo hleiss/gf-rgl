@@ -1,16 +1,14 @@
-concrete StructuralGer of Structural = CatGer ** 
+concrete StructuralGer of Structural =
+  CatGer ** open MorphoGer, MakeStructuralGer, (X = ConstructX),
+                 ParadigmsGer, (I = IrregGer), Prelude in {
+flags
+  optimize=all ; coding=utf8 ;
 
-  open MorphoGer, MakeStructuralGer, (X = ConstructX), 
-       ParadigmsGer, IrregGer, Prelude in {
-
-  flags optimize=all ; coding=utf8 ;
-
-  lin
-
+lin
   above_Prep = mkCPrep "über" dative ;
   after_Prep = mkCPrep "nach" dative ;
 --  all_Predet = {s = appAdj (regA "all") ; c = noCase ; a = PAgNone} ;
-  all_Predet = {s = appAdj (regA "all") ; c = noCase ; a = PAg Pl} ; -- HL 5/2022
+  all_Predet = {s = appAdj (MorphoGer.regA "all") ; c = noCase ; a = PAg Pl} ; -- HL 5/2022
   almost_AdA, almost_AdN = ss "fast" ;
   although_Subj = ss "obwohl" ;
   always_AdV = ss "immer" ;
@@ -23,12 +21,12 @@ concrete StructuralGer of Structural = CatGer **
   but_PConj = ss "aber" ;
   by8agent_Prep = mkCPrep "durch" accusative ;
   by8means_Prep = mkCPrep "mit" dative ;
-  can8know_VV, can_VV = auxVV
+  can8know_VV, can_VV = ParadigmsGer.auxVV (lin V
       (MorphoGer.mkV  -- modal verb has no imperative forms "könne,könn(e)t" HL 12/2024
         "können" "kann" "kannst" "kann" "könnt" "könne"
         "konnte" "konntest" "konnten" "konntet"
         "könnte" "gekonnt" [] 
-        VHaben) ;
+        VHaben)) ;
   during_Prep = mkPrep "während" genitive ; --- no variants in the rgl | mkPrep accusative "über" ;
   either7or_DConj = sd2 "entweder" "oder" ** {n = Sg} ;
   everybody_NP = nameNounPhrase Masc {s = caselist "jeder" "jeden" "jedem" "jedes"} ;
@@ -62,8 +60,8 @@ concrete StructuralGer of Structural = CatGer **
   more_CAdv = X.mkCAdv "mehr" "als" ;
 --  most_Predet = {s = appAdj (regA "meist") ; c = noCase ; a = PAgNone} ;
   most_Predet = {                                                           -- HL 5/2022
-    s = \\n,g,c => let gn = MorphoGer.gennum g n ;
-                      adj = (mkA "viel" "mehr" "meiste").s ! Superl
+    s = \\n,g,c => let gn = gennum g n ;
+                      adj = (ParadigmsGer.mkA "viel" "mehr" "meiste").s ! Superl
                    in
                       MorphoGer.artDef ! gn ! c ++ adj ! (agrAdj Weak gn c) ;
     c = {p = [] ; k = PredCase Gen} ;
@@ -73,12 +71,12 @@ concrete StructuralGer of Structural = CatGer **
     sp = \\_,g,c => "viel" + detEnding ! (gennum g Sg) ! c ;  ---- (GSg _ Sg) ! Gen ?
     n = Sg ; a = Strong ; isDef = False ; hasDefArt = False} ;
 
-  must_VV = auxVV
+  must_VV = ParadigmsGer.auxVV (lin V
       (MorphoGer.mkV  -- modal verb, has no imperative forms "müsse,müsst" HL 12/2024
         "müssen" "muss" "musst" "muss" "müsst" "müsse"
         "musste" "musstest" "mussten" "musstet"
         "müsste" "gemusst" [] 
-        VHaben) ;
+        VHaben)) ;
 ---  one_Quant = DEPREC
   only_Predet = {s = \\_,_,_ => "nur" ; c = noCase ; a = PAgNone} ;
   no_Utt = ss "nein" ;
@@ -103,7 +101,7 @@ concrete StructuralGer of Structural = CatGer **
     } ;
   something_NP = nameNounPhrase Neutr {s = \\_ => "etwas"} ;
   somewhere_Adv = ss "irgendwo" ;
-  that_Quant = let jener : GenNum => Case => Str = \\gn,c => "jen" + detEnding ! gn ! c
+  that_Quant = let jener : GenNum => MorphoGer.Case => Str = \\gn,c => "jen" + detEnding ! gn ! c
     in {s = \\_ => jener ; sp = jener ; a = Weak ; isDefArt,delCardOne = False} ;
 ---b  that_NP = nameNounPhrase Neutr {s = caselist "das" "das" "dem" "dessen"} ; ----
   there_Adv = ss "da" ; --- no variants in the rgl | ss "dort" ;
@@ -113,7 +111,7 @@ concrete StructuralGer of Structural = CatGer **
 ---b  these_NP = {s = caselist "diese" "diese" "diesen" "dieser" ; a = agrP3 Pl} ;
 
   they_Pron = mkPronPers "sie" "sie" "ihnen" "ihrer" "ihr" Fem Pl P3 ;
-  this_Quant = let dieser : GenNum => Case => Str = \\gn,c => "dies" + detEnding ! gn ! c
+  this_Quant = let dieser : GenNum => MorphoGer.Case => Str = \\gn,c => "dies" + detEnding ! gn ! c
     in {s = \\_ => dieser ; sp = dieser ; a = Weak ; isDefArt, delCardOne = False} ;
 ---b  this_NP = nameNounPhrase Neutr {s = caselist "dies" "dies" "diesem" "dieses"} ; ----
 ---b  those_NP = {s = caselist "jene" "jene" "jenen" "jener" ; a = agrP3 Pl} ;
@@ -123,12 +121,12 @@ concrete StructuralGer of Structural = CatGer **
   under_Prep = mkCPrep "unter" dative ;
   very_AdA = ss "sehr" ;
 
-  want_VV = auxVV
-      (MorphoGer.mkV  -- modal verb, has no imperative forms "wolle,woll(e)t" HL 12/2024
+  want_VV = ParadigmsGer.auxVV (lin V
+    (MorphoGer.mkV  -- modal verb, has no imperative forms "wolle,woll(e)t" HL 12/2024
         "wollen" "will" "willst" "will" "wollt" "wolle"
         "wollte" "wolltest" "wollten" "wolltet"
         "wollte" "gewollt" [] 
-        VHaben) ;
+        VHaben)) ;
   we_Pron = mkPronPers "wir" "uns"  "uns"   "unser"  "unser" Fem Pl P1 ;
 
   whatSg_IP = {s = caselist "was" "was" "was" "wessen" ;
@@ -173,6 +171,7 @@ concrete StructuralGer of Structural = CatGer **
 
   language_title_Utt = ss "Deutsch" ;
 
+{- unused in AllGer:
 oper
   asNum : (Gender => Case => Str) -> (Gender => Case => {quant,num:Str}) =
     \tab -> \\g,c => {quant = []; num = tab ! g ! c} ;
@@ -181,6 +180,7 @@ oper
   appAdjDegAdjf : Adjective -> Degree -> Adjf -> GenNum => Case => Str =
     \adj,deg,adjf -> \\gn,c => adj.s ! deg ! (agrAdj adjf gn c) ;
 
-  -- (detLikeAdj b n str).s   = \\g,c => str + adjEnding ! (gennum g n) ! c
-  -- (detUnLikeAdj b n str).s = \\g,c => str + detEnding ! (gennum g n) ! c
+  (detLikeAdj b n str).s   = \\g,c => str + adjEnding ! (gennum g n) ! c
+  (detUnLikeAdj b n str).s = \\g,c => str + detEnding ! (gennum g n) ! c
+-}
 }
