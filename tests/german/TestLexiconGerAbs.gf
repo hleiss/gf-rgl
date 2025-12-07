@@ -1,5 +1,5 @@
 --# -path=.:../../src/german: -- for ExtraGerAbs; verbs partially extracted from DictVerbsGerAbs
-abstract TestLexiconGerAbs = Lexicon, ExtraGerAbs[NS,NV,NQ,V4,VSA] ** {
+abstract TestLexiconGerAbs = Lexicon, CorrelatesGerAbs[NS,NV,NQ,VSA] ** {
 
   -- Verbs
 
@@ -17,6 +17,7 @@ fun
   erstaunen_sV2 : V2 ; -- sentential subject (not enforced)
 
   fragen_VQ : VQ ;
+  fragen_V2 : V2 ;
 
   anklagen_gen_V3 : V3 ;
   erklaeren_dat_V3 : V3 ;
@@ -49,8 +50,8 @@ fun
 
   finden_VSA : VSA ;          -- finde AP, dass S
 
-  kaufen_bei_fuer_V4 : V4 ;
-  mieten_von_fuer_V4 : V4 ;
+  -- kaufen_bei_fuer_V4 : V4 ;
+  -- mieten_von_fuer_V4 : V4 ;
 
   -- Adjectives
 

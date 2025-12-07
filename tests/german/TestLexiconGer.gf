@@ -1,9 +1,12 @@
 --# -path=.:../abstract:../common:../prelude: 
 
 concrete TestLexiconGer of TestLexiconGerAbs = 
-  LexiconGer, ExtraGer[V4,NS,NV,NQ,CorAdv,VSA] **
+  LexiconGer, CorrelatesGer[NS,NV,NQ,CorAdv,VSA] **
   open (R=ResGer), (P=Prelude), ParadigmsGer, (Irreg=IrregGer)
 in {
+
+flags
+  coding = utf8 ;
 
   -- Verbs
 
@@ -23,10 +26,10 @@ oper
 
   mkVSA : V -> VSA = \v -> v ** {lock_VSA = <>} ;
 
-  -- quaternary verbs
-  mkV4 : V -> Prep -> Prep -> Prep -> V4 =
-    \v,p2,p3,p4 -> lin V4 (v ** { c2=p2 ; c3=p3 ; c4=p4 }) ;
-  dirV4 : V -> Prep -> Prep -> V4 = \v,c,d -> mkV4 v accPrep c d ;
+  -- -- quaternary verbs
+  -- mkV4 : V -> Prep -> Prep -> Prep -> V4 =
+  --   \v,p2,p3,p4 -> lin V4 (v ** { c2=p2 ; c3=p3 ; c4=p4 }) ;
+  -- dirV4 : V -> Prep -> Prep -> V4 = \v,c,d -> mkV4 v accPrep c d ;
 
 lin
   aendern_rV = reflV (regV "ändern") accusative ;
@@ -41,7 +44,7 @@ lin
   erstaunen_sV2 = dassV2 (irregV "erstaunen" "erstaunt" "erstaunte" "erstaunte" "erstaunt") accPrep ;
 
   fragen_VQ = mkVQ (regV "fragen") nach_Prep ;
-
+  fragen_V2 = mkV2 (regV "fragen") nach_Prep ;
 
   erklaeren_dat_V3 = mkV3 (irregV "erklären" "erklärt" "erklärte" "erklärte" "erklärt") ;
   anklagen_gen_V3 = dirV3 (prefixV "an" (regV "klagen")) genPrep ;
@@ -88,8 +91,8 @@ lin
 
   -- quaternary verb:
 
-  kaufen_bei_fuer_V4 = dirV4 (regV "kaufen") bei_Prep fuer_Prep ;
-  mieten_von_fuer_V4 = dirV4 (regV "mieten") von_Prep fuer_Prep ;
+  -- kaufen_bei_fuer_V4 = dirV4 (regV "kaufen") bei_Prep fuer_Prep ;
+  -- mieten_von_fuer_V4 = dirV4 (regV "mieten") von_Prep fuer_Prep ;
 
   -- Adjectives
 
