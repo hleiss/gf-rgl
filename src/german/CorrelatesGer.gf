@@ -40,17 +40,37 @@ concrete CorrelatesGer of CorrelatesGerAbs = CatGer **
     CorVQ v = corVP v v.c2 ;
 
   -- correlate for infinitival object           TODO: vfin ++ cor ++ adv ++ neg ++ vinf
-  -- lintype VV now has c2:Preposition;  denke daran, .. zu tun | will *es tun
-    CorComplVV vv vp =                       -- generalizes former EsVV
+
+    -- TODO: exclude correlate for modal verbs, vv.isAux=True: will|kann|muss *es schlafen
+    CorComplVV vv vp =                       -- denke daran, .. zu tun (former EsVV)
       let inf = mkInf False Simul Pos vp ;   -- False = force extraction
           vvp = corVP vv vv.c2
       in
       insertExtrapos vp.ext (insertInf inf vvp) ;
-    CorVV v = corVP v v.c2 ;
+    CorVV v = corVP v v.c2 ;                 -- denke daran ; will es
 
-    -- TODO: use v.objCtrl to exclude es-correlate for vv.isAux=True: will|kann|muss *es schlafen
-    --       wir versprechen|lassen|helfen *es euch , infzu
-    
+    -- -- VS, VQ, VV with nominal object  -- replace by the more general rules that follow
+    -- Compl2VS vs np =
+    --   let vp = (predVc vs ** {objCtrl = False})
+    --   in insertObjNP np vs.c2 vp ;
+    -- Compl2VQ vq np =
+    --   let vp = (predVc vq ** {objCtrl = False})
+    --   in insertObjNP np vq.c2 vp ;
+    -- Compl2VV vq np =
+    --   let vp = (predVc vq ** {objCtrl = False})
+    --   in insertObjNP np vq.c2 vp ;
+    -- For nominal instead of sentential objects, and questions like "what do you know|ask|intend?"
+    UseVS v = lin V2 v ;
+    UseVQ v = lin V2 v ;
+    UseVV v = lin V2 v ;
+
+    UseV2S v = lin V3 v ;  -- V2S with two nominal objects, e.g. glaube dir deine Versprechen
+    UseV2Q v = lin V3 v ;
+    UseV2V v = lin V3 v ;
+
+    -- TODO: exclude es-correlate for vv.isAux=True and where else?
+    --       wir lassen *es euch vp.inf ; wir helfen *es euch , vp.infzu
+    -- But:  wir versprechen (es) euch, vp.infzu ;
     CorSlashV2S v s = (corVPSlash v v.c3) ** {ext = comma ++ conjThat ++ s.s ! Sub} ;
     CorSlashV2Q v q = (corVPSlash v v.c3) ** {ext = comma ++ q.s ! QIndir} ;
     CorV2S v = corVPSlash v v.c3 ;
@@ -73,9 +93,43 @@ concrete CorrelatesGer of CorrelatesGerAbs = CatGer **
       insertExtrapos vp.ext (
         insertInf inf vps) ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
 
--- Interrogatve correlate for sentential object
--- ICorVS : VS -> QVP ;          -- woran glauben
--- PredIQVP : QVP -> NP -> QCl ; -- woran glauben die Kinder
+  -- Interrogatve (and relative) correlate for sentential complement
+  oper
+    mkICor : Preposition -> Str = \p ->
+      case p.t of {isPrep => p.s ! CIPron ; _ => "was" } ;
+
+  -- Questions with interrogative sentential pronoun or correlate "was", "woran" etc.
+  lincat
+    VPSlashS = ResGer.VPSlash ;  -- experimental
+    ClSlashS = {                 -- stolen from ClSlash
+      s : Mood => ResGer.Tense => Anteriority => Polarity => Order => Str ;
+      c2 : Preposition
+      } ;
+
+  lin
+    SlashVSa vs = predVc vs ;
+    SlashVQa vs = predVc vs ;
+    SlashVVa vs = predVc vs ;
+
+    AdvVPSlashS vp adv = vp ** insertAdv adv.s vp ;
+
+    SlashVPSlashS np vp =
+      let sb = mkSubject np vp.c1 in mkClause sb.s sb.a vp ** {c2 = vp.c2} ;
+
+    QuestSlashS cl = {
+      s = \\m,t,a,p =>
+        let cls = cl.s ! m ! t ! a ! p ;
+            what = mkICor cl.c2
+        in table {
+          QDir   => what ++ cls ! Inv ;
+          QIndir => what ++ cls ! Sub }
+      } ;
+
+    Slash2V2S v np =
+      let vps = insertObjNP np v.c2 (predVc v) ** {c2 = v.c3}
+      in lin VPSlashS vps ;
+    ComplSlashS vps s =
+      insertExtrapos (comma ++ conjThat ++ s.s ! Sub) vps ; -- prelim
 
     -- Sentences in conjunctive mood
   lincat

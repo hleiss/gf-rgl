@@ -15,43 +15,59 @@ abstract CorrelatesGerAbs = Cat ** {
     -- interrogative object with correlate
 
     CorComplVQ : VQ -> QS -> VP ;        -- frage danach, wann ihr kommt
-    CorVS : VS -> VP ;                   -- frage es|danach
+    CorVQ : VQ -> VP ;                   -- frage es|danach
 
     -- infinitival object with correlate (not to be used for modal verbs vv.isAux)
 
     CorComplVV : VV -> VP -> VP ;        -- versuche es, ein Lied zu singen (was: EsVV)
     CorVV: VV -> VP ;                    -- versuche es|das
 
+    -- -- VS,VQ,VV with nominal object
+    -- Compl2VS : VS -> NP -> VP ;          -- hoffe auf den Lottogewinn
+    -- Compl2VQ : VQ -> NP -> VP ;          -- wundere mich über deine Frage
+    -- Compl2VV : VV -> NP -> VP ;          -- wage einen Versuch [zu unternehmen] (overgenerates!)
+
+    -- Replace the above three rules by the next more general rules (cf. Backward.gf):
+    -- e.g. Compl2VS v np = ComplSlash (SlashV2a (UseVS hope_VS)) ; but keep VS.c2 : Preposition!
+    UseVS : VS -> V2 ;                   -- know (a secret)
+    UseVQ : VQ -> V2 ;                   -- ask (a question) ; frage (nach einer Auskunft)
+    UseVV : VV -> V2 ;                   -- try (another method)
+
     -- for verbs with nominal and sentential|interrogative object with correlate
 
-    CorSlashV2S : V2S -> S -> VPSlash ;   -- überzeuge (ihn) davon , dass die Sonne scheint
-    CorSlashV2Q : V2Q -> QS -> VPSlash ;  -- frage (ihn) danach , ob die Sonne scheint
-    CorV2S : V2S -> VPSlash ;             -- überzeuge (ihn) davon
-    CorV2Q : V2Q -> VPSlash ;             -- frage (ihn) danach
+    CorSlashV2S : V2S -> S -> VPSlash ;  -- überzeuge (ihn) davon , dass die Sonne scheint
+    CorSlashV2Q : V2Q -> QS -> VPSlash ; -- frage (ihn) danach , ob die Sonne scheint
+    CorV2S : V2S -> VPSlash ;            -- überzeuge (ihn) davon
+    CorV2Q : V2Q -> VPSlash ;            -- frage (ihn) danach
 
-    CorSlashV2V : V2V -> VP -> VPSlash ;  -- bitte (dich) darum , nicht zu schlafen
-    CorV2V : V2V -> VPSlash ;             -- bitte (dich) darum
+    CorSlashV2V : V2V -> VP -> VPSlash ; -- bitte (dich) darum , nicht zu schlafen
+    CorV2V : V2V -> VPSlash ;            -- bitte (dich) darum
 
-{-  With ComplSlash : VPSlash -> NP -> VP, the following can be derived
+    -- Rem. A nominal object can be added by ComplSlash : VPSlash -> NP -> VP 
 
-    -- nominal object plus sentential or interrogative object with correlate 
+    -- To use with nominal instead of sentential object
+    UseV2S : V2S -> V3 ;                -- answer (them) (many questions | what)
+    UseV2Q : V2Q -> V3 ;                -- ask (you) (several questions | what)
+    UseV2V : V2V -> V3 ;                -- promise (you) (my support | what)
 
-    ComplSlash (CorSlashV2S v s) np      -- überzeuge ihn davon , dass ...
-    ComplSlash (CorSlashV2Q v q) np      -- frage ihn danach, wann ihr kommt
-    ComplSlash (CorV2S v) np             -- überzeuge ihn davon
-    ComplSlash (CorV2Q v) np             -- frage ihn danach
-                                              -- pron.switch: antworte es ihm ?
+  -- Questions with interrogatve sentential pronoun "was" (or correlate "woran" etc.)
 
-    -- nominal object plus infinitival object with correlate 
+  cat
+    VPSlashS ;                   -- (NP\Cl)/S, clause missing subject and sentential object
+    ClSlashS ;                   -- Cl/S,      clause missing sentential object
+  fun
+    SlashVSa : VS -> VPSlashS ;                   -- believe (that he lives | in your capabilities)
+    SlashVQa : VQ -> VPSlashS ;                   -- fragen (nach NP | ob S | danach | wonach)
+    SlashVVa : VV -> VPSlashS ;                   -- denke (daran | woran) [zu schlafen]
 
-    ComplSlash (CorSlashV2V v vp) np     -- bitte dich darum , zu arbeiten
-    ComplSlash (CorV2V v) np             -- bitte dich darum
--}
+    AdvVPSlashS : VPSlashS -> Adv -> VPSlashS ;   -- believe strongly
+    SlashVPSlashS : NP -> VPSlashS -> ClSlashS ;  -- John believes (that we sleep)
+    QuestSlashS : ClSlashS -> QCl ;               -- what does John believe ; worauf hoffen wir
+    -- RelSlashS : IP -> ClSlashS -> RCl ;           -- what John believes ; worauf wir hoffen
 
--- Interrogatve correlate for sentential object
--- ICorVS : VS -> QVP ;          -- woran glauben
--- PredIQVP : QVP -> NP -> QCl ; -- woran glauben die Kinder
-
+    Slash2V2S : V2S -> NP -> VPSlashS ;            -- dir antworten (dass .. | was)
+    ComplSlashS : VPSlashS -> S -> VP ;            -- dir antworten , dass wir leben
+                                                   --   Todo: remove ComplVS : VS -> S -> VP
     -- Sentences in conjunctive mood
   cat
     SConj ;
