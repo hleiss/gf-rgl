@@ -95,7 +95,7 @@ lin
   hat_N = regN "hat" ;
   hear_V2 = dirV2 (irregV "hear" "heard" "heard") ;
   hill_N = regN "hill" ;
-  hope_VS = mkVS (regV "hope") ;
+  hope_VS = mkVS (regV "hope") ** {p = "for"} ; -- HL: p=correlate: that S, we hope for
   horse_N = regN "horse" ;
   hot_A = duplADeg "hot" ;
   house_N = regN "house" ;

@@ -363,8 +363,10 @@ mkV2 : overload {
 -- questions, verb phrases, and adjectives.
 
   mkV0  : V -> V0 ; --%
-  mkVS  : V -> VS ;
-
+  mkVS : overload {
+    mkVS : V -> VS ;            -- e.g. [es] glauben, dass S
+    mkVS : V -> Prep -> VS ;    -- e.g. sich [dessen] erinnern, dass S
+    } ;
   mkV2V : overload { -- with zu
     mkV2V : V -> V2V ;          -- object-control verb (zu-inf),  e.g. bitte jmdn, sich auszuruhen
     mkV2V : V -> Prep -> V2V ;  -- object-control verb with prep, e.g. appelliere an jmdn, zu schweigen
@@ -755,12 +757,13 @@ mkV2 : overload {
   dirV3 v p = mkV3 v accPrep p ;        -- accPrep, datPrep have t=isCase
   accdatV3 v = mkV3 v datPrep accPrep ; -- to fit to Eng ditransitives (no preposition): 
                                         -- give sb(indir) sth(dir) = geben jmdm(dat) etwas(acc)
-  mkVS v = v ** {c2 = accPrep ; lock_VS = <>} ;
+  mkVS = overload {
+    mkVS : V -> VS = \v -> v ** {c2 = accPrep ; lock_VS = <>} ;
+    mkVS : V -> Prep -> VS = \v,p -> v ** {c2 = p ; lock_VS = <>} ;
+    } ;
   mkVQ = overload {
-    mkVQ : V -> VQ
-      = \v -> v ** {c2 = accPrep ; lock_VQ = <>} ;
-    mkVQ : V -> Prep -> VQ
-      = \v,p -> v ** {c2 = p ; lock_VQ = <>} ;
+    mkVQ : V -> VQ = \v -> v ** {c2 = accPrep ; lock_VQ = <>} ;
+    mkVQ : V -> Prep -> VQ = \v,p -> v ** {c2 = p ; lock_VQ = <>} ;
     } ;
   mkVV v = v ** {c2 = accPrep ; isAux = False ; lock_VV = <>} ;
   auxVV v = v ** {c2 = accPrep ; isAux = True ; lock_VV = <>} ;

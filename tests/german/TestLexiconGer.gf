@@ -1,7 +1,7 @@
 --# -path=.:../abstract:../common:../prelude: 
 
 concrete TestLexiconGer of TestLexiconGerAbs = 
-  LexiconGer, CorrelatesGer[NS,NV,NQ,CorAdv,VSA] **
+  LexiconGer, CorrelatesGer[NS,NV,NQ,CorAdv,VSA,AS,AV,AQ] **
   open (R=ResGer), (P=Prelude), ParadigmsGer, (Irreg=IrregGer)
 in {
 
@@ -24,12 +24,16 @@ oper
   -- binary verb with sentential subject (not enforced)
   dassV2 : V -> Prep -> V2 = mkV2 ;
 
-  mkVSA : V -> VSA = \v -> v ** {lock_VSA = <>} ;
+  mkVSA : V -> CorrelatesGer.VSA = \v -> v ** {lock_VSA = <>} ;
 
-  -- -- quaternary verbs
+  -- -- quaternary verbs (cf. DictionaryGer) 
   -- mkV4 : V -> Prep -> Prep -> Prep -> V4 =
   --   \v,p2,p3,p4 -> lin V4 (v ** { c2=p2 ; c3=p3 ; c4=p4 }) ;
   -- dirV4 : V -> Prep -> Prep -> V4 = \v,c,d -> mkV4 v accPrep c d ;
+
+  mkAQ : A -> Prep -> AQ = \a,p -> lin AQ (a ** {c2 = p});
+  -- mkAS : A -> Prep -> AS = \a,p -> lin AS (a ** {c2 = p}); -- conflict with ParadigmsGer.mkAS
+  -- mkAV : A -> Prep -> AQ = \a,p -> lin AV (a ** {c2 = p});
 
 lin
   aendern_rV = reflV (regV "ändern") accusative ;
@@ -87,6 +91,11 @@ lin
 
   erwarten_V2 = mkV2 (irregV "erwarten" "erwartet" "erwartete" "erwarte" "erwartet") ;
 
+  -- verb with sentential object
+  erinnern_rVS =
+    mkVS (reflV (irregV "erinnern" "erinnert" "erinnerte" "erinnerte" "erinnert") accusative) genPrep ;
+  trauen_VS = mkVS (regV "trauen") datPrep ;
+
   finden_VSA = mkVSA (irregV "finden" "findet" "fand" "fände" "gefunden")  ;
 
   -- quaternary verb:
@@ -104,6 +113,18 @@ lin
   stolz_A2 = mkA2 (mk3A "stolz" "stolzer" "stolzeste") (mkCPrep "auf" accusative) ;
   ausgehend_A2 = mkA2 (mkA "ausgehend") von_Prep ;
   einhergehend_A2 = mkA2 (mkA "einhergehend") mit_Prep ;
+
+  glad_AS = lin AS (mkA2 (mkA "froh") (mkCPrep "über" accusative)) ;
+  tired_of_AS = lin AS (mkA2 (mkA "überdrüssig") genPrep) ;
+
+  determined_AV = (mkA "entschlossen") ** {c2 = (mkCPrep "zu" dative)} ;
+  eager_AV = (mkA "bestrebt") ** {c2 = accPrep} ;
+
+  uncertain_AQ = mkAQ (mkA "ungewiß" "ungewiss" "ungewisser" "ungewisseste") genPrep ;
+  curious_AQ = mkAQ (mkA "neugierig") aufAcc_Prep ;
+
+  true_A =  mkA "wahr" ;
+  unknown_A = mkA "unbekannt" ;  
 
   -- Adverbs
 
@@ -125,14 +146,18 @@ lin
 
   -- Noun
 
+  alp_N = mkN "Alp" "Alpen" feminine ;
+  belief_N = mkN "Glaube" "Glauben" masculine ;
+  claim_N = mkN "Behauptung" feminine ;
+  hope_N = mkN "Hoffnung" feminine ;
   idea_N = mkN "Idee" "Ideen" feminine ;
   intention_N = mkN "Absicht" "Absichten" feminine ;
-  alp_N = mkN "Alp" "Alpen" feminine ;
-
-  hope_NV = mkN "Hoffnung" feminine ** {c2 = aufs_Prep} ;
-  belief_NS = mkN "Glaube" "Glauben" masculine ** {c2 = an_Prep} ;
+  interesse_N = mkN "Interesse" "Interessen" neuter ;
+  
+  belief_NS = mkN "Glaube" "Glauben" masculine ** {c2 = ans_Prep} ;
   claim_NS = mkN "Behauptung" feminine ** {c2 = accPrep} ;
 
+  hope_NV = mkN "Hoffnung" feminine ** {c2 = aufs_Prep} ;
   intention_NV = mkN "Absicht" "Absichten" feminine ** {c2 = zu_Prep} ;
   interesse_NV = mkN "Interesse" "Interessen" neuter ** {c2 = an_Prep} ;
 
@@ -171,20 +196,13 @@ lin
 --  mit_Prep   = mkPrep "mit" dative ;
   wegen_Prep = mkCPrep "wegen" dative ;
   wegen2_Prep = mkCPrep [] genitive "wegen" ;          -- postposition
-{-
-  entlang_Prep  = mkPrep "entlang" genitive ;
-  entlang2_Prep = mkPrep accusative "entlang" ;
-  ueber3_Prep   = mkPrep accusative "über" ;
-  um_herum_Prep = mkPrep "um" accusative "herum" ; -- circumposition
-  von_aus_Prep  = mkPrep "von" dative "aus" ;
--}
   entlang_Prep  = mkCPrep "entlang" genitive ;
   entlang2_Prep = mkCPrep accusative "entlang" ;
   ueber3_Prep   = mkCPrep accusative "über" ;
-  um_herum_Prep = mkCPrep "um" accusative "herum" ; -- circumposition
+  um_herum_Prep = mkCPrep "um" accusative "herum" ;    -- circumposition
   von_aus_Prep  = mkCPrep "von" dative "aus" ;
 
-  -- Contracted Prepositions (Relativparticle, Duden 610, RAdv)
+  -- Contracted Prepositions (Relativparticle, Duden 610, RAdv), with correlate
 
 lin
   an_Prep = mkCPrep "an" "am" "an der" "am" dative ;

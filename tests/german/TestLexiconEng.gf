@@ -3,7 +3,8 @@
 -- translations and corresponding c2,c3,c4-objects under Slash?V3, Slash?V4.
 
 concrete TestLexiconEng of TestLexiconGerAbs = 
-  LexiconEng, ExtraGerEng[V4,NV] ** open (R=ResEng), (P=Prelude), ParadigmsEng, (I=IrregEng)
+  LexiconEng-[hope_VS], CorrelatesEng[NS,NV,NQ,VSA,AS,AV,AQ,A] **
+  open (R=ResEng), (P=Prelude), ParadigmsEng, (I=IrregEng)
 in {
 
 oper
@@ -14,11 +15,13 @@ oper
   reflV3 v p q = mkV3 (reflV v) p q ;
 
   -- quaternary verbs:
-  mkV4 : V -> Prep -> Prep -> Prep -> V4 = 
-         \v,p2,p3,p4 -> lin V4 (v ** { c2=p2.s ; c3=p3.s ; c4=p4.s }) ;
-  dirV4 : V -> Prep -> Prep -> V4 = \v,c,d -> mkV4 v noPrep c d ;
+  -- mkV4 : V -> Prep -> Prep -> Prep -> V4 =
+  --        \v,p2,p3,p4 -> lin V4 (v ** { c2=p2.s ; c3=p3.s ; c4=p4.s }) ;
+  -- dirV4 : V -> Prep -> Prep -> V4 = \v,c,d -> mkV4 v noPrep c d ;
   -- control verbs:
   defaultV2V : V -> V2V = \v -> lin V2V (dirV2 v ** {c3=[] ; typ = R.VVInf}) ;
+
+  mkAQ : A -> AQ = \a -> lin AQ a ;
 
 lin
   aendern_rV = (regV "change") ;
@@ -34,9 +37,15 @@ lin
   merken_rV2 = dirV2 (regV "remember") ;
   erstaunen_sV2 = dirV2 (mkV "astonish" "astonishes" "astonished" "astonished" "astonishing") ;
 
+  fragen_VQ = mkVQ (mkV "ask" "asks" "asked" "asked" "asking") ;
+  fragen_V2 = mkV2 (mkV "ask" "asks" "asked" "asked" "asking") (mkPrep "for") ;
+
   anklagen_gen_V3 = dirV3 (regV "accuse") (mkPrep "of") ;
   erklaeren_dat_V3 = dirV3 (regV "explain") (mkPrep "to") ;
   erinnern_an_V3 = dirV3 (regV "remind") (mkPrep "of") ;
+  erinnern_an_V2S = mkV2S (regV "remind") (mkPrep "of") ; ----
+  erinnern_an_V2V = mkV2V (regV "remind") noPrep (mkPrep "to") ;
+  
   write_to_V3 = dirV3 (irregV "write" "wrote" "written") toP ;
   danken_dat_fuer_V3 = dirV3 (regV "thank") (mkPrep "for") ;
   debattieren_mit_ueber_V3 = mkV3 (regV "debate") (mkPrep "with") (mkPrep "about") ;
@@ -48,8 +57,8 @@ lin
   entschuldigen_bei_fuer_rV3 = mkV3 (regV "apologize") (mkPrep "to") (mkPrep "for") ; 
   raechen_am_fuer_rV3 = mkV3 (regV "revenge") (mkPrep "on") (mkPrep "for") ; 
 
-  kaufen_bei_fuer_V4 = dirV4 (irregV "buy" "bought" "bought") (mkPrep "from") (mkPrep "for") ;
-  mieten_von_fuer_V4 = dirV4 (regV "rent") (mkPrep "from") (mkPrep "for") ;
+  -- kaufen_bei_fuer_V4 = dirV4 (irregV "buy" "bought" "bought") (mkPrep "from") (mkPrep "for") ;
+  -- mieten_von_fuer_V4 = dirV4 (regV "rent") (mkPrep "from") (mkPrep "for") ;
 
   wagen_VV = mkVV (regV "dare") ;                       -- typ=VVInf
   versuchen_VV = mkVV (irregV "try" "tried" "tried") ;  -- typ=VVInf
@@ -66,6 +75,8 @@ lin
 
   erwarten_V2 = mkV2 (mkV "expect") ;
 
+--  hope_VS = mkVS (mkV "hope") ** {p = "for"} ;
+
   -- Adjectives
 
   ander_A = compoundA (mkA "other") ; -- from DictEng other_A
@@ -74,6 +85,16 @@ lin
   neugierig_auf_A2 = mkA2 (regA "curious") (mkPrep "about") ;
   treu_A2 = mkA2 (compoundA (mkA "faithful")) (mkPrep "to") ;
   stolz_A2 = mkA2 (mkA "proud" "prouder") (mkPrep "of") ;
+
+  glad_AS = mkAS (mkA "glad") ;       -- with sentential object
+  determined_AV = mkAV (mkA "determined") ;
+  eager_AV = mkAV (mkA "eager") ;
+  uncertain_AQ = mkAQ (mkA "uncertain") ;
+  curious_AQ = mkAQ (mkA "curious") ;
+
+  true_A = mkA "true" ;               -- with sentential subject
+  unknown_A = mkA "unknown" ;         -- with interrogative subject 
+
 
   -- Adverbs
 
@@ -106,12 +127,21 @@ lin
   
   -- Noun
 
+  alp_N = mkN "alp" ;
+  belief_N = mkN "belief" ;
+  claim_N = mkN "claim" ;
   idea_N = mkN "idea" ;
   intention_N = mkN "intention" ;
-  alp_N = mkN "alp" ;
+
+  belief_NS = mkNS (mkN "belief") [] ;
+  claim_NS = mkNS (mkN "claim") [] ; 
 
   hope_NV = mkNV (mkN "hope") "in" ;
   intention_NV = lin NV (regN "intention" ** {g = R.Neutr ; c2 = []});
+  interesse_NV = lin NV (regN "interest" ** {g = R.Neutr ; c2 = "in"});
+  
+  question_NQ = mkNQ (mkN "question") [] ;
+  doubt_NQ = mkNQ (mkN "doubt") [] ;
 
   -- Proper name
 
@@ -134,5 +164,7 @@ lin
 
   oper
     mkNV : N -> Str -> NV = \n,p -> lin NV {s = n.s ; g = n.g ; c2 = p} ;
+    mkNS : N -> Str -> NS = \n,p -> lin NS {s = n.s ; g = n.g ; c2 = p} ;
+    mkNQ : N -> Str -> NQ = \n,p -> lin NQ {s = n.s ; g = n.g ; c2 = p} ;
 
 }

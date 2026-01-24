@@ -1,5 +1,5 @@
 --# -path=.:../../src/german: -- for ExtraGerAbs; verbs partially extracted from DictVerbsGerAbs
-abstract TestLexiconGerAbs = Lexicon, CorrelatesGerAbs[NS,NV,NQ,VSA] ** {
+abstract TestLexiconGerAbs = Lexicon, Correlates[NS,NV,NQ,VSA,AS,AV,AQ] ** {
 
   -- Verbs
 
@@ -48,22 +48,37 @@ fun
 
   erwarten_V2 : V2 ;
 
-  finden_VSA : VSA ;          -- finde AP, dass S
+  -- Verbs with sentential object (also accepts nominal object instead)
+  erinnern_rVS : VS ;         -- erinnere mich [dessen], dass S
+  trauen_VS : VS ;            -- traue dem, dass S ; but: traue *dass S
 
-  -- kaufen_bei_fuer_V4 : V4 ;
-  -- mieten_von_fuer_V4 : V4 ;
+  finden_VSA : VSA ;          -- finde AP, dass S
 
   -- Adjectives
 
   ander_A : A ;
   froh_A : A ;
 
-  neugierig_auf_A2 : A2 ;
-  treu_A2 : A2 ;  -- Ger: dative complement
-  stolz_A2 : A2 ;
-  ausgehend_A2 : A2 ;
-  einhergehend_A2 : A2 ;
+  neugierig_auf_A2 : A2 ; -- + auf + accusative
+  treu_A2 : A2 ;          -- + dative
+  stolz_A2 : A2 ;         -- + auf + accusative
+  ausgehend_A2 : A2 ;     -- + von + dative
+  einhergehend_A2 : A2 ;  -- + mit + dative
 
+  glad_AS : AS ;          -- (we are) glad (that S)
+  tired_of_AS : AS ;      -- eng:AV
+
+  eager_AV : AV ;         -- (we are) eager (to win the game)
+  determined_AV : AV ;    -- (we are) determined (to fly to Paris)
+  uncertain_AQ : AQ ;     -- (we are) uncertain (whether S)
+  curious_AQ : AQ ;       -- (we are) curious (who won the game)
+  
+  -- Adjectives with sentential *subject* are handled by
+  -- PredSCVP sc (UseComp (CompAP ap))    -- (that S | whether S | to VP) (is) adj
+  -- CorPredSCVP sc (UseComp (CompAP ap)) -- (it is) adj (that S | whether S | to VP)
+  true_A : A ;
+  unknown_A : A ;
+  
   -- Adverbs
 
 --  anders_Adv : Adv ;
@@ -96,9 +111,13 @@ fun
 
   -- Noun
 
+  alp_N : N ;
+  belief_N : N ;
+  claim_N : N ;
+  hope_N : N ;
   idea_N : N ;
   intention_N : N ;
-  alp_N : N ;
+  interesse_N : N ;
 
   belief_NS : NS ;
   claim_NS : NS ;
@@ -106,6 +125,7 @@ fun
   hope_NV : NV ;
   intention_NV : NV ;
   interesse_NV : NV ;
+
   question_NQ : NQ ;
   doubt_NQ : NQ ;
 {-

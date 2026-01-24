@@ -1,7 +1,7 @@
 --# -path=.:../abstract:../common:../prelude:../api:../../tests/german:
 
-abstract CorLangGerAbs = 
-  Lang - [that_Subj],
-  CorrelatesGerAbs,
+abstract CorLang = 
+  Lang - [part_Prep, possess_Prep, that_Subj, SentCN, SentAP],
+  Correlates,
   TestLexiconGerAbs
   ** {} ;

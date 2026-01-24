@@ -685,7 +685,7 @@ mkVoc s = lin Voc (ss s) ;
   mkV0  v = v ;
   mkV2S v p = lin V2S (prepV2 v p) ;
   mkV2V = overload {
-    mkV2V : Str -> V2V = \s -> lin V2V (dirV2 (regV s) ** {c3 = [] ; typ = VVAux}) ;
+    mkV2V : Str -> V2V = \s -> lin V2V (dirV2 (regV s)) ** {c3 = [] ; typ = VVInf} ;
     mkV2V : V -> V2V = \v -> lin V2V (dirV2 v ** {c3 = [] ; typ = VVAux}) ;
     mkV2V : V -> Prep -> Prep -> V2V = \v,p,t -> lin V2V (prepV2 v p ** {c3 = t.s ; typ = VVAux}) ;
     } ;

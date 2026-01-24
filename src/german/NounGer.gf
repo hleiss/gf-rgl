@@ -228,8 +228,8 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       in cn ** {
         s = case ap.isPre of { -- HL 1/2023 False only for ap = SentAP ap' sc
           True => \\a,n,c =>   -- besserer cn als a.s2 [instead: cn, besser als a.s2,]
-                 (ap.c.p1 ++ ap.c.p2 ++ ap.s ! agrAdj a (gennum g n) c)
-            ++   (cn.s ! a ! n ! c) ++ ap.s2 ! c ++ ap.ext ;
+                 (ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s ! agrAdj a (gennum g n) c)
+            ++   (cn.s ! a ! n ! c) ++ ap.s2 ! c ; -- ++ ap.ext ; HL Jan 26: moved for CorLang
           False => \\a,n,c => cn.s ! a ! n ! c ++ -- postnominal ap with sc
             embedInCommas (ap.c.p1 ++ ap.c.p2 ++ ap.s ! APred ++ ap.s2 ! c ++ ap.ext)} ;
         g = g
@@ -255,7 +255,7 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep vonDat (np.s ! False) ++ bigNP np } ;
 
     PartNP cn np = case np.w of {
-      WPron => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep vonDat (np.s ! False) ++ np.rc} ;
+      WPron => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep vonDat (np.s ! False) ++ np.ext ++ np.rc} ;
       _     => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! False ! Gen ++ np.ext ++ np.rc}
         };         -- glass of wine
 
@@ -266,8 +266,7 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
         s = \\b,c => det.sp ! b ! g ! c ++ appPrep vonDat np ;
         a = agrgP3 g det.n ;
         w = case det.isDef of { True => WLight ; _ => WHeavy } ;
-        rc = np.rc ;
-        ext = np.ext
+        rc,ext = [] -- np.rc ++ np.ext  in (appPrep vonDat np)
       } ;
 
     AdjDAP dap ap = -- the large (one)  -- HL 8/22 der auf dich stolze; die ihm treue; der so dumme, infzu

@@ -101,7 +101,7 @@ lin
   hat_N = reg2N "Hut" "Hüte" masculine ;
   hear_V2 = dirV2 (regV "hören") ;
   hill_N = mkN "Hügel" ;
-  hope_VS = mkVS (regV "hoffen") ** {c2 = aufAcc_Prep} ;
+  hope_VS = mkVS (regV "hoffen") aufAcc_Prep ;
   horse_N = reg2N "Pferd" "Pferde" neuter ;
   hot_A = regA "heiß" ;
   house_N = reg2N "Haus" "Häuser" neuter ;

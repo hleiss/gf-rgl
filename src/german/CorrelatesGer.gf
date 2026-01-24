@@ -1,53 +1,48 @@
 --# -path=.:../abstract:../common:../api:../prelude
 
-concrete CorrelatesGer of CorrelatesGerAbs = CatGer ** 
+concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
   open ResGer, Coordination, Prelude, IrregGer, (P = ParadigmsGer), (N = NounGer) in {
   flags coding=utf8 ;
 
   -- Sentential complement with correlate
 
   oper
+    demPron : Case => Str =
+      table {Dat => "dem" ; Gen => "dessen" ; _ => "es"} ; -- | "das"} ;
     mkCor : Preposition -> Str = \p ->
-      case p.t of {isPrep => p.s ! CAdvPron ; _ => "es" } ; -- | "das"} ;
-    corVP : Verb -> Preposition -> ResGer.VP = \v,p ->
-      let cor : Str = mkCor p ;
-          vp = predV v ;
-          vnn = vp.nn
-      in case p.t of {
-        isCase => vp ** {nn = \\a => <cor ++ (vnn!a).p1, (vnn!a).p2, (vnn!a).p3, (vnn!a).p4>} ;
-        _      => vp ** {nn = \\a => <(vnn!a).p1, (vnn!a).p2, cor ++ (vnn!a).p3, (vnn!a).p4>}
-      } ** {lock_VP = <>} ;
-    corVPSlash : Verb ** {c2:Preposition} -> Preposition -> ResGer.VPSlash = \v,p ->
-      let cor : Str = mkCor p ;
-          vp = predVc v ;
-          vnn = vp.nn
-      in case p.t of {
-        isCase => vp ** {nn = \\a => <cor ++ (vnn!a).p1, (vnn!a).p2, (vnn!a).p3, (vnn!a).p4>} ;
-        _      => vp ** {nn = \\a => <(vnn!a).p1, (vnn!a).p2, cor ++ (vnn!a).p3, (vnn!a).p4>}
-      } ** {lock_VPSlash = <>} ;
+      case p.t of {isPrep => p.s ! CAdvPron ; _ => demPron ! p.c} ;
 
+    insertCor : Preposition -> ResGer.VP -> ResGer.VP = \p,vp ->
+      let cor : Str = CorrelatesGer.mkCor p ;
+          vnn = vp.nn
+      in case p.t of {
+        isCase => vp ** {nn = \\a => <cor ++ (vnn!a).p1, (vnn!a).p2, (vnn!a).p3, (vnn!a).p4>} ;
+        _      => vp ** {nn = \\a => <(vnn!a).p1, (vnn!a).p2, cor ++ (vnn!a).p3, (vnn!a).p4>}
+      } ;
+    insertCorc : Preposition -> ResGer.VPSlash -> ResGer.VPSlash = \p,vp -> vp ** insertCor p vp ;
+    -- inCommas : Str -> Str = embedInCommas ;
+    inCommas : Str -> Str = \s -> bindComma ++ s ; -- to ease parse -cat=NP
   lin
     -- correlate for sentential subject (SC)
-    CorPredSCVP sc vp = mkClause "es" (agrP3 Sg) (insertExtrapos sc.s vp) ;
+    CorPredSCVP sc vp = mkClause "es" (agrP3 Sg) (insertExtrapos (comma ++ sc.s) vp) ;
     -- CorSCVP vp = ImpersCl vp ;
 
-    -- correlate for sentential|infinitival object is like a pronominal or prepositional object
-    CorComplVS v s =                     -- (nicht) daran glauben, dass S
-      insertExtrapos (comma ++ conjThat ++ s.s ! Sub) (corVP v v.c2) ;
-    CorVS v = corVP v v.c2 ;
-    CorComplVQ v q =                       -- danach fragen, ob S
-      insertExtrapos (comma ++ q.s ! QIndir) (corVP v v.c2) ;
-    CorVQ v = corVP v v.c2 ;
+    -- correlate for sentential|interrogative object is like a pronominal or prepositional object
+    CorVS v = insertCor v.c2 (predV v) ;
+    CorComplVS v s =                       -- glaube (nicht) daran , dass S
+      insertExtrapos (comma ++ conjThat ++ s.s ! Sub) (insertCor v.c2 (predV v)) ;
+
+    CorVQ v = insertCor v.c2 (predV v);
+    CorComplVQ v q =                       -- frage (nicht) danach , ob S
+      insertExtrapos (comma ++ q.s ! QIndir) (insertCor v.c2 (predV v)) ;
 
   -- correlate for infinitival object           TODO: vfin ++ cor ++ adv ++ neg ++ vinf
-
-    -- TODO: exclude correlate for modal verbs, vv.isAux=True: will|kann|muss *es schlafen
-    CorComplVV vv vp =                       -- denke daran, .. zu tun (former EsVV)
-      let inf = mkInf False Simul Pos vp ;   -- False = force extraction
-          vvp = corVP vv vv.c2
+    CorVV v = insertCor v.c2 (predV v);    -- will es (nicht) ; denke (nicht) daran
+    CorComplVV v vp =                        -- no correlates for modal verb v.isAux=True
+      let inf = mkInf v.isAux Simul Pos vp ; -- will *es schlafen ; denke daran, zu schlafen
+          vvp = case v.isAux of {True => predV v ; _ => insertCor v.c2 (predV v)}
       in
       insertExtrapos vp.ext (insertInf inf vvp) ;
-    CorVV v = corVP v v.c2 ;                 -- denke daran ; will es
 
     -- -- VS, VQ, VV with nominal object  -- replace by the more general rules that follow
     -- Compl2VS vs np =
@@ -59,83 +54,105 @@ concrete CorrelatesGer of CorrelatesGerAbs = CatGer **
     -- Compl2VV vq np =
     --   let vp = (predVc vq ** {objCtrl = False})
     --   in insertObjNP np vq.c2 vp ;
+
     -- For nominal instead of sentential objects, and questions like "what do you know|ask|intend?"
-    UseVS v = lin V2 v ;
-    UseVQ v = lin V2 v ;
-    UseVV v = lin V2 v ;
+    UseVS v = v ;
+    UseVQ v = v ;
+    UseVV v = v ;
 
-    UseV2S v = lin V3 v ;  -- V2S with two nominal objects, e.g. glaube dir deine Versprechen
-    UseV2Q v = lin V3 v ;
-    UseV2V v = lin V3 v ;
+    -- Ternary verbs with correlate for sentential object
+    CorV2S v = insertCorc v.c3 (predVc v) ;
+    CorSlashV2S v s = insertCorc v.c3 (predVc v) ** {ext = comma ++ conjThat ++ s.s ! Sub} ;
+    CorV2Q v = insertCorc v.c3 (predVc v) ;
+    CorSlashV2Q v q = insertCorc v.c3 (predVc v) ** {ext = comma ++ q.s ! QIndir} ;
 
-    -- TODO: exclude es-correlate for vv.isAux=True and where else?
-    --       wir lassen *es euch vp.inf ; wir helfen *es euch , vp.infzu
-    -- But:  wir versprechen (es) euch, vp.infzu ;
-    CorSlashV2S v s = (corVPSlash v v.c3) ** {ext = comma ++ conjThat ++ s.s ! Sub} ;
-    CorSlashV2Q v q = (corVPSlash v v.c3) ** {ext = comma ++ q.s ! QIndir} ;
-    CorV2S v = corVPSlash v v.c3 ;
-    CorV2Q v = corVPSlash v v.c3 ;
+    -- But:  wir versprechen (es) euch, vp.infzu ; -- set cor=[] for c2=accPrep
+    CorV2V v =                     -- e.g. verspricht|bittet.isAux=False | läßt.isAux=True
+      insertCorc v.c3 (predVGen v.isAux v ** {c2 = v.c2 ; objCtrl = v.objCtrl}) ;
 
-    CorV2V v =
-      let cor : Str = mkCor v.c3 ;
-          vps = predVGen v.isAux v -- e.g. verspricht|bittet.isAux=False | läßt.isAux=True
-                  ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
-          vnn = vps.nn
-      in case v.c3.t of {
-        isCase => vps ** {nn = \\a => <cor ++ (vnn!a).p1, (vnn!a).p2, (vnn!a).p3, (vnn!a).p4>} ;
-        _      => vps ** {nn = \\a => <(vnn!a).p1, (vnn!a).p2, cor ++ (vnn!a).p3, (vnn!a).p4>}
-      } ;
-    CorSlashV2V v vp =             -- bitte (jmdn) darum , zu kommen
-      let
-        vps = CorV2V v ;
-        inf = mkInf v.isAux Simul Pos vp
+    CorSlashV2V v vp =             -- bitte (jmdn) darum, zu kommen ; helfe *es euch, zu leben
+      let                          -- lasse (jmdn) *es schlafen ; but: rate ?es euch , zu kommen
+        inf = mkInf v.isAux Simul Pos vp ;
+        vps0 = predVGen v.isAux v ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
+        vps = case v.c3.t of {isCase => vps0 ;
+                              _ => case v.isAux of {True => vps0 ; _ => insertCorc v.c3 vps0}}
       in
       insertExtrapos vp.ext (
         insertInf inf vps) ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
 
+    UseV2S v = v ;  -- V2S with two nominal objects, e.g. glaube dir deine Versprechen
+    UseV2Q v = v ;
+    UseV2V v = v ;
+
   -- Interrogatve (and relative) correlate for sentential complement
   oper
+    quPron : Case => Str =
+      table {Dat => "wem" ; Gen => "wessen" ; _ => "was"} ;
     mkICor : Preposition -> Str = \p ->
-      case p.t of {isPrep => p.s ! CIPron ; _ => "was" } ;
+      case p.t of {isPrep => p.s ! CIPron ; _ => quPron ! p.c } ;
 
-  -- Questions with interrogative sentential pronoun or correlate "was", "woran" etc.
+  -- Verb phrase and clause missing a sentential object
   lincat
-    VPSlashS = ResGer.VPSlash ;  -- experimental
-    ClSlashS = {                 -- stolen from ClSlash
-      s : Mood => ResGer.Tense => Anteriority => Polarity => Order => Str ;
-      c2 : Preposition
-      } ;
-
+    VPSlashS, VPSlashQS, VPSlashVP = ResGer.VPSlash ;
+    ClSlashS, ClSlashQS, ClSlashVP = ResGer.Clause ** {c2 : Preposition} ; -- ClSlash
   lin
-    SlashVSa vs = predVc vs ;
-    SlashVQa vs = predVc vs ;
-    SlashVVa vs = predVc vs ;
+    SlashVSa, SlashVQa, SlashVVa = \vsc -> predVc vsc ;
 
-    AdvVPSlashS vp adv = vp ** insertAdv adv.s vp ;
+    Slash2V2S, Slash2V2Q, Slash2V2V = \v2sc, np ->
+      insertObjNP np v2sc.c2 (predVc v2sc) ** {c2 = v2sc.c3} ;
 
-    SlashVPSlashS np vp =
+    AdvVPSlashS, AdvVPSlashQS, AdvVPSlashVV =
+      \vp, adv -> vp ** insertAdv adv.s vp ;
+
+    SlashVPSlashS, SlashVPSlashQS, SlashVPSlashVP = \np,vp ->
       let sb = mkSubject np vp.c1 in mkClause sb.s sb.a vp ** {c2 = vp.c2} ;
 
-    QuestSlashS cl = {
+    -- Interrogative/relative clause with fronted sentential correlate "was", "woran" etc.
+
+    QuestSlashS, QuestSlashQS, QuestSlashVP = \cls -> {
       s = \\m,t,a,p =>
-        let cls = cl.s ! m ! t ! a ! p ;
-            what = mkICor cl.c2
+        let cl = cls.s ! m ! t ! a ! p ;
+            what = mkICor cls.c2
         in table {
-          QDir   => what ++ cls ! Inv ;
-          QIndir => what ++ cls ! Sub }
+          QDir   => what ++ cl ! Inv ;
+          QIndir => what ++ cl ! Sub }
       } ;
 
-    Slash2V2S v np =
-      let vps = insertObjNP np v.c2 (predVc v) ** {c2 = v.c3}
-      in lin VPSlashS vps ;
-    ComplSlashS vps s =
-      insertExtrapos (comma ++ conjThat ++ s.s ! Sub) vps ; -- prelim
+    RelSlashS, RelSlashQS, RelSlashVP = \cls ->
+      let what = mkICor cls.c2 in {
+      s = \\m,t,a,p,gn => what ++ cls.s ! m ! t ! a ! p ! Sub ;
+      c = cls.c2.c
+      } ;
 
+  -- Leftextraction of sentential object and correlate
+  oper
+    demPronLeft : Case => Str = table {Dat => "dem" ; Gen => "dessen" ; _ => "das"} ;
+    mkCorLeft : Preposition -> Str = \p ->
+       case p.t of {isPrep => p.s ! CAdvPron ; _ => demPronLeft ! p.c} ;
+
+    insertLeft : Str -> Str -> ResGer.Clause ** {c2 : Preposition} -> Foc =
+      \obj,cor,cl -> lin Foc {s = \\m,t,a,p => obj ++ cor ++ cl.s  ! m ! t ! a ! p ! Inv} ;
+  lin
+    FocS s cl   = insertLeft (conjThat ++ s.s ! Sub ++ comma) [] cl ;
+    FocCorS s cl = insertLeft (conjThat ++ s.s ! Sub ++ comma) (mkCorLeft cl.c2) cl ;
+    CorFocS cls = insertLeft [] (mkCorLeft cls.c2) cls ;
+      
+    FocQS qs cl = insertLeft (qs.s ! QIndir ++ comma) [] cl ;
+    FocCorQS qs cl = insertLeft (qs.s ! QIndir ++ comma) (mkCorLeft cl.c2) cl ;
+    CorFocQS cl = insertLeft [] (mkCorLeft cl.c2) cl ;
+    
+    -- TODO: no leading comma in inf; agr in inf?
+    FocVP vp cl = let inf = mkInf False Simul Pos vp in --{inpl:(Agr=>Str)*Str; extr:Agr=>Str}
+      insertLeft (inf.extr ! agrP3 Sg ++ vp.ext ++ comma) [] cl ;
+    FocCorVP vp cl = let inf = mkInf False Simul Pos vp in
+      insertLeft (inf.extr ! agrP3 Sg ++ vp.ext ++ comma) (mkCorLeft cl.c2) cl ;
+    CorFocVP cl = insertLeft [] (mkCorLeft cl.c2) cl ;
+    
     -- Sentences in conjunctive mood
   lincat
     SConj = {s : Order => Str} ;
   lin
-    UseConjCl t p cl = {
+    UseClConj t p cl = {
       s = \\o => t.s ++ p.s ++ cl.s ! MConjunct ! t.t ! t.a ! p.p ! o
       } ;
 
@@ -143,175 +160,134 @@ concrete CorrelatesGer of CorrelatesGerAbs = CatGer **
   lincat
     NS, NQ, NV = Noun ** {c2 : Preposition} ; -- to replace SentCN : CN -> SC -> CN
   oper
-    mkCorN : Preposition -> Str = \p ->
+    mkNCor : Preposition -> Str = \p ->
       case p.t of {isPrep => p.s ! CAdvPron ; _ => "" } ;
   lin
     -- Constructions for sentential complementations of nouns
-    UseNS ns = {
-      s = \\_ => ns.s ;
-      rc = \\_ => [] ;
-      ext,adv = [] ;
-      g = ns.g
-      } ;
     ComplNS ns s = {
-      s = \\a,n,c => ns.s ! n ! c ;
+      s = \\_ => ns.s ;
       rc = \\n => [] ;
-      ext = embedInCommas (conjThat ++ s.s ! Sub) ;
+      ext = inCommas (conjThat ++ s.s ! Sub) ;
       adv = [] ;
       g = ns.g
       } ;
-    ComplConjNS ns s = {
-      s = \\a,n,c => ns.s ! n ! c ;
+    ComplNSConj ns s = {
+      s = \\_ => ns.s ;
       rc = \\n => [] ;
-      ext = embedInCommas (s.s ! Main) ;  -- alternatively: s ! Main in conjunctive ?
+      ext = inCommas (s.s ! Main) ;  -- object sentence in conjunctive
       adv = [] ;
-      g = ns.g
-      } ;
-    CorNS ns = {
-      s = \\a,n,c => ns.s ! n ! c ++ (mkCorN ns.c2) ;
-      rc = \\_ => [] ;
-      ext,adv = [] ;
       g = ns.g
       } ;
     CorComplNS ns s = {
-      s = \\a,n,c => ns.s ! n ! c ++ (mkCorN ns.c2) ;
+      s = \\_ => ns.s ;
       rc = \\n => [] ;
-      ext = embedInCommas (conjThat ++ s.s ! Sub) ;
+      ext = mkNCor ns.c2 ++ inCommas (conjThat ++ s.s ! Sub) ;
       adv = [] ;
       g = ns.g
       } ;
-    Compl2NS ns np = {
-      s = \\a,n,c => ns.s ! n ! c ++ appPrep ns.c2 np ;
+    -- Compl2NQ, 
+    Compl2NS, Compl2NV = \ns,np -> {
+      s = \\_ => ns.s ;
       rc = \\n => [] ;
-      ext = [] ;
+      ext = appPrep ns.c2 np ; -- nominal instead of sentential object
       adv = [] ;
       g = ns.g
       } ;
-
-    UseNV nv = {
-      s = \\_ => nv.s ;
+    CorNS, CorNV, CorNQ = \ns -> {
+      s = \\_ => ns.s ;
       rc = \\_ => [] ;
-      ext,adv = [] ;
-      g = nv.g
+      ext = mkNCor ns.c2 ;  -- separate from ns: Glaube (der Leute) daran 
+      adv = [] ;
+      g = ns.g
       } ;
+    
     ComplNV nv vp = {  -- e.g. Interesse , vp.infzu
-      s = \\a,n,c => nv.s ! n ! c ;
+      s = \\_ => nv.s ;
       rc = \\n => [] ;
-      ext = embedInCommas (useInfVP False vp) ;
+      ext = inCommas (useInfVP False vp) ;
       adv = [] ;
-      g = nv.g
-      } ;
-    Compl2NV nv np = {  -- e.g. Interesse an einem Erfolg
-      s = \\a,n,c => nv.s ! n ! c ;
-      rc = \\n => [] ;
-      ext = appPrep nv.c2 np ;
-      adv = [] ;
-      g = nv.g
-      } ;
-    CorNV nv = {   -- e.g. Interesse daran
-      s = \\a,n,c => nv.s ! n ! c ++ (mkCorN nv.c2) ;
-      rc = \\n => [] ;
-      ext,adv = [] ;
       g = nv.g
       } ;
     CorComplNV nv vp = {  -- e.g. Interesse daran , vp.infzu
-      s = \\a,n,c => nv.s ! n ! c ++ (mkCorN nv.c2 ) ;
+      s = \\_ => nv.s ;
       rc = \\n => [] ;
-      ext = embedInCommas (useInfVP False vp) ;
+      ext = mkNCor nv.c2 ++ inCommas (useInfVP False vp) ;
       adv = [] ;
       g = nv.g
       } ;
-
-    UseNQ nq = {
+    
+    ComplNQ nq q = {
+      s = \\a,n,c => nq.s ! n ! c ;
+      rc = \\n => [] ;
+      ext = inCommas (q.s ! QIndir) ;
+      adv = [] ;
+      g = nq.g
+      } ;
+    CorComplNQ nq q = {
       s = \\_ => nq.s ;
-      rc = \\_ => [] ;
-      ext,adv = [] ;
+      rc = \\n => [] ;
+      ext = mkNCor nq.c2 ++ inCommas (q.s ! QIndir) ;
+      adv = [] ;
       g = nq.g
       } ;
-    ComplNQ ns q = {
-      s = \\a,n,c => ns.s ! n ! c ;
-      rc = \\n => [] ;
-      ext = embedInCommas (q.s ! QIndir) ;
-      adv = [] ;
-      g = ns.g
-      } ;
-    Compl2NQ ns np = {
-      s = \\a,n,c => ns.s ! n ! c ++ appPrep ns.c2 np ;
-      rc = \\n => [] ;
-      ext = [] ;
-      adv = [] ;
-      g = ns.g
-      } ;
-    CorNQ nq = {
-      s = \\a,n,c => nq.s ! n ! c ++ (mkCorN nq.c2) ;
-      rc = \\_ => [] ;
-      ext,adv = [] ;
-      g = nq.g
-      } ;
-    CorComplNQ ns q = {
-      s = \\a,n,c => ns.s ! n ! c ++ (mkCorN ns.c2) ;
-      rc = \\n => [] ;
-      ext = embedInCommas (q.s ! QIndir) ;
-      adv = [] ;
-      g = ns.g
-      } ;
-
-{-    -- simpler alternative for binary noun with sentential complement ---
-  lin
-    SentN2 n2 sc = {
-      s = \\a,n,c => n2.s ! n ! c ;
-      rc = \\n => [] ;
-      ext = embedInCommas sc.s ;
-      adv = [] ;
-      g = n2.g
-    } ;
-    SentCorN2 n2 sc = {
-      s = \\a,n,c => n2.s ! n ! c ++ (mkCorN n2.c2) ;
-      rc = \\n => [] ;
-      ext = embedInCommas sc.s ;
-      adv = [] ;
-      g = n2.g
-    } ;
-    CorN2 n2 = {
-      s = \\a,n,c => n2.s ! n ! c ++ (mkCorN n2.c2) ;
-      rc = \\n => [] ;
-      ext = [] ;
-      adv = [] ;
-      g = n2.g
-    } ; ------------------------------------------------------------
--}
+    UseNQ nq = nq ;  -- instead of Compl2NQ
 
   -- Adjective with sentential complement (replace modification SentAP : AP -> SC -> AP)
 
-    -- simpler alternative for binary adjective with sentential object
+  oper
+    insertACor : Preposition -> Str * Str = \p ->
+      let cor : Str = CorrelatesGer.mkCor p ;
+      in case p.t of {isCase => <cor,[]> ; _ => <[],cor>} ;
 
-  SentA2 a2 sc =
-    {
-      s = \\a => a2.s ! Posit ! a ;
-      ext = comma ++ sc.s ;
-      s2 = \\_ => [] ;
-      c = <[], []> ;
-      isPre = False -- True?
-    } ;
-  CorSentA2 a2 sc =
-    let cor : Str = case a2.c2.t of {isPrep => a2.c2.s ! CAdvPron ; _ => []}
-    in {
-      s = \\a => cor ++ a2.s ! Posit ! a ;
-      ext = comma ++ sc.s ;
-      s2 = \\_ => [] ;
-      c = <[], []> ;
-      isPre = True
-    } ;
-  CorA2 a2 =
-    let cor : Str = case a2.c2.t of {isPrep => a2.c2.s ! CAdvPron ; _ => []}
-    in {
-      s = \\a => cor ++ a2.s ! Posit ! a ;
-      ext = [] ;
-      s2 = \\_ => [] ;
-      c = <[], []> ;
-      isPre = True
-    } ;
+  lincat
+    AS = Adjective ** {c2:Preposition} ;
+    AV = Adjective ** {c2:Preposition} ;
+    AQ = Adjective ** {c2:Preposition} ;
+  lin
+    ComplAS as s = {
+      s = as.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+      c = <[],[]> ;
+      ext = embedInCommas (conjThat ++ s.s ! Sub)
+      } ;
+    ComplAQ aq qs = {
+      s = aq.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+      c = <[],[]> ;
+      ext = embedInCommas (qs.s ! QIndir)
+      } ;
+    ComplAV av vp = {
+      s = av.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+      c = <[],[]> ;
+      ext = embedInCommas (useInfVP False vp)
+      } ;
 
+    CorComplAS as s =
+      let cor = CorrelatesGer.mkCor as.c2 in
+      {s = as.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+       c = insertACor as.c2 ;
+       ext = embedInCommas (conjThat ++ s.s ! Sub)
+      } ;
+    CorComplAQ aq qs =
+      {s = aq.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+       c = insertACor aq.c2 ;
+       ext = embedInCommas (qs.s ! QIndir)
+      } ;
+    CorComplAV av vp =
+      {s = av.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+       c = insertACor av.c2 ;
+       ext = embedInCommas (useInfVP False vp)
+      } ;
+
+    CorAS, CorAV, CorAQ = \as -> 
+      {s = as.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+       c = insertACor as.c2 ;
+       ext = []
+      } ;
+    Compl2AS, Compl2AV, Compl2AQ = \as,np ->
+      let obj:Str = appPrep as.c2 np in 
+      {s = as.s ! Posit ; s2 = \\_ => [] ; isPre = True ;
+       c = case as.c2.t of {isCase => <obj,[]> ; _ => <[],obj>} ;
+       ext = []
+      } ;
 
 -- extra rules to get some of the "es" alternative linearisations
 
