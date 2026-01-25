@@ -1,0 +1,755 @@
+Start running CorLang.gfs on
+Do 22. Jan 21:27:11 CET 2026
+load ~/GF/gf-rgl/src/german/CorLangGer.gf
+load ~/GF/gf-rgl/tests/german/CorLangEng.gf
+from git branch
+small-correlates
+
+use ~/GF/gf-rgl/tests/german/Correlates.gfs last modified on 
+Do 22. Jan 21:22:55 CET 2026
+
+
+-- sentential subject, by PredSCVP : SC -> VP -> Cl --
+
+CorLang: PredSCVP (EmbedS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV play_V)))) (UseComp (CompAP (PositA good_A)))
+CorLangEng: that you don't play is good
+CorLangGer: dass ihr nicht spielt , ist gut
+
+
+CorLang: PredSCVP (EmbedVP (UseV sleep_V)) (UseComp (CompAP (PositA good_A)))
+CorLangEng: to sleep is good
+CorLangGer: zu schlafen , ist gut
+
+
+CorLang: PredSCVP (EmbedQS (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv where_IAdv (PredVP (UsePron we_Pron) (UseV live_V))))) (UseComp (CompAP (PositA beautiful_A)))
+CorLangEng: where we live is beautiful
+CorLangGer: wo wir leben , ist schön
+
+
+-- Correlate + sentential subject, by CorPredSCVP : SC -> VP -> Cl --
+
+CorLang: CorPredSCVP (EmbedS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV play_V)))) (UseComp (CompAP (PositA good_A)))
+CorLangEng: it is good that you don't play
+CorLangGer: es ist gut , dass ihr nicht spielt
+
+
+CorLang: CorPredSCVP (EmbedVP (UseV sleep_V)) (UseComp (CompAP (PositA good_A)))
+CorLangEng: it is good to sleep
+CorLangGer: es ist gut , zu schlafen
+
+
+CorLang: CorPredSCVP (EmbedQS (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv where_IAdv (PredVP (UsePron we_Pron) (UseV live_V))))) (UseComp (CompAP (PositA beautiful_A)))
+CorLangEng: it is beautiful where we live
+CorLangGer: es ist schön , wo wir leben
+
+
+-- object sentence (+ correlate), by (Cor)ComplVS : VS -> S -> VP --
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (ComplVS fear_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we haven't feared that you come
+CorLangGer: wir haben nicht gefürchtet , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (CorComplVS fear_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we haven't [CorComplVS]
+CorLangGer: wir haben es nicht gefürchtet , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (ComplVS hope_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we haven't hoped for that you come
+CorLangGer: wir haben nicht gehofft , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (CorComplVS hope_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we haven't [CorComplVS]
+CorLangGer: wir haben nicht darauf gehofft , dass ihr kommt
+
+
+--- BUG: VS with datPrep or genPrep should not use ComplVS, only CorComplVS --
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVS trauen_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we don't [trauen_VS] that you come
+CorLangGer: wir trauen nicht , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVS trauen_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we don't [CorComplVS]
+CorLangGer: wir trauen dem nicht , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVS erinnern_rVS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we don't [erinnern_rVS] that you come
+CorLangGer: wir erinnern uns nicht , dass ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVS erinnern_rVS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+CorLangEng: we don't [CorComplVS]
+CorLangGer: wir erinnern dessen uns nicht , dass ihr kommt
+
+
+-- object interrogative (+ correlate), by (Cor)ComplVQ : VQ -> QS -> VP --
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (ComplVQ fragen_VQ (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv when_IAdv (PredVP (UsePron youPl_Pron) (UseV come_V))))))
+CorLangEng: I ask when you come
+CorLangGer: ich frage , wann ihr kommt
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (CorComplVQ fragen_VQ (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv when_IAdv (PredVP (UsePron youPl_Pron) (UseV come_V))))))
+CorLangEng: I [CorComplVQ]
+CorLangGer: ich frage danach , wann ihr kommt
+
+
+-- object infinitive (+ correlate), by (Cor)ComplVV : VV -> VP -> VP --
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVV versuchen_VV (UseV sleep_V)))
+CorLangEng: we don't try to sleep
+CorLangGer: wir versuchen nicht , zu schlafen
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVV versuchen_VV (UseV sleep_V)))
+CorLangEng: we don't [CorComplVV]
+CorLangGer: wir versuchen es nicht , zu schlafen
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVV denken_an_VV (UseV sleep_V)))
+CorLangEng: we don't think about sleeping
+CorLangGer: wir denken nicht , zu schlafen
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVV denken_an_VV (UseV sleep_V)))
+CorLangEng: we don't [CorComplVV]
+CorLangGer: wir denken nicht daran , zu schlafen
+
+
+-- Using nominal object instead of sentential object ---
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVV versuchen_VV)) (DetCN (DetQuant (PossPron i_Pron) NumSg) (UseN idea_N))))
+CorLangEng: we [UseVV] my idea
+CorLangGer: wir versuchen meine Idee
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVQ fragen_VQ)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+CorLangEng: we ask your idea
+CorLangGer: wir fragen nach deiner Idee
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS hope_VS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+CorLangEng: we hope for your idea
+CorLangGer: wir hoffen auf deine Idee
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS erinnern_rVS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+CorLangEng: we [erinnern_rVS] your idea
+CorLangGer: wir erinnern uns deiner Idee
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS trauen_VS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+CorLangEng: we [trauen_VS] your idea
+CorLangGer: wir trauen deiner Idee
+
+
+-- nominal object and object infinitive (+ correlate), using (Cor)SlashV2V : V2V -> VP -> VPSlash --
+
+CorLang: PredVP (UsePron i_Pron) (ComplSlash (SlashV2V erinnern_an_V2V (ComplSlash (SlashV2a close_V2) (DetCN (DetQuant DefArt NumSg) (UseN door_N)))) (UsePron youSg_Pron))
+CorLangEng: I remind you to close the door
+CorLangGer: ich erinnere dich , die Tür zu schließen
+
+
+CorLang: PredVP (UsePron i_Pron) (ComplSlash (CorSlashV2V erinnern_an_V2V (ComplSlash (SlashV2a close_V2) (DetCN (DetQuant DefArt NumSg) (UseN door_N)))) (UsePron youSg_Pron))
+CorLangEng: I [CorSlashV2V] you
+CorLangGer: ich erinnere dich daran , die Tür zu schließen
+
+
+-- question for missing object sentence, by QuestSlashS : ClSlashS -> QCl --
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron youSg_Pron) (AdvVPSlashS (SlashVSa hope_VS) now_Adv)))
+CorLangEng: what do you hope for now
+CorLangGer: worauf hoffst du jetzt
+
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (AdvNP (UsePron youSg_Pron) now_Adv) (SlashVSa hope_VS)))
+CorLangEng: what do you now hope for
+CorLangGer: worauf hoffst du jetzt
+
+
+--    alternative reading with whatSg_IP and QuestSlash : ClSlash -> IP -> QCl --
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlash whatSg_IP (AdvSlash (SlashVP (UsePron youSg_Pron) (SlashV2a (UseVS hope_VS))) now_Adv))
+CorLangEng: what do you hope for now
+CorLangGer: auf was hoffst du jetzt
+
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlash whatSg_IP (SlashVP (UsePron youSg_Pron) (AdvVPSlash (SlashV2a (UseVS hope_VS)) now_Adv)))
+CorLangEng: what do you hope for now
+CorLangGer: auf was hoffst du jetzt
+
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron))))
+CorLangEng: what do we remind of you
+CorLangGer: woran erinnern wir euch
+
+
+CorLang: UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron we_Pron) (SlashVSa hope_VS)))
+CorLangEng: what do we hope for
+CorLangGer: worauf hoffen wir
+
+
+-- Difference between QuestSlashS and RelSlashS --
+
+CorLang: UseQCl (TTAnt TPast AAnter) PNeg (QuestSlashS (SlashVPSlashS (AdvNP (UsePron we_Pron) today_Adv) (SlashVSa hope_VS)))
+CorLangEng: what hadn't we today hoped for
+CorLangGer: worauf hatten wir heute nicht gehofft
+
+
+CorLang: UseRCl (TTAnt TPast AAnter) PPos (RelSlashS (SlashVPSlashS (UsePron we_Pron) (AdvVPSlashS (SlashVSa hope_VS) today_Adv)))
+CorLangEng: [RelSlashS]
+CorLangGer: worauf wir heute gehofft hatten
+
+
+-- Nominal and sentential object (+ correlate) , via ComplSlash o (Cor)SlashV2S : V2S -> S -> NP -> VP --
+
+CorLang: PredVP (UsePron we_Pron) (ComplSlash (SlashV2S answer_V2S (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron they_Pron) (UseV live_V)))) (UsePron youSg_Pron))
+CorLangEng: we answer to you that they live
+CorLangGer: wir antworten dir , dass sie leben
+
+
+CorLang: PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2S answer_V2S (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron they_Pron) (UseV live_V)))) (UsePron youSg_Pron))
+CorLangEng: we [CorSlashV2S] you
+CorLangGer: wir antworten es dir , dass sie leben
+
+
+-- Nominal and interrogative object (+ correlate) , via ComplSlash o (Cor)SlashV2Q : V2Q -> S -> NP -> VP --
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (SlashV2Q ask_V2Q (UseQCl (TTAnt TPast AAnter) PPos (QuestCl (PredVP (UsePron he_Pron) tired_VP)))) (UsePron youSg_Pron)))
+CorLangEng: we don't ask you if he had been tired
+CorLangGer: wir fragen dich nicht , ob er müde gewesen war
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2Q ask_V2Q (UseQCl (TTAnt TPast AAnter) PPos (QuestCl (PredVP (UsePron he_Pron) tired_VP)))) (UsePron youSg_Pron)))
+CorLangEng: we don't [CorSlashV2Q] you
+CorLangGer: wir fragen dich nicht danach , ob er müde gewesen war
+
+
+-- Nominal and infinitival object (+ correlate) , via ComplSlash o (Cor)SlashV2V : V2V -> S -> NP -> VP --
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (SlashV2V versprechen_dat_V2V ready_VP) (UsePron youSg_Pron)))
+CorLangEng: we don't promise you to be ready
+CorLangGer: wir versprechen dir nicht , bereit zu sein
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2V versprechen_dat_V2V ready_VP) (UsePron youSg_Pron)))
+CorLangEng: we don't [CorSlashV2V] you
+CorLangGer: wir versprechen dir nicht , bereit zu sein
+
+
+CorLang: UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2V helfen_V2V ready_VP) (UsePron youSg_Pron)))
+CorLangEng: we don't [CorSlashV2V] you
+CorLangGer: wir helfen dir nicht dabei , bereit zu sein
+
+
+------------------ Focus constructions (= fronting, left extraction) -------------------------
+
+-- Nominal object in focus, via FocObj : NP -> ClSlash -> Foc --
+
+CorLang: FocObj (UsePron it_Pron) (SlashVP (UsePron we_Pron) (SlashV2a (UseVS hope_VS)))
+CorLangEng: it we hope for
+CorLangGer: auf es hoffen wir
+
+
+CorLang: FocObj (UsePron he_Pron) (SlashVP (UsePron we_Pron) (SlashV2a (UseVS hope_VS)))
+CorLangEng: him we hope for
+CorLangGer: auf ihn hoffen wir
+
+
+CorLang: FocObj (DetNP (DetQuant DefArt NumSg)) (SlashVP (UsePron we_Pron) (Slash2V3 (UseV2S answer_V2S) (UsePron youSg_Pron)))
+CorLangEng: it we [UseV2S] you
+CorLangGer: das antworten wir dir
+
+
+CorLang: FocObj (UsePron he_Pron) (SlashVP (UsePron i_Pron) (AdVVPSlash always_AdV (SlashV2a love_V2)))
+CorLangEng: him I always love
+CorLangGer: ihn liebe ich immer
+
+
+-- Focus constructions: Sentential objects and correlates extracted to the left --
+
+CorLang: PredVP (UsePron youSg_Pron) (ComplVS hope_VS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (UseV sleep_V))))
+CorLangEng: you hope that we don't sleep
+CorLangGer: du hoffst , dass wir nicht schlafen
+
+CorLang: FocS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (UseV sleep_V))) (SlashVPSlashS (UsePron youSg_Pron) (SlashVSa hope_VS))
+CorLangEng: that we sleep , you hope for
+CorLangGer: dass wir nicht schlafen , hoffst du
+
+
+-- sentential object in focus, via Foc(Cor)S : S -> ClSlashS -> Foc --
+
+CorLang: FocS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV come_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa know_VS))
+CorLangEng: that you don't come , we know
+CorLangGer: dass ihr nicht kommt , wissen wir
+
+
+CorLang: FocCorS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV come_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa know_VS))
+CorLangEng: 
+CorLangGer: dass ihr nicht kommt , das wissen wir
+
+
+CorLang: FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa hope_VS))
+CorLangEng: 
+CorLangGer: dass wir leben , darauf hoffen wir
+
+
+CorLang: FocS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+CorLangEng: that we live , we answer to you
+CorLangGer: dass wir leben , antworten wir dir
+
+
+CorLang: FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+CorLangEng: 
+CorLangGer: dass wir leben , das antworten wir dir
+
+
+CorLang: FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron)))
+CorLangEng: 
+CorLangGer: dass wir leben , daran erinnern wir euch
+
+
+CorLang: CorFocS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+CorLangEng: 
+CorLangGer: das antworten wir dir
+
+
+CorLang: CorFocS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron)))
+CorLangEng: 
+CorLangGer: daran erinnern wir euch
+
+
+-- interrogative object in focus, via FocQS : QS -> ClSlashQS -> Foc --
+
+CorLang: FocQS (UseQCl (TTAnt TPres ASimul) PPos (QuestVP whoSg_IP is_wrong_VP)) (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+CorLangEng: who is wrong , John asks somebody
+CorLangGer: wer Unrecht hat , fragt Johann jemanden
+
+
+CorLang: CorFocQS (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+CorLangEng: 
+CorLangGer: danach fragt Johann jemanden
+
+
+CorLang: FocCorQS (UseQCl (TTAnt TPres ASimul) PPos (QuestVP whoSg_IP is_wrong_VP)) (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+CorLangEng: 
+CorLangGer: wer Unrecht hat , danach fragt Johann jemanden
+
+
+-- infinitival object in focus, via FocVP : VP -> ClSlashVP -> Foc --
+
+CorLang: FocVP is_right_VP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+CorLangEng: to be right everybody dares
+CorLangGer: , Recht zu haben , wagt jeder
+
+
+CorLang: CorFocVP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+CorLangEng: 
+CorLangGer: das wagt jeder
+
+
+CorLang: FocCorVP is_right_VP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+CorLangEng: 
+CorLangGer: , Recht zu haben , das wagt jeder       BUG: leading comma
+
+
+-- noun with sentential object (and correlate), via CorNS : NS -> CN and CorComplNS : NS -> S -> CN --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (UseN belief_N)
+CorLangEng: the belief
+CorLangGer: der Glaube
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorNS belief_NS)
+CorLangEng: the belief
+CorLangGer: der Glaube daran
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorComplNS belief_NS (UseCl (TTAnt TPast ASimul) PPos (PredVP nobody_NP ill_VP)))
+CorLangEng: the [CorComplNS]
+CorLangGer: der Glaube daran , dass niemand krank war
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (ComplNS belief_NS (UseCl (TTAnt TPast ASimul) PPos (PredVP nobody_NP ill_VP)))
+CorLangEng: the belief that nobody was ill
+CorLangGer: der Glaube , dass niemand krank war
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (ComplNSConj belief_NS (UseClConj (TTAnt TPres ASimul) PPos (PredVP nobody_NP ill_VP)))
+CorLangEng: the [ComplNSConj]
+CorLangGer: der Glaube , niemand sei krank
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (Compl2NS belief_NS (UseLN switzerland_LN))
+CorLangEng: the belief in Switzerland
+CorLangGer: der Glaube an die Schweiz
+
+
+-- noun with sentential object (and correlate), and possessive (via PartNP) --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (PartNP (ComplNS belief_NS (UseCl (TTAnt TPres AAnter) PPos (PredVP (UsePron we_Pron) (UseV sleep_V)))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+CorLangEng: the belief that we have slept of the children         BUG: the belief of the children that we have slept
+CorLangGer: der Glaube der Kinder , dass wir geschlafen haben
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (PartNP (CorComplNS belief_NS (UseCl (TTAnt TPres AAnter) PPos (PredVP (UsePron we_Pron) (UseV sleep_V)))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+CorLangEng: the [CorComplNS] of the children
+CorLangGer: der Glaube der Kinder daran , dass wir geschlafen haben
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (PartNP (Compl2NS belief_NS (DetCN (DetQuant DefArt NumSg) (UseN2 mother_N2))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+CorLangEng: the belief in the mother of the children
+CorLangGer: der Glaube der Kinder an die Mutter
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (Compl2NS belief_NS (DetCN (DetQuant DefArt NumSg) (PartNP (UseN2 mother_N2) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))))
+CorLangEng: the belief in the mother of the children
+CorLangGer: der Glaube an die Mutter der Kinder
+
+
+-- noun with infinitival object (and correlate), via CorNV : NV -> CN and CorComplNV : NV -> VP -> CN --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorNV hope_NV)
+CorLangEng: the hope
+CorLangGer: die Hoffnung darauf
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorComplNV hope_NV (CorVV can_VV))
+CorLangEng: the [CorComplNV]
+CorLangGer: die Hoffnung darauf , es zu können
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorComplNV hope_NV thirsty_VP)
+CorLangEng: the [CorComplNV]
+CorLangGer: die Hoffnung darauf , durstig zu sein
+
+
+-- noun with interrogative object (and correlate), via CorNQ : NQ -> N2 and CorComplNQ : NQ -> QS -> CN --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (UseN2 (UseNQ doubt_NQ))
+CorLangEng: the doubt
+CorLangGer: der Zweifel
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorNQ doubt_NQ)
+CorLangEng: the doubt
+CorLangGer: der Zweifel daran
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (CorComplNQ doubt_NQ (UseQCl (TTAnt TPres AAnter) PPos (QuestIComp (CompIAdv (AdvIAdv why_IAdv there_Adv)) nothing_NP)))
+CorLangEng: the [CorComplNQ]
+CorLangGer: der Zweifel daran , warum da nichts gewesen ist
+
+
+==== AP Part of Correlates.gfs (from CorAdjectives.gfs) ===
+
+=== Predicative adjective with sentential, infinitival or interrogative object ===
+
+-- predicatve adjective with correlate for sentential object, via CorAS, CorAV, CorAQ --
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAS glad_AS)))
+CorLangEng: we are [CorAS]
+CorLangGer: wir sind froh darüber
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAS tired_of_AS)))
+CorLangEng: we are [CorAS]
+CorLangGer: wir sind dessen überdrüssig
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAV eager_AV)))
+CorLangEng: we are [CorAV]
+CorLangGer: wir sind es bestrebt      BUG: wir sind es zu tun bestrebt  ???
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAV determined_AV)))
+CorLangEng: we are [CorAV]
+CorLangGer: wir sind entschlossen dazu
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAQ uncertain_AQ)))
+CorLangEng: we are [CorAQ]
+CorLangGer: wir sind dessen ungewiß
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorAQ curious_AQ)))
+CorLangEng: we are [CorAQ]
+CorLangGer: wir sind neugierig darauf
+
+
+-- predicatve adjective with sentential object (and correlate), via (Cor)ComplAS --
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))))))
+CorLangEng: we are glad that we live
+CorLangGer: wir sind froh , dass wir leben
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (AdAP very_AdA (ComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V)))))))
+CorLangEng: we are very glad that we live
+CorLangGer: wir sind sehr froh , dass wir leben
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAS tired_of_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))))))
+CorLangEng: 
+CorLangGer: wir sind überdrüssig , dass wir leben       GRAMMATICAL?
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))))))
+CorLangEng: we are [CorComplAS]
+CorLangGer: wir sind froh darüber , dass wir leben
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAS tired_of_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV sleep_V))))))
+CorLangEng: we are [CorComplAS]
+CorLangGer: wir sind dessen überdrüssig , dass ihr schlaft
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV sleep_V)))))))
+CorLangEng: we haven't been [CorComplAS]
+CorLangGer: wir sind nicht froh darüber gewesen , dass ihr schlaft
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAS tired_of_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV sleep_V)))))))
+CorLangEng: we haven't been [CorComplAS]
+CorLangGer: wir sind nicht dessen überdrüssig gewesen , dass ihr schlaft
+
+
+-- predicatve adjective with interrogative object (and correlate), via (Cor) ComplAQ : AQ -> QS -> AP --
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAQ uncertain_AQ (UseQCl (TTAnt TFut ASimul) PPos (ExistIP whatSg_IP)))))
+CorLangEng: we are uncertain what there will be
+CorLangGer: wir sind ungewiß , was es geben wird      BUG: correlate needed
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAQ uncertain_AQ (UseQCl (TTAnt TFut ASimul) PPos (ExistIP whatSg_IP)))))
+CorLangEng: we are [CorComplAQ]
+CorLangGer: wir sind dessen ungewiß , was es geben wird
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAQ curious_AQ (UseQCl (TTAnt TFut ASimul) PPos (ExistIP whatSg_IP)))))
+CorLangEng: we are curious what there will be
+CorLangGer: wir sind neugierig , was es geben wird
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAQ curious_AQ (UseQCl (TTAnt TFut ASimul) PPos (ExistIP whatSg_IP)))))
+CorLangEng: we are [CorComplAQ]
+CorLangGer: wir sind neugierig darauf , was es geben wird
+
+
+-- predicatve adjective with infinitival object (and correlate), via (Cor) ComplAV : AV -> VP -> AP --
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAV eager_AV (AdvVP (UseV live_V) (PositAdvAdj good_A)))))
+CorLangEng: we are eager to live well
+CorLangGer: wir sind bestrebt , gut zu leben
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAV eager_AV (AdvVP (UseV live_V) (PositAdvAdj good_A)))))
+CorLangEng: we are [CorComplAV]
+CorLangGer: wir sind es bestrebt , gut zu leben      GRAMMATICAL with correlate?
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (ComplAV determined_AV (AdvVP (UseV fly_V) (PrepNP to_Prep (UsePN paris_PN))))))
+CorLangEng: we are determined to fly to Paris
+CorLangGer: wir sind entschlossen , nach Paris zu fliegen
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (CorComplAV determined_AV (AdvVP (UseV fly_V) (PrepNP to_Prep (UsePN paris_PN))))))
+CorLangEng: we are [CorComplAV]
+CorLangGer: wir sind entschlossen dazu , nach Paris zu fliegen
+
+
+=== Attributive adjectives with sentential, infinitival or interrogative object ===
+
+-- attributive adjective with correlate for sentential object, via CorAS : AS -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAS glad_AS) (UseN child_N))
+CorLangEng: the child [CorAS]
+CorLangGer: das darüber frohe Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAS tired_of_AS) (UseN child_N))
+CorLangEng: the child [CorAS]
+CorLangGer: das dessen überdrüssige Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAV eager_AV) (UseN child_N))
+CorLangEng: the child [CorAV]
+CorLangGer: das es bestrebte Kind    BUG: correlate = es zu tun ?
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAQ uncertain_AQ) (UseN child_N))
+CorLangEng: the child [CorAQ]
+CorLangGer: das dessen ungewisse Kind
+
+
+-- attributive adjective with sentential object (and correlate), via (Cor)ComplAS : AS -> S -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (UseV sleep_V)))) (UseN child_N))
+CorLangEng: the glad that I sleep child
+CorLangGer: das , dass ich schlafe , frohe Kind          UNGRAMMATICAL: correlate needed
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAS tired_of_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron it_Pron) (UseV rain_V0)))) (UseN boy_N))
+CorLangEng: 
+CorLangGer: der , dass es regnet , überdrüssige Junge    UNGRAMMATICAL: correlate needed
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorComplAS glad_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (UseV sleep_V)))) (UseN child_N))
+CorLangEng: the child [CorComplAS]
+CorLangGer: das darüber , dass ich schlafe , frohe Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorComplAS tired_of_AS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron it_Pron) (UseV rain_V0)))) (UseN boy_N))
+CorLangEng: the boy [CorComplAS]
+CorLangGer: der dessen , dass es regnet , überdrüssige Junge
+
+
+-- attributive adjective with correlate for interrogative object, via CorAQ : AQ -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAQ uncertain_AQ) (UseN child_N))
+CorLangEng: the child [CorAQ]
+CorLangGer: das dessen ungewisse Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAQ curious_AQ) (UseN child_N))
+CorLangEng: the child [CorAQ]
+CorLangGer: das darauf neugierige Kind
+
+
+-- attributive adjective with interrogative object (and correlate), via (Cor)ComplAQ : AQ -> QS -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAQ curious_AQ (UseQCl (TTAnt TPres ASimul) PPos (what_name_QCl (UsePron i_Pron)))) (UseN child_N))
+CorLangEng: the curious what my name is child
+CorLangGer: das , wie ich heiße , neugierige Kind       UNGRAMMATICAL: correlate needed
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorComplAQ curious_AQ (UseQCl (TTAnt TPres ASimul) PPos (what_name_QCl (UsePron i_Pron)))) (UseN child_N))
+CorLangEng: the child [CorComplAQ]
+CorLangGer: das darauf , wie ich heiße , neugierige Kind
+
+
+-- attributive adjective with correlate for infinitival object, via CorAV : AV -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAV eager_AV) (UseN child_N))
+CorLangEng: the child [CorAV]
+CorLangGer: das es bestrebte Kind                       UNGRAMMATICAL: correlate = es zu tun ?
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorAV determined_AV) (UseN child_N))
+CorLangEng: the child [CorAV]
+CorLangGer: das dazu entschlossene Kind
+
+
+-- attributive adjective with (correlate and) infinitival object, via (Cor)ComplAV : AV -> VP -> AP --
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAV determined_AV (ComplVV can_VV (UseV sing_V))) (UseN child_N))
+CorLangEng: the determined to be able to sing child
+CorLangGer: das , singen zu können , entschlossene Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAV determined_AV (CorComplVV can_VV (UseV sing_V))) (UseN child_N))
+CorLangEng: the determined to [CorComplVV] child
+CorLangGer: das , singen zu können , entschlossene Kind        REMARK: for modal verb, CorComplVV = ComplVV
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (ComplAV determined_AV (UseV sing_V)) (UseN child_N))
+CorLangEng: the determined to sing child
+CorLangGer: das , zu singen , entschlossene Kind               GRAMMATICAL: drop commata
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (CorComplAV determined_AV (UseV sing_V)) (UseN child_N))
+CorLangEng: the child [CorComplAV]
+CorLangGer: das dazu , zu singen , entschlossene Kind
+
+
+=== Adjectives with nominal instead of sentential object ===
+
+--- predicative adjective with nominal instead of sentential object ---
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AS glad_AS (DetCN (DetQuant DefArt NumSg) (UseN peace_N)))))
+CorLangEng: we are [Compl2AS]
+CorLangGer: wir sind froh über den Frieden
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AS glad_AS (DetCN (DetQuant DefArt NumSg) (UseN war_N))))))
+CorLangEng: we haven't been [Compl2AS]
+CorLangGer: wir sind nicht froh über den Krieg gewesen
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AS tired_of_AS (DetCN (DetQuant DefArt NumSg) (UseN war_N)))))
+CorLangEng: we are [Compl2AS]
+CorLangGer: wir sind des Kriegs überdrüssig
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AS tired_of_AS (DetCN (DetQuant DefArt NumSg) (UseN peace_N))))))
+CorLangEng: we haven't been [Compl2AS]
+CorLangGer: wir sind nicht des Friedens überdrüssig gewesen
+
+
+--- attributive adjective with nominal instead of sentential object ---
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (AdAP very_AdA (Compl2AS glad_AS (DetCN (DetQuant DefArt NumSg) (UseN dog_N)))) (UseN child_N))
+CorLangEng: the child very [Compl2AS]
+CorLangGer: das über den Hund sehr frohe Kind
+
+
+--- predicative adjective with nominal instead of infinitival object ---
+
+BUG: nominal instead of infinitival object is bad for eager_AV.c2 = accPrep: 
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AV eager_AV (DetCN (DetQuant DefArt NumSg) (UseN peace_N)))))
+CorLangEng: we are [Compl2AV]
+CorLangGer: wir sind den Frieden bestrebt          UNGRAMMATICAL: eager_AV + NP 
+
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AV determined_AV (DetCN (DetQuant DefArt NumSg) (UseN peace_N)))))
+CorLangEng: we are [Compl2AV]
+CorLangGer: wir sind entschlossen zu dem Frieden
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AV determined_AV (DetCN (DetQuant DefArt NumSg) (UseN peace_N))))))
+CorLangEng: we haven't been [Compl2AV]
+CorLangGer: wir sind nicht entschlossen zu dem Frieden gewesen
+
+
+--- attributive adjective with nominal instead of infinitival object ---
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (Compl2AV determined_AV everything_NP) (UseN child_N))
+CorLangEng: the child [Compl2AV]
+CorLangGer: das zu allem entschlossene Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (Compl2AV eager_AV everything_NP) (UseN child_N))
+CorLangEng: the child [Compl2AV]
+CorLangGer: das alles bestrebte Kind                UNGRAMMATICAL: eager_AV + NP
+
+
+--- predicative adjective with nominal instead of interrogative object ---
+
+CorLang: PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AQ curious_AQ (DetCN (DetQuant DefArt NumSg) (UseN peace_N)))))
+CorLangEng: we are [Compl2AQ]
+CorLangGer: wir sind neugierig auf den Frieden
+
+
+CorLang: UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (UseComp (CompAP (Compl2AQ curious_AQ (DetCN (DetQuant DefArt NumSg) (UseN peace_N))))))
+CorLangEng: we haven't been [Compl2AQ]
+CorLangGer: wir sind nicht neugierig auf den Frieden gewesen
+
+
+--- attributive adjective with nominal instead of interrogative object ---
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (Compl2AQ curious_AQ (DetCN beide_Det (UseN2 father_N2))) (UseN child_N))
+CorLangEng: the child [Compl2AQ]
+CorLangGer: das auf beide Väter neugierige Kind
+
+
+CorLang: DetCN (DetQuant DefArt NumSg) (AdjCN (Compl2AQ uncertain_AQ (DetCN beide_Det (UseN2 father_N2))) (UseN child_N))
+CorLangEng: the child [Compl2AQ]
+CorLangGer: das beider Väter ungewisse Kind
+
+
+---- end Correlates.gfs -------
+-- CorLang.gfs done --

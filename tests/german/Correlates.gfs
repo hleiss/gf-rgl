@@ -1,0 +1,177 @@
+-- Author: Hans Leiss, Dec 2025, Jan 2026
+dc h1 ps ?0
+dc lt l -bind -treebank ?0
+
+%h1 "======== GF/gf-rgl/tests/german/Correlates.gfs ============"
+
+%h1 "-- sentential subject, by PredSCVP : SC -> VP -> Cl --"
+
+%lt PredSCVP (EmbedS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV play_V)))) (UseComp (CompAP (PositA good_A)))
+%lt PredSCVP (EmbedVP (UseV sleep_V)) (UseComp (CompAP (PositA good_A)))
+%lt PredSCVP (EmbedQS (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv where_IAdv (PredVP (UsePron we_Pron) (UseV live_V))))) (UseComp (CompAP (PositA beautiful_A)))
+
+%h1 "-- Correlate + sentential subject, by CorPredSCVP : SC -> VP -> Cl --"
+
+%lt CorPredSCVP (EmbedS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV play_V)))) (UseComp (CompAP (PositA good_A)))
+%lt CorPredSCVP (EmbedVP (UseV sleep_V)) (UseComp (CompAP (PositA good_A)))
+%lt CorPredSCVP (EmbedQS (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv where_IAdv (PredVP (UsePron we_Pron) (UseV live_V))))) (UseComp (CompAP (PositA beautiful_A)))
+
+%h1 "-- object sentence (+ correlate), by (Cor)ComplVS : VS -> S -> VP --"
+
+%lt UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (ComplVS fear_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+%lt UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (CorComplVS fear_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+
+%lt UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (ComplVS hope_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+%lt UseCl (TTAnt TPres AAnter) PNeg (PredVP (UsePron we_Pron) (CorComplVS hope_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+
+ps "--- BUG: VS with datPrep or genPrep should not use ComplVS, only CorComplVS --" 
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVS trauen_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVS trauen_VS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVS erinnern_rVS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVS erinnern_rVS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron youPl_Pron) (UseV come_V)))))
+
+%h1 "-- object interrogative (+ correlate), by (Cor)ComplVQ : VQ -> QS -> VP --"
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (ComplVQ fragen_VQ (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv when_IAdv (PredVP (UsePron youPl_Pron) (UseV come_V))))))
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron i_Pron) (CorComplVQ fragen_VQ (UseQCl (TTAnt TPres ASimul) PPos (QuestIAdv when_IAdv (PredVP (UsePron youPl_Pron) (UseV come_V))))))
+
+%h1 "-- object infinitive (+ correlate), by (Cor)ComplVV : VV -> VP -> VP --"
+
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVV versuchen_VV (UseV sleep_V)))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVV versuchen_VV (UseV sleep_V)))
+
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplVV denken_an_VV (UseV sleep_V)))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (CorComplVV denken_an_VV (UseV sleep_V)))
+
+%h1 "-- Using nominal object instead of sentential object ---"
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVV versuchen_VV)) (DetCN (DetQuant (PossPron i_Pron) NumSg) (UseN idea_N))))
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVQ fragen_VQ)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS hope_VS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS erinnern_rVS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+
+%lt UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (ComplSlash (SlashV2a (UseVS trauen_VS)) (DetCN (DetQuant (PossPron youSg_Pron) NumSg) (UseN idea_N))))
+
+
+
+%h1 "-- nominal object and object infinitive (+ correlate), using (Cor)SlashV2V : V2V -> VP -> VPSlash --"
+
+%lt PredVP (UsePron i_Pron) (ComplSlash (SlashV2V erinnern_an_V2V (ComplSlash (SlashV2a close_V2) (DetCN (DetQuant DefArt NumSg) (UseN door_N)))) (UsePron youSg_Pron))
+
+%lt PredVP (UsePron i_Pron) (ComplSlash (CorSlashV2V erinnern_an_V2V (ComplSlash (SlashV2a close_V2) (DetCN (DetQuant DefArt NumSg) (UseN door_N)))) (UsePron youSg_Pron))
+
+%h1 "-- question for missing object sentence, by QuestSlashS : ClSlashS -> QCl --"
+
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron youSg_Pron) (AdvVPSlashS (SlashVSa hope_VS) now_Adv)))
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (AdvNP (UsePron youSg_Pron) now_Adv) (SlashVSa hope_VS)))
+
+%h1 "--    alternative reading with whatSg_IP and QuestSlash : ClSlash -> IP -> QCl --"
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlash whatSg_IP (AdvSlash (SlashVP (UsePron youSg_Pron) (SlashV2a (UseVS hope_VS))) now_Adv))
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlash whatSg_IP (SlashVP (UsePron youSg_Pron) (AdvVPSlash (SlashV2a (UseVS hope_VS)) now_Adv)))
+
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron))))
+
+%lt UseQCl (TTAnt TPres ASimul) PPos (QuestSlashS (SlashVPSlashS (UsePron we_Pron) (SlashVSa hope_VS)))
+
+%h1 "-- Difference between QuestSlashS and RelSlashS --"
+
+%lt UseQCl (TTAnt TPast AAnter) PNeg (QuestSlashS (SlashVPSlashS (AdvNP (UsePron we_Pron) today_Adv) (SlashVSa hope_VS)))
+
+%lt UseRCl (TTAnt TPast AAnter) PPos (RelSlashS (SlashVPSlashS (UsePron we_Pron) (AdvVPSlashS (SlashVSa hope_VS) today_Adv)))
+
+%h1 "-- Nominal and sentential object (+ correlate) , via ComplSlash o (Cor)SlashV2S : V2S -> S -> NP -> VP --"
+
+%lt PredVP (UsePron we_Pron) (ComplSlash (SlashV2S answer_V2S (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron they_Pron) (UseV live_V)))) (UsePron youSg_Pron))
+%lt PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2S answer_V2S (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron they_Pron) (UseV live_V)))) (UsePron youSg_Pron))
+
+%h1 "-- Nominal and interrogative object (+ correlate) , via ComplSlash o (Cor)SlashV2Q : V2Q -> S -> NP -> VP --"
+
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (SlashV2Q ask_V2Q (UseQCl (TTAnt TPast AAnter) PPos (QuestCl (PredVP (UsePron he_Pron) tired_VP)))) (UsePron youSg_Pron)))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2Q ask_V2Q (UseQCl (TTAnt TPast AAnter) PPos (QuestCl (PredVP (UsePron he_Pron) tired_VP)))) (UsePron youSg_Pron)))
+
+%h1 "-- Nominal and infinitival object (+ correlate) , via ComplSlash o (Cor)SlashV2V : V2V -> S -> NP -> VP --"
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (SlashV2V versprechen_dat_V2V ready_VP) (UsePron youSg_Pron)))
+%lt UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2V versprechen_dat_V2V ready_VP) (UsePron youSg_Pron)))
+%lt (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2V helfen_V2V ready_VP) (UsePron youSg_Pron))))
+
+gr -number=4 UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (ComplSlash (CorSlashV2V ? ready_VP) (UsePron youSg_Pron))) | l
+
+%h1 "===------- Focus constructions (= fronting, left extraction) ---------==="
+
+%h1 "-- Nominal object in focus, via FocObj : NP -> ClSlash -> Foc --"
+
+%lt FocObj (UsePron it_Pron) (SlashVP (UsePron we_Pron) (SlashV2a (UseVS hope_VS)))
+%lt FocObj (UsePron he_Pron) (SlashVP (UsePron we_Pron) (SlashV2a (UseVS hope_VS)))
+%lt FocObj (DetNP (DetQuant DefArt NumSg)) (SlashVP (UsePron we_Pron) (Slash2V3 (UseV2S answer_V2S) (UsePron youSg_Pron)))
+%lt FocObj (UsePron he_Pron) (SlashVP (UsePron i_Pron) (AdVVPSlash always_AdV (SlashV2a love_V2)))
+
+%h1 "-- Focus constructions: Sentential objects and correlates extracted to the left --"
+
+%lt PredVP (UsePron youSg_Pron) (ComplVS hope_VS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (UseV sleep_V))))
+%lt FocS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron we_Pron) (UseV sleep_V))) (SlashVPSlashS (UsePron youSg_Pron) (SlashVSa hope_VS))
+
+%h1 "-- sentential object in focus, via Foc(Cor)S : S -> ClSlashS -> Foc --"
+
+%lt FocS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV come_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa know_VS))
+
+%lt FocCorS (UseCl (TTAnt TPres ASimul) PNeg (PredVP (UsePron youPl_Pron) (UseV come_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa know_VS))
+
+%lt FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (SlashVSa hope_VS))
+
+%lt FocS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+
+%lt FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+
+%lt FocCorS (UseCl (TTAnt TPres ASimul) PPos (PredVP (UsePron we_Pron) (UseV live_V))) (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron)))
+
+%lt CorFocS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S answer_V2S (UsePron youSg_Pron)))
+%lt CorFocS (SlashVPSlashS (UsePron we_Pron) (Slash2V2S erinnern_an_V2S (UsePron youPl_Pron)))
+
+%h1 "-- interrogative object in focus, via FocQS : QS -> ClSlashQS -> Foc --"
+
+%lt FocQS (UseQCl (TTAnt TPres ASimul) PPos (QuestVP whoSg_IP is_wrong_VP)) (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+%lt CorFocQS (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+%lt FocCorQS (UseQCl (TTAnt TPres ASimul) PPos (QuestVP whoSg_IP is_wrong_VP)) (SlashVPSlashQS (UsePN john_PN) (Slash2V2Q ask_V2Q somebody_NP))
+
+%h1 "-- infinitival object in focus, via FocVP : VP -> ClSlashVP -> Foc --"
+
+%lt FocVP is_right_VP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+%lt CorFocVP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+%lt FocCorVP is_right_VP (SlashVPSlashVP everybody_NP (SlashVVa wagen_VV))
+
+%h1 "-- noun with sentential object (and correlate), via CorNS : NS -> CN and CorComplNS : NS -> S -> CN --"
+%lt DetCN (DetQuant DefArt NumSg) (UseN belief_N)
+%lt DetCN (DetQuant DefArt NumSg) (CorNS belief_NS)
+%lt DetCN (DetQuant DefArt NumSg) (CorComplNS belief_NS (UseCl (TTAnt TPast ASimul) PPos (PredVP nobody_NP ill_VP)))
+%lt DetCN (DetQuant DefArt NumSg) (ComplNS belief_NS (UseCl (TTAnt TPast ASimul) PPos (PredVP nobody_NP ill_VP)))
+%lt DetCN (DetQuant DefArt NumSg) (ComplNSConj belief_NS (UseClConj (TTAnt TPres ASimul) PPos (PredVP nobody_NP ill_VP)))
+%lt DetCN (DetQuant DefArt NumSg) (Compl2NS belief_NS (UseLN switzerland_LN))
+
+%h1 "-- noun with sentential object (and correlate), and possessive (via PartNP) --"
+%lt DetCN (DetQuant DefArt NumSg) (PartNP (ComplNS belief_NS (UseCl (TTAnt TPres AAnter) PPos (PredVP (UsePron we_Pron) (UseV sleep_V)))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+%lt DetCN (DetQuant DefArt NumSg) (PartNP (CorComplNS belief_NS (UseCl (TTAnt TPres AAnter) PPos (PredVP (UsePron we_Pron) (UseV sleep_V)))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+
+%lt DetCN (DetQuant DefArt NumSg) (PartNP (Compl2NS belief_NS (DetCN (DetQuant DefArt NumSg) (UseN2 mother_N2))) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))
+%lt DetCN (DetQuant DefArt NumSg) (Compl2NS belief_NS (DetCN (DetQuant DefArt NumSg) (PartNP (UseN2 mother_N2) (DetCN (DetQuant DefArt NumPl) (UseN child_N)))))
+
+
+%h1 "-- noun with infinitival object (and correlate), via CorNV : NV -> CN and CorComplNV : NV -> VP -> CN --"
+%lt DetCN (DetQuant DefArt NumSg) (CorNV hope_NV)
+%lt DetCN (DetQuant DefArt NumSg) (CorComplNV hope_NV (CorVV can_VV))
+%lt DetCN (DetQuant DefArt NumSg) (CorComplNV hope_NV thirsty_VP)
+
+%h1 "-- noun with interrogative object (and correlate), via CorNQ : NQ -> N2 and CorComplNQ : NQ -> QS -> CN --"
+%lt DetCN (DetQuant DefArt NumSg) (UseN2 (UseNQ doubt_NQ))
+%lt DetCN (DetQuant DefArt NumSg) (CorNQ doubt_NQ)
+%lt DetCN (DetQuant DefArt NumSg) (CorComplNQ doubt_NQ (UseQCl (TTAnt TPres AAnter) PPos (QuestIComp (CompIAdv (AdvIAdv why_IAdv there_Adv)) nothing_NP)))
+
+%h1 "==== AP Part of Correlates.gfs (from CorAdjectives.gfs) ==="
+
+eh CorAdjectives.gfs
+
+! echo "---- end Correlates.gfs -------"
