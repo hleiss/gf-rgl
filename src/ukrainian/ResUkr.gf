@@ -164,7 +164,7 @@ oper mkA : (_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_ : Str) -> A =
 
 
 oper Compl = {s : Str; c : Case} ;
-oper noPrep : Compl = {s=""; c=Nom} ;
+oper noPrep : Compl = {s=""; c=Acc} ;
 
 oper CommonNoun = N ;
 oper AdjPhrase = A ;
