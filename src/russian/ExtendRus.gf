@@ -197,7 +197,7 @@ lin
     } ;
   Imperfective => vps ** {
     verb=(passivate vps.verb);
-    compl=\\p,a => shortPastPassPart vps.verb (agrGenNum a) ++ vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ vps.c.s
+    compl=\\p,a => vps.compl1 ! p ! a ++ vps.compl2 ! p ! a ++ vps.c.s
   }
      };
 
