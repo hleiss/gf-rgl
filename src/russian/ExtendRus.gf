@@ -63,6 +63,7 @@ concrete ExtendRus of Extend =
 lincat
   VPS     = {s : Mood => Agr => Str} ;
   [VPS]  = {s1,s2 : Mood => Agr => Str} ;
+  [Comp] = {s1,s2 : AgrTable ; cop : CopulaType} ;
   RNP     = {s : Agr => Str} ;
   RNPList = {s1,s2 : Agr => Str} ;
 
@@ -325,6 +326,24 @@ lin
   BaseVPS = twoTable2 Mood Agr ;
   ConsVPS = consrTable2 Mood Agr comma ;
   ConjVPS = conjunctDistrTable2 Mood Agr ;
+
+  BaseComp x y = {
+    s1 = \\a => x.adv ++ x.s ! a ;
+    s2 = \\a => y.adv ++ y.s ! a ;
+    cop = x.cop
+    } ;
+
+  ConsComp x xs = {
+    s1 = \\a => x.adv ++ x.s ! a ++ comma ++ xs.s1 ! a ;
+    s2 = xs.s2 ;
+    cop = x.cop
+    } ;
+
+  ConjComp conj xs = {
+    s = \\a => conj.s1 ++ xs.s1 ! a ++ conj.s2 ++ xs.s2 ! a ;
+    adv = [] ;
+    cop = xs.cop
+    } ;
 
   -- : NP -> VPS -> S ;
   PredVPS np vps = {
