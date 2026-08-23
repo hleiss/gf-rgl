@@ -6,7 +6,7 @@ concrete NamesMkd of Names = CatMkd ** open Prelude,ResMkd in {
                         vocative = gn.s ++ sn.s; a = {g = GSg Masc; p = P1}} ;
   lin GivenName gn = {s = \\r => gn.s; vocative = gn.s;
                       a = {g = GSg Masc; p = P1}} ;
-  lin InLN ln = {s = ln.s} ;
+  lin InLN ln = {s = "во" ++ ln.s} ;
   lin MaleSurname sn = {s = \\r => sn.s; vocative = sn.s;
                         a = {g = GSg Masc; p = P1}} ;
   lin PlSurname sn = {s = \\r => sn.s; vocative = sn.s;

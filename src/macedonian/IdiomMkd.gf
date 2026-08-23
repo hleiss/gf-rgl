@@ -1,12 +1,26 @@
-concrete IdiomMkd of Idiom = CatMkd ** open Prelude,ResMkd in {
+concrete IdiomMkd of Idiom = CatMkd ** open Prelude,ResMkd,MorphoMkd in {
 
   lin CleftAdv a s = {s = \\t,a2,p,o => a.s ++ s.s} ;
   lin CleftNP np rs = {s = \\t,a,p,o => np.s ! RSubj
                                           ++ rs.s ! np.a.g} ;
   lin ExistIP ip = {s = \\t,a,p => ip.s} ;
   lin ExistIPAdv ip a = {s = \\t,a2,p => ip.s ++ a.s} ;
-  lin ExistNP np = {s = \\t,a,p,o => np.s ! RSubj} ;
-  lin ExistNPAdv np a = {s = \\t,a2,p,o => np.s ! RSubj ++ a.s} ;
+  lin ExistNP np = {
+        s = \\o,t,a,p =>
+                let vp = case p of {
+	                       Pos => mkV001 "има" ;
+	                       Neg => mkV001 "нема" 
+	                     } ** {compl = \\_ => np.s ! RSubj} ;
+                in mkClause [] {g=GSg Neuter; p=P3} vp ! o ! t ! a ! p
+      } ;
+  lin ExistNPAdv np a = {
+        s = \\o,t,a2,p =>
+                let vp = case p of {
+	                       Pos => mkV001 "има" ;
+	                       Neg => mkV001 "нема" 
+	                     } ** {compl = \\_ => np.s ! RSubj ++ a.s} ;
+                in mkClause [] {g=GSg Neuter; p=P3} vp ! o ! t ! a2 ! p
+      } ;
   lin GenericCl vp = {s = \\t,a,p,o => vp.present ! Imperfective ! Sg
                                          ! P1} ;
   lin ImpP3 np vp = {s = np.s ! RSubj
