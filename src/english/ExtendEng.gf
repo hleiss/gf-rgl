@@ -500,4 +500,6 @@ lin CardCNCard card cn =
 lin theyFem_Pron = mkPron "they" "them" "their" "theirs" plural P3 feminine ;
 lin theyNeutr_Pron = mkPron "they" "them" "their" "theirs" plural P3 nonhuman ;
 
+lin UttAdV adv = adv ;
+
 }
