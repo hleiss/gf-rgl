@@ -10,7 +10,7 @@ concrete IdiomMkd of Idiom = CatMkd ** open Prelude,ResMkd,MorphoMkd in {
                 let vp = case p of {
 	                       Pos => mkV001 "има" ;
 	                       Neg => mkV001 "нема" 
-	                     } ** {compl = \\_ => np.s ! RSubj} ;
+	                     } ** {compl : Agr => Str = \\_ => np.s ! RSubj} ;
                 in mkClause [] {g=GSg Neuter; p=P3} vp ! o ! t ! a ! Pos
       } ;
   lin ExistNPAdv np a = {
@@ -18,7 +18,7 @@ concrete IdiomMkd of Idiom = CatMkd ** open Prelude,ResMkd,MorphoMkd in {
                 let vp = case p of {
 	                       Pos => mkV001 "има" ;
 	                       Neg => mkV001 "нема" 
-	                     } ** {compl = \\_ => np.s ! RSubj ++ a.s} ;
+	                     } ** {compl : Agr => Str = \\_ => np.s ! RSubj ++ a.s} ;
                 in mkClause [] {g=GSg Neuter; p=P3} vp ! o ! t ! a2 ! Pos
       } ;
   lin GenericCl vp = {s = \\t,a,p,o => vp.present ! Imperfective ! Sg
