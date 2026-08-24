@@ -1224,7 +1224,7 @@ mkConj : Str -> Number -> Conj =
 mkPConj : Str -> PConj = \s -> lin PConj {s=s} ;
 mkPredet : Str -> Predet = \s -> lin Predet {s=s} ;
 mkCAdv : Str -> CAdv = \s -> lin CAdv {s=s; p=""} ;
-mkCard : Str -> Card = \s -> lin Card {s=s} ;
-mkACard : Str -> ACard = \s -> lin ACard {s=s} ;
+mkCard : Str -> Card = \s -> lin Card {s=s; n=NNum Sg} ;
+mkACard : Str -> ACard = \s -> lin ACard {s=s; n=NNum Sg} ;
 
 }

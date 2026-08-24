@@ -1,5 +1,5 @@
 concrete NounMkd of Noun = CatMkd ** open Prelude,ResMkd in {
-  lin AdNum a c = {s = a.s ++ c.s} ;
+  lin AdNum a c = c ** {s = a.s ++ c.s} ;
   lin AdjCN ap cn = {
        s = case ap.isPre of {
              True  => \\s,n => ap.s ! s
@@ -82,10 +82,14 @@ concrete NounMkd of Noun = CatMkd ** open Prelude,ResMkd in {
   lin MassNP cn = {s = \\r => cn.s ! Indef ! Sg;
                    vocative = cn.vocative ! Sg;
                    a = {g = GSg cn.g; p = P3}} ;
-  lin NumCard c = {s = c.s; n = NNum Sg} ;
-  lin NumDecimal d = {s = d.s} ;
-  lin NumDigits d = {s = d.s} ;
-  lin NumNumeral n = {s = n.s} ;
+  lin NumCard c = c ;
+  lin NumDecimal, NumDigits, NumNumeral = \d -> {
+        s = d.s ;
+        n = case d.n of {
+              Sg => NNum Sg ;
+              Pl => NCountable
+            }
+        } ;
   lin NumPl = {s = []; n = NNum Pl} ;
   lin NumSg = {s = []; n = NNum Sg} ;
   lin UseN s = s ;

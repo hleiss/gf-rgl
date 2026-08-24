@@ -17,6 +17,7 @@ lincat Pron = Pronoun ;
 lincat Prep = Compl ;
 lincat Decimal = {s : Str; n : Number; hasDot : Bool} ;
 lincat Digits = {s : Str; n : Number; tail : DTail} ;
+lincat Numeral = {s : Str; n : Number} ;
 
 linref N,N2,N3 = \n -> n.s ! Indef ! Sg ;
 linref V, VA, VV, VS, VQ, V2, V2S, V2Q, V3, V2A, V2V = 
@@ -30,7 +31,7 @@ linref A, A2 = \a -> a.s ! Indef ! GSg Masc ;
 
 lincat AP = {s : Species => GenNum => Str; isPre : Bool} ;
 lincat NP = {s : Role => Str; vocative: Str; a : Agr} ;
-lincat Num = {s : Str; n : NNumber} ;
+lincat Num, Card, ACard = {s : Str; n : NNumber} ;
 lincat Quant = {s : GenNum => Str; sp : Species} ;
 lincat Ord = {s : Species => GenNum => Str} ;
 lincat Det, DAP = {s : Gender => Str; n : NNumber; sp : Species} ;
