@@ -14,6 +14,8 @@ lincat
 lin
   GenModNP num np cn = DetCN (DetQuant DefArt num) (PossNP cn np) ;
 
+  UttAdV adv = {s = adv.s} ;
+
   EmptyRelSlash slash = RelSlash IdRP slash ;
 
   CompoundN n1 n2 = 

@@ -8,6 +8,8 @@ lin
 
   AdAdV a adv = {s = a.s ++ adv.s; p = adv.p} ;
 
+  UttAdV adv = {s = adv.s} ;
+
   EmptyRelSlash slash = {
       s = \\t,a,p,agr => linPrep slash.c2 ++ whichRP ! agr.gn ++ slash.s ! agr ! t ! a ! p ! Main
       } ;
@@ -319,4 +321,3 @@ lin ProDrop pro = pro ;
 lin TPastSimple = {s = []} ** {t = VPastSimple} ;  --# notpresent
 
 }
-

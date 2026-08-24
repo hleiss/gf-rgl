@@ -17,6 +17,8 @@ lincat
   X = {s : Str} ;
 
 lin
+  UttAdV adv = {s = adv.s} ;
+
   iFem_Pron  = mkPron "eg" "meg" "mær" "mín" Masc Sg P1 ;
   youFem_Pron = mkPron "tú" "teg" "tær" "tín" Masc Sg P2 ;
   weFem_Pron = mkPron "vit" "okkum" "okkum" "okkara" Masc Pl P1 ;

@@ -2,6 +2,8 @@
 concrete ExtendUkr of Extend = CatUkr ** open ResUkr, ParadigmsUkr in {
 
 lin
+  UttAdV adv = {s = adv.s} ;
+
   iFem_Pron      = mkPron "я" "мене" "мені" "мене" "мені" "мною" Fem Sg P1 ;
   youFem_Pron    = mkPron "ти" "тeбе" "тобі" "мене" "тобі" "тобою" Fem Sg P2 ;  
   weFem_Pron     = mkPron "ми" "нас" "нам" "нас" "наc" "нами" Fem Pl P1 ;
@@ -12,4 +14,3 @@ lin
   youPolPlFem_Pron = mkPron "ви" "вас" "вам" "вас" "вас" "вами" Fem Pl P2 ;
 
 }
-
