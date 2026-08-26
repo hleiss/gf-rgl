@@ -14,12 +14,12 @@ concrete ExtendMlt of Extend =
                  PresPartAP, EmbedPresPart, PastPartAP, PastPartAgentAP,
                  PassVPSlash, PassAgentVPSlash,
                  CompoundN, CompoundAP, GerundCN, GerundNP, GerundAdv,
-                 WithoutVP, ByVP, InOrderToVP,
+                 WithoutVP, ByVP, InOrderToVP, ProgrVPSlash,
                  RNP, RNPList,
                  ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, AdvRVP, AdvRAP,
                  ReflA2RNP, PossPronRNP, ConjRNP,
                  Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP,
-                 AdAdV, UttAdV, PositAdVAdj
+                 AdAdV, UttAdV, PositAdVAd, UseDAP, UseDAPMasc, UseDAPFemj
               ]
               with (Grammar = GrammarMlt) ** open Prelude, Maybe, ParadigmsMlt, MorphoMlt, ResMlt in {
 
@@ -199,6 +199,10 @@ lin ReflPron = {s = \\agr => prep_lil.enclitic ! agr ++ reflPron ! toVAgr agr} ;
     AdAdV ada adv = {s = ada.s ++ adv.s} ;
     UttAdV adv = {s = adv.s} ;
 
+lin UseDAP dap = useDAP Masc dap ;
+    UseDAPMasc dap = useDAP Masc dap ;
+    UseDAPFem dap = useDAP Fem dap ;
+
 oper
   complNP : Compl -> NP -> Str = \c,np ->
     case <c.isPresent,np.isDefn> of {
@@ -229,5 +233,11 @@ oper
   gerundStr : VP -> Str = \vp ->
     "li" ++ infVP vp Simul Pos (agrP3 Sg Masc) ;
 
+  useDAP : Gender -> DAP -> NP = \g,dap -> lin NP {
+    s = \\_ => dap.s ! g ++ dap.adj ! mkGenNum g (numform2num dap.n) ;
+    a = agrP3 (numform2num dap.n) g ;
+    isPron = False ;
+    isDefn = dap.isDefn
+    } ;
 
 }
