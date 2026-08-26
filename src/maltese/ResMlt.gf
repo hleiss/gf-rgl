@@ -1312,4 +1312,11 @@ resource ResMlt = ParamX ** open Prelude, Predef, Maybe in {
         ma+"z-" ++ BIND / strs { "z" }
       } ;
 
+   Adverb = {
+      s : Str ;
+      joinsVerb : Bool ; -- Adv "for us" completely integrates into verb at VP level
+      a : Agr ; -- when joinsVerb, this is important
+      } ;
+   advSS : Str -> Adverb = \s -> {s = s ; joinsVerb = False ; a = agrP3 Sg Masc} ;
+
 }

@@ -107,6 +107,18 @@ concrete NounMlt of Noun = CatMlt ** open ResMlt, Prelude, Maybe in {
       isDefn = True ;
       } ;
 
+    -- DAP -> AP -> DAP
+    -- the large one
+    AdjDAP dap ap = dap ** {
+      adj = \\gn => dap.adj ! gn ++ ap.s ! gn
+      } ;
+
+    -- Det -> DAP
+    -- this one
+    DetDAP det = det ** {
+      adj = \\_ => []
+      } ;
+
     -- Quant
     DefArt = {
       s  = \\_ => artDef ;
