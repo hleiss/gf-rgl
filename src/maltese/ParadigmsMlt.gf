@@ -486,7 +486,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => qabilha ;
           AgP1 Pl     => qabilna ;
           AgP2 Pl     => qabilkom ;
-          AgP2Pl      => qabilhom
+          AgP3Pl      => qabilhom
           } ;
         takesDet = False ;
         joinsVerb = False ;
@@ -547,7 +547,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => biha ;
           AgP1 Pl     => bina ;
           AgP2 Pl     => bikom ;
-          AgP2Pl      => bihom
+          AgP3Pl      => bihom
           } ;
         takesDet = True ;
         joinsVerb = joinsV ;
@@ -564,7 +564,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => war+"ajha" ;
           AgP1 Pl     => war+"ajna" ;
           AgP2 Pl     => war+"ajkom" ;
-          AgP2Pl      => war+"ajhom"
+          AgP3Pl      => war+"ajhom"
           } ;
 
         f+"i" => case toVAgr agr of {
@@ -574,7 +574,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => f+"iha" ;
           AgP1 Pl     => f+"ina" ;
           AgP2 Pl     => f+"ikom" ;
-          AgP2Pl      => f+"ihom"
+          AgP3Pl      => f+"ihom"
           } ;
 
         t+"a'" => case toVAgr agr of {
@@ -584,7 +584,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => t+"agħha" ;
           AgP1 Pl     => t+"agħna" ;
           AgP2 Pl     => t+"agħkom" ;
-          AgP2Pl      => t+"agħhom"
+          AgP3Pl      => t+"agħhom"
           } ;
 
         _ => case toVAgr agr of {
@@ -594,7 +594,7 @@ resource ParadigmsMlt = open
           AgP3Sg Fem  => taht + "ha" ;
           AgP1 Pl     => case taht of {bej+"n" => bej+"na"; _ => taht+"na"} ;
           AgP2 Pl     => taht + "kom" ;
-          AgP2Pl      => taht + "hom"
+          AgP3Pl      => taht + "hom"
           }
       } ;
 
