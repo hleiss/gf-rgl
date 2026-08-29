@@ -152,7 +152,7 @@ lin
 
   MkVPS t p vp = {
     s = \\a => 
-          let verb  = vpTenses vp ! t.t ! t.a ! p.p ! a ! False ! Perf ;
+          let verb  = vpTenses vp ! t.t ! t.a ! p.p ! a ! Main ! Perf ;
               compl = vp.compl ! a
           in t.s ++ p.s ++ verb ++ compl
     } ;
@@ -318,6 +318,6 @@ lin UseComp_estar = UseComp ;
 
 lin ProDrop pro = pro ;
 
-lin TPastSimple = {s = []} ** {t = VPastSimple} ;  --# notpresent
+lin TPastSimple = {s = []} ** {t = VPastSimple Indicative} ;  --# notpresent
 
 }
