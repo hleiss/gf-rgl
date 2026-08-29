@@ -659,7 +659,8 @@ resource ResBul = ParamX - [Tense,Pres,Past,Fut,Cond] ** open Prelude, Predef in
 
           verbs : {aux:{s1:Str; s2:Str}; main:Str} =
             case <t,a> of {
-              <VPresent,Simul> => {aux=vf2 clitic.s;  main=presentImperf} ; --# notpresent
+              <VPresent,Simul> => {aux=vf2 clitic.s;  main=presentImperf}
+              ;  --# notpresent
               <VPresent,Anter> => {aux=vf1 clitic.s;  main=perfect} ; --# notpresent
               <VPastSimple Indicative,Simul> => {aux=vf2 clitic.s;  main=aorist} ; --# notpresent
               <VPastSimple Indicative,Anter> => {aux=vf4 auxAorist; main=perfect} ; --# notpresent
