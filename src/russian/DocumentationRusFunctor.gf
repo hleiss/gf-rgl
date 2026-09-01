@@ -177,11 +177,10 @@ oper
 {-
 -} --# notpresent
   clauseTense : Str -> ResRus.Tense -> Cl -> Str = \label,tense,cl ->
-    tr (th (label ++ " (полож.)") ++
+    tr (intagAttr "th" "rowspan=\"2\"" label ++
         td (clauseForm tense Pos cl) ++
         td (clauseForm tense Pos cl)) ++
-    tr (th (label ++ " (отриц.)") ++
-        td (clauseForm tense Neg cl) ++
+    tr (td (clauseForm tense Neg cl) ++
         td (clauseForm tense Neg cl)) ;
 
   clauseForm : ResRus.Tense -> Polarity -> Cl -> Str = \tense,pol,cl ->
