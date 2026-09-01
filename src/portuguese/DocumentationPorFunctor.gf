@@ -112,6 +112,9 @@ lin
            inflClauseTense (heading past_Parameter)
                            (heading past_Parameter ++ " " ++ heading perfect_Parameter)
                            RPast cl ++
+           inflClauseTense (heading past_Parameter)
+                           (heading past_Parameter ++ " " ++ heading perfect_Parameter)
+                           RPasse cl ++
            inflClauseTense (heading future_Parameter)
                            (heading future_Parameter ++ " " ++ heading perfect_Parameter)
                            RFut cl ++
