@@ -14,6 +14,7 @@ concrete GrammarTel of Grammar =
   TextX - [Adv,AdN,SC],
   StructuralTel,
   TenseX - [Adv,AdN,SC],
-  IdiomTel
+  IdiomTel,
+  NamesTel
   ** {
 }
