@@ -1,1 +1,1 @@
-abstract AllHinAbs = Lang ;
+abstract AllTelAbs = Lang ;
