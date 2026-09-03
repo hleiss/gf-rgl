@@ -1,3 +1,5 @@
 --# -path=.:../abstract:../common:../prelude
 
-concrete AllTel of AllTelAbs = LangTel ;
+concrete AllTel of AllTelAbs =
+  LangTel,
+  ExtendTel ;

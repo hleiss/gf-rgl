@@ -1,1 +1,2 @@
-abstract AllTelAbs = Lang ;
+abstract AllTelAbs =
+  Lang, Extend ;
