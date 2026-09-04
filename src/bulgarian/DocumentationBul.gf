@@ -1,6 +1,6 @@
 --# -path=.:../abstract:../common
 concrete DocumentationBul of Documentation = CatBul ** open 
-  ResBul, Prelude,
+  ResBul, Prelude, ParamX
   HTML in {
 flags coding=utf8 ;
 
