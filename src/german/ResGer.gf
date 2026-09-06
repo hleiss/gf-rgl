@@ -23,7 +23,9 @@ resource ResGer = ParamX ** open Prelude in {
 -- These are the standard four-value case and three-value gender.
 
   param
-    Case = Nom | Acc | Dat | Gen ;
+    Case = Nom | Obj ObjCase ;
+    ObjCase = Acc | Dat | Gen ;
+    
     Gender = Masc | Fem | Neutr ;
 
 -- Complex $CN$s, like adjectives, have strong and weak forms.
@@ -133,7 +135,7 @@ resource ResGer = ParamX ** open Prelude in {
 
   param VAux = VHaben | VSein ;
 
-  param VType = VAct | VRefl Case ;
+  param VType = VAct | VRefl ObjCase ;
 
 -- The order of a sentence depends on whether it is used as a main
 -- clause, inverted, or subordinate.
@@ -190,20 +192,20 @@ resource ResGer = ParamX ** open Prelude in {
     agrAdj : Adjf -> GenNum -> Case -> AForm = \a,gn,c ->
       let
         e  = AMod (GSg Fem) Nom ;
-        en = AMod (GSg Masc) Acc ;
+        en = AMod (GSg Masc) (Obj Acc) ;
       in
       case a of {
         Strong => AMod gn c ;
         Weak => case <gn,c> of {
           <GSg _,   Nom> => e ;
-          <GSg Masc,Acc> => en ;
-          <GSg _,   Acc> => e ;
+          <GSg Masc,Obj Acc> => en ;
+          <GSg _,   Obj Acc> => e ;
           _              => en } ;
         Mixed => case <gn,c> of {
-          <GSg g, Nom|Acc> => AMod gn c ;
+          <GSg g, Nom|Obj Acc> => AMod gn c ;
           _ => en } ;
         MixedStrong => case <gn,c> of {
-          <GSg _, Dat|Gen> => en ;
+          <GSg _, Obj Dat|Obj Gen> => en ;
           _                => AMod gn c }
       } ;
 
@@ -211,7 +213,7 @@ resource ResGer = ParamX ** open Prelude in {
 -- This is used twice in NounGer.
 
     adjfCase : Adjf -> Case -> Adjf = \a,c -> case c of {
-         Nom|Acc => a ;
+         Nom | Obj Acc => a ;
          _ => Weak
          } ;      
 
@@ -252,6 +254,12 @@ resource ResGer = ParamX ** open Prelude in {
   caselist : (x1,_,_,x4 : Str) -> Case => Str = \n,a,d,g -> 
     table {
       Nom => n ; 
+      Obj Acc => a ; 
+      Obj Dat => d ; 
+      Obj Gen => g
+      } ;
+  objcaselist : (x1,_,x3 : Str) -> ObjCase => Str = \a,d,g -> 
+    table {
       Acc => a ; 
       Dat => d ; 
       Gen => g
@@ -447,18 +455,22 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- Prepositions indicate the case of their complement noun phrase.
 
--- There are three types: (i) cases, (ii) pure pre-, post- and circum-positions,
--- and (iii) prepositions contracted with definite article in singular or
--- demonstrative and interrogative pronoun (pronominal adverbs da/wo/hier+prep).
+-- There are two types: (i) object cases, (ii) pure pre-, post- and circum-positions,
+-- where the pre part may contract with the definite article in singular or 
+-- with demonstrative pronoun (da+für, hier+für) [= pronominal adverb] or 
+-- with interrogative pronoun (wo+für).
 
   -- e.g. in+Dat: in dem CN => im CN ; in da => darin ; in wo => worin
   --      Gen+wegen: des CN!Gen wegen ; des(sen) wegen => deswegen ; wes(sen) wegen => weswegen
   param
-    PrepType = isCase | isPrep | isContracting ;
+    PrepType = isCase | isPrep ; -- | isContracting ;
     PrepForm = CPl | CSg Gender | CAdvPron | CIPron ;
 
   oper
-    Preposition : Type = {s : PrepForm => Str ; s2:Str ; c : Case ; t : PrepType} ;
+    Preposition : Type = {s : PrepForm => Str ; s2:Str ; c : ObjCase ; t : PrepType} ;
+
+    -- To specify subjects of V, VP etc, extend to allow nominative     -- HL 9/26
+    SubjectPrep : Type = {s : PrepForm => Str ; s2:Str ; c : Case ; t : PrepType} ;
 
   -- auxiliary type for interrogative and relative pronoun
 
@@ -468,29 +480,37 @@ resource ResGer = ParamX ** open Prelude in {
   -- To apply a preposition to a noun phrase, interrogative or relative pronoun
 
     appPrep = overload {
-    appPrep : Preposition -> (Case => Str) -> Str = appPrep0 ;
-    appPrep : Preposition -> NP -> Str = appPrepNP ; -- e.g. in dem CN => im CN
-    appPrep : Preposition -> IP -> Str = appPrepIP ; -- e.g. in was    => worin
-    appPrep : Preposition -> RP -> RelGenNum => Str  -- e.g. in was    => worin
+    appPrep : Preposition -> (ObjCase => Str) -> Str = appPrep0 ;
+--    appPrep : Preposition -> (Case => Str) -> Str = \p,c -> appSPrep (toSPrep p) c ; -- does not infer lintype e.g. in ExtraGer.AdvRAP
+    appPrep : SubjectPrep -> (Case => Str) -> Str = appSPrep ;
+    appPrep : SubjectPrep -> NP -> Str = appSPrepNP ; -- e.g. in dem CN => im CN
+    appPrep : SubjectPrep -> IP -> Str = appPrepIP ; -- e.g. in was    => worin
+    appPrep : SubjectPrep -> RP -> RelGenNum => Str  -- e.g. in was    => worin
       = appPrepRP ;
     -- appPrep : Preposition -> DemPron -> Str = use CAdvPron ; -- e.g. in dem => darin
     } ;
 
-    appPrep0 : Preposition -> (Case => Str) -> Str = \prep,arg ->
+    appPrep0 : Preposition -> (ObjCase => Str) -> Str = \prep,arg ->
       prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
 
-    appPrepNP : Preposition -> NP -> Str = \prep,np ->
+    appSPrep : SubjectPrep -> (Case => Str) -> Str = \prep,arg ->
+      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
+
+    appSPrepNP : SubjectPrep -> NP -> Str = \prep,np ->
     let
       g : Gender = genderAgr np.a ;
       n : Number = numberAgr np.a ;
       b = case <prep.t,n,np.w> of {
-        <isContracting,Sg,WDefArt> => True ; -- e.g. "zum Hof|zur Tür|zum Fenster herein"
-        _ => False} ;                        -- e.g. "auf dem Hof|auf der Tür|auf dem Fenster"
+        <isPrep,Sg,WDefArt> => True ;  -- e.g. "zum Hof|zur Tür|zum Fenster herein"
+        _ => False} ;                  -- e.g. "auf dem Hof|auf der Tür|auf dem Fenster"
       f = case b of {True => CSg g ; _ => CPl} ;
     in
     prep.s ! f ++ np.s ! b ! prep.c ++ np.ext ++ prep.s2 ++ np.rc ;
 
-  appPrepIP : Preposition -> IP -> Str = \prep,np ->
+    appPrepNP : Preposition -> NP -> Str = \prep,np ->
+      appSPrepNP (toSPrep prep) np ;
+
+  appPrepIP : SubjectPrep -> IP -> Str = \prep,np ->
     let
       g : Gender = genGenNum np.a ;
       n : Number = numGenNum np.a ;
@@ -498,15 +518,15 @@ resource ResGer = ParamX ** open Prelude in {
       f = case b of {True => CIPron ; _ => CPl} -- e.g. "zu was" => "wozu"
     in prep.s ! f ++ np.s ! b ! prep.c ++ prep.s2 ;
 
-  appPrepRP : Preposition -> RP -> (RelGenNum => Str) = \prep,np ->
+  appPrepRP : SubjectPrep -> RP -> (RelGenNum => Str) = \prep,np ->
     let
       uncontracted : RelGenNum => Str =
         \\gn => prep.s ! CPl ++ np.s ! gn ! prep.c ++ prep.s2
     in
     case <prep.t, np.a> of {
-      <isContracting, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
-                                       -- RGenNum (GSg Neutr) => prep.s ! CIPron ;
-                                       gn => uncontracted ! gn} ;
+      <isPrep, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
+                                -- RGenNum (GSg Neutr) => prep.s ! CIPron ;
+                                gn => uncontracted ! gn} ;
       _ => uncontracted
     } ;
 
@@ -524,23 +544,30 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- To build a preposition from just a case.  -- HL 9/19: no longer used in RGL
 
-  noPreposition : Case -> Preposition = \c -> 
+  noPreposition : Case -> SubjectPrep = \c -> 
     {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase} ;
 
 -- To build a preposition from just a case.  -- HL 9/19: moved to mkPrep in ParadigmsGer
 
-  PrepNom : Preposition = {s = \\_ => [] ; t = isCase ; c = Nom ; s2 = []} ;
+  PrepNom : SubjectPrep = {s = \\_ => [] ; t = isCase ; c = Nom ; s2 = []} ;
 
   vonDat  : Preposition = {s=table{CPl => "von" ; CSg Fem => "von der" ; CSg _ => "vom" ;
                                    CAdvPron => "davon" ; CIPron => "wovon"};
-                           s2=[]; c=Dat; t=isContracting} ;
+                           s2=[]; c=Dat; t=isPrep} ;
+
+  toSPrep : Preposition -> SubjectPrep = \prep ->
+    {s = prep.s ; s2 = prep.s2 ; c = Obj prep.c ; t = prep.t} ;
+  fromSPrep : SubjectPrep -> Preposition = \prep ->  -- default Acc for Nom
+    {s = prep.s ; s2 = prep.s2 ; c = case prep.c of {Obj d => d ; Nom => Acc} ; t = prep.t} ;
+                                              
 
 -- To build passive: accusative object -> nom subject; others -> same case or prep
 
-  subjPrep : Preposition -> Preposition = \prep ->
+  subjPrep : Preposition -> SubjectPrep = \prep ->
+    let r : {s : PrepForm => Str ; s2:Str ; t : PrepType} = {s = prep.s ; s2 = prep.s2 ; t = prep.t} in
     case <prep.c,prep.t> of {
-      <Acc,isCase> => prep ** {c = Nom} ;
-      _ => prep
+      <Acc,isCase> => r ** {c = Nom} ;
+      <c,  _>      => r ** {c = Obj c}
     } ;
 
 -- Pronouns and articles
@@ -567,7 +594,7 @@ resource ResGer = ParamX ** open Prelude in {
             <_,Sg,P2> => AgSgP2 -- for "man", "Sie", set in StructuralGer  HL
         } ;
       sp = table {PossF (GSg Masc) Nom => mein + "er" ;             -- HL 12/23
-                  PossF (GSg Neutr) (Nom|Acc) => mein + "es" ;
+                  PossF (GSg Neutr) (Nom|Obj Acc) => mein + "es" ;
                   PossF gn c  => mein + (pronEnding ! gn ! c)} ;
       } ;
 
@@ -614,7 +641,7 @@ resource ResGer = ParamX ** open Prelude in {
    let adj = adjForms teuer teur
    in
    table {
-     AMod (GSg Masc| GSg Neutr) Gen => teur + "es" ;
+     AMod (GSg Masc| GSg Neutr) (Obj Gen) => teur + "es" ;
      a => adj ! a
      } ;
 
@@ -648,7 +675,7 @@ resource ResGer = ParamX ** open Prelude in {
       ext : Str ;             -- sentential complement of V(2)S, V(2)Q, e.g. dass|ob sie kommt
       inf : {inpl: (Agr => Str)*Str ; -- infinitival complement of V(2)V       HL 3/2022
              extr: (Agr => Str)} ;    -- e.g. ihn [] versuchen (lasse) [, ihr zu helfen]
-      c1 : Preposition        -- case of subject
+      c1 : SubjectPrep        -- case of subject
      } ;
 
   VPSlash = VP ** {c2 : Preposition ; objCtrl : Bool} ;  -- HL 3/2019 objCtr added
@@ -804,12 +831,12 @@ resource ResGer = ParamX ** open Prelude in {
 
   insertObjNP : NP -> Preposition -> VPSlash -> VPSlash = \np,prep,vp ->
     let obj = appPrepNP prep np ;
-        b : Bool = case prep.t of {isPrep | isContracting => True ; _ => False} ;
+        b : Bool = case prep.t of {isPrep => True ; _ => False} ;
         w = np.w ;
-        c = prep.c
+        c = prep.c -- TODO turn to ObjCase?
     in insertObj' obj b w c vp ;
 
-  insertObj' : Str -> Bool -> Weight -> Case -> VPSlash -> VPSlash = \obj,isPrep,w,c,vp ->
+  insertObj' : Str -> Bool -> Weight -> ObjCase -> VPSlash -> VPSlash = \obj,isPrep,w,c,vp ->
     vp ** {
       nn = \\a =>
         let vpnn = vp.nn ! a in
@@ -1024,22 +1051,38 @@ resource ResGer = ParamX ** open Prelude in {
     in
        glue (embedInf vpi.inpl <vpi.objs, vpi.pred>) ++ vpi.extr!agr ++ vp.ext ;
 
--- The nominative case is not used as reflexive, but defined here
--- so that we can reuse this in personal pronouns. 
+-- Relfexive pronouns have object cases only, so nominative is omittet. -- HL 9/26
+-- (The old reflPron with nominative forms is not reused to define personal pronouns.)
 
-  reflPron : Agr => Case => Str = table { -- with persPron nominative
-    AgSgP1       => caselist "ich" "mich" "mir"  "meiner" ;
-    AgSgP2       => caselist "du"  "dich" "dir"  "deiner" ;
-    AgSgP3 Masc  => caselist "er" "sich" "sich" "seiner" ;
-    AgSgP3 Fem   => caselist "sie" "sich" "sich" "ihrer" ;
-    AgSgP3 Neutr => caselist "es" "sich" "sich" "seiner" ;
-    AgPl P1      => caselist "wir" "uns"  "uns"  "unser" ;
-    AgPl P2      => caselist "ihr" "euch" "euch" "euer" ;
-    AgPl P3      => caselist "sie" "sich" "sich" "ihrer" ;
-    AgPlPol      => caselist "Sie" "sich" "sich" "Ihrer"              -- HL 8/2023
-    -- AgSgP3Gen    => caselist "man selbst" "sich" "sich" "seiner" ; -- älter als man selbst sein
-    -- ; AgPlReci  => caselist "man" "einander" "einander" "einander" -- reciPron ?
+  reflPron : Agr => ObjCase => Str = table {
+    AgSgP1       => objcaselist "mich" "mir"  "meiner" ;
+    AgSgP2       => objcaselist "dich" "dir"  "deiner" ;
+    AgSgP3 Masc  => objcaselist "sich" "sich" "seiner" ;
+    AgSgP3 Fem   => objcaselist "sich" "sich" "ihrer" ;
+    AgSgP3 Neutr => objcaselist "sich" "sich" "seiner" ;
+    AgPl P1      => objcaselist "uns"  "uns"  "unser" ;
+    AgPl P2      => objcaselist "euch" "euch" "euer" ;
+    AgPl P3      => objcaselist "sich" "sich" "ihrer" ;
+    AgPlPol      => objcaselist "sich" "sich" "Ihrer"              -- HL 8/2023
+    -- AgSgP3Gen    => objcaselist "sich" "sich" "seiner" ; -- man wundert sich
+    -- ; AgPlReci  => objcaselist "einander" "einander" "einander" -- man grüßt einander
     } ;
+
+  -- Nominative forms of the personal pronouns, used in ExtendGer.ReflPron : RNP 
+  persPronNom : Agr => Str = table {
+    AgSgP1       => "ich" ;
+    AgSgP2       => "du" ;
+    AgSgP3 Masc  => "er";
+    AgSgP3 Fem   => "sie" ;
+    AgSgP3 Neutr => "es" ;
+    AgPl P1      => "wir" ; 
+    AgPl P2      => "ihr" ;
+    AgPl P3      => "sie" ;
+    AgPlPol      => "Sie" 
+    -- AgSgP3Gen    => "man" ; -- älter als man selbst sein
+    -- ; AgPlReci  => "man" ;
+    } ;
+
 
   possPron : Agr -> Number -> Gender -> Case -> Str = \a,n,g,c -> case <a,n,g> of {
     <AgSgP1,Sg,Masc>  => caselist "mein"  "meinen" "meinem"  "meines" ! c ;
@@ -1098,20 +1141,20 @@ resource ResGer = ParamX ** open Prelude in {
     case rgn of {
     RGenNum gn => 
       case <gn,c> of {
-      <GSg Fem,Gen> => "deren" ;
-      <GSg g,Gen>   => "dessen" ;
-      <GPl,Dat>     => "denen" ;
-      <GPl,Gen>     => "deren" ;
+      <GSg Fem,Obj Gen> => "deren" ;
+      <GSg g,Obj Gen>   => "dessen" ;
+      <GPl,Obj Dat>     => "denen" ;
+      <GPl,Obj Gen>     => "deren" ;
       _ => artDef ! gn ! c
       } ;
     RSentence => (caselist "was" "was" "was" "wessen") ! c   -- wessen HL 4/2022
     } ;
 
 -- Function that allows the construction of non-nominative subjects.
-  mkSubject : NP -> Preposition -> {s:Str ; a:Agr} = \np, prep ->
+  mkSubject : NP -> SubjectPrep -> {s:Str ; a:Agr} = \np, prep ->
     let
       agr = case prep.c of { Nom => np.a ; _ => AgSgP3 Masc } ;
-      subj = appPrepNP prep np
+      subj = appSPrepNP prep np
     in {s = subj ; a = agr} ;
 
   sex2gender : Sex -> Gender = \g ->

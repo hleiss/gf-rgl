@@ -18,7 +18,7 @@ concrete StructuralGer of Structural = CatGer **
   and_Conj = {s1 = [] ; s2 = "und" ; n = Pl} ;
   because_Subj = ss "weil" ;
   before_Prep = P.mkCPrep "vor" P.dative ;
-  behind_Prep = mkPrep "hinter" P.dative ;
+  behind_Prep = P.mkCPrep "hinter" P.dative ;
   between_Prep = P.mkCPrep "zwischen" P.dative ;
   both7and_DConj = sd2 "sowohl" "als auch" ** {n = Sg} ;
   but_PConj = ss "aber" ;
@@ -30,7 +30,7 @@ concrete StructuralGer of Structural = CatGer **
         "konnte" "konntest" "konnten" "konntet"
         "könnte" "gekonnt" [] 
         VHaben) ;
-  during_Prep = mkPrep "während" P.genitive ; --- no variants in the rgl | P.mkPrep P.accusative "über" ; 
+  during_Prep = P.mkPrep "während" P.genitive ; --- no variants in the rgl | P.mkPrep P.accusative "über" ; 
   either7or_DConj = sd2 "entweder" "oder" ** {n = Sg} ;
   everybody_NP = nameNounPhrase Masc {s = caselist "jeder" "jeden" "jedem" "jedes"} ;
   every_Det = {
@@ -67,7 +67,7 @@ concrete StructuralGer of Structural = CatGer **
                       adj = (P.mkA "viel" "mehr" "meiste").s ! Superl
                    in
                       MorphoGer.artDef ! gn ! c ++ adj ! (agrAdj Weak gn c) ;
-    c = {p = [] ; k = PredCase Gen} ;
+    c = {p = [] ; k = PredCase (Obj Gen)} ;
     a = PAg Pl} ;
   much_Det = {
     s = \\_,g,c => "viel" ;
@@ -146,7 +146,7 @@ concrete StructuralGer of Structural = CatGer **
   whoPl_IP = {s = caselist "wer alles" "wen alles" "wem alles" "wessen alles" ;
               a = GSg Masc ; isPron = True} ; -- Duden 563
   why_IAdv = ss "warum" ;
-  without_Prep = mkPrep "ohne" P.accusative ;
+  without_Prep = P.mkPrep "ohne" P.accusative ;
   with_Prep = P.mkCPrep "mit" P.dative ;
   youSg_Pron = mkPronPers "du" "dich" "dir" "deiner" "dein" Fem Sg P2 ;
   youPl_Pron = mkPronPers "ihr" "euch" "euch" "eurer" "euer" Fem Pl P2 ; ---- poss
@@ -166,7 +166,7 @@ concrete StructuralGer of Structural = CatGer **
     nameNounPhrase Neutr {s = \\_ => "nichts"} ; --maybe add: nameNounPhrase {s = \\_ => "garnichts"}
   at_least_AdN = ss "wenigstens" ;
   at_most_AdN = ss "höchstens" ;
-  except_Prep = mkPrep "außer" P.dative ;
+  except_Prep = P.mkPrep "außer" P.dative ;
 
   as_CAdv = X.mkCAdv "ebenso" "wie" ;
   have_V2 = P.dirV2 IrregGer.haben_V ;
