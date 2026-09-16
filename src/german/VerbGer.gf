@@ -138,9 +138,7 @@ concrete VerbGer of Verb = CatGer ** open Prelude, ResGer, Coordination in {
     ReflVP vp = insertObjRefl vp ; -- HL, 19/06/2019
 
     PassV2 v = -- acc object -> nom subject; all others: same PCase
-      let c = case <v.c2.c, v.c2.t> of {
-            <Acc, isCase> => Nom ; _ => Obj v.c2.c}
-      in insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass) ** { c1 = v.c2 ** {c = c} } ;
+      insertObj (\\_ => v.s ! VPastPart APred) (predV werdenPass) ** { c1 = subjPrep v.c2 } ;
 
     VPSlashPrep vp prep = vp ** {c2 = prep ; objCtrl = False} ;
 

@@ -600,7 +600,8 @@ mkV2 : overload {
 
   mkPrep = overload {
     mkPrep : Case -> SubjectPrep = \c ->
-      {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase ; lock_Prep = <>} ;
+      let ct = case c of {Nom => SCase Nom ; Obj e => toCaseOrPrep <e,isCase>} in
+      {s = \\_ => [] ; s2 = [] ; c = c ; ct = ct; lock_Prep = <>} ;
     mkPrep : ObjCase -> Prep = \c ->
       {s = \\_ => [] ; s2 = [] ; c = c ; t = isCase ; lock_Prep = <>} ;
     mkPrep : Str -> ObjCase -> Prep = \p,c -> -- non-contracting preposition

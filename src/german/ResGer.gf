@@ -471,11 +471,32 @@ resource ResGer = ParamX ** open Prelude in {
     PrepType = isCase | isPrep ;
     PrepForm = CPl | CSg Gender | CAdvPron | CIPron ;
 
-  oper
-    Preposition : Type = {s : PrepForm => Str ; s2:Str ; c : ObjCase ; t : PrepType} ;
+    CaseOrPrep = SCase Case | SPrep ObjCase ; -- 7 values instead of 8 of Case * PrepType
 
-    -- To specify subjects of V, VP etc, extend to allow nominative     -- HL 9/26
-    SubjectPrep : Type = {s : PrepForm => Str ; s2:Str ; c : Case ; t : PrepType} ;
+  oper -- Preposition = ObjectPrep
+    Preposition : Type = {s : PrepForm => Str ; s2:Str ; c : ObjCase ; t : PrepType} ;
+    SubjectPrep : Type = {s : PrepForm => Str ; s2:Str ; ct : CaseOrPrep} ; -- with Nom
+
+    toCaseOrPrep : ObjCase * PrepType -> CaseOrPrep = \pair ->
+      case pair.p2 of {isCase => SCase (Obj pair.p1) ; isPrep => SPrep pair.p1} ;
+    fromCaseOrPrep : CaseOrPrep -> ObjCase * PrepType = \v ->
+      case v of {SPrep c => <c,isPrep> ;
+                 SCase (Obj c) => <c,isCase> ;
+                 SCase Nom => <Acc,isCase>} ; -- default for 7th value, don't use!
+                   
+    toSPrep : Preposition -> SubjectPrep = \prep ->
+      {s = prep.s ; s2 = prep.s2 ; ct = toCaseOrPrep <prep.c,prep.t>} ;
+
+    -- apply a preposition to a table
+    
+    appPrep0 : Preposition -> (ObjCase => Str) -> Str = \prep,arg ->
+      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
+    appPrep1 : Preposition -> (Case => Str) -> Str = \p,c ->
+      appSPrep (toSPrep p) c ;
+
+    appSPrep : SubjectPrep -> (Case => Str) -> Str = \prep,tab ->
+      let cs = case prep.ct of {SCase c => c ; SPrep d => Obj d} 
+      in prep.s ! CPl ++ tab ! cs ++ prep.s2 ;
 
   -- auxiliary type for interrogative and relative pronoun
 
@@ -493,25 +514,19 @@ resource ResGer = ParamX ** open Prelude in {
         \prep,rp -> appSPrepRP (toSPrep prep) rp ;
       } ;
 
-    appPrep0 : Preposition -> (ObjCase => Str) -> Str = \prep,arg ->
-      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
-    appPrep1 : Preposition -> (Case => Str) -> Str = \p,c ->
-      appSPrep (toSPrep p) c ;
-
-    appSPrep : SubjectPrep -> (Case => Str) -> Str = \prep,arg ->
-      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
-
     appSPrepNP : SubjectPrep -> NP -> Str = \prep,np ->
     let
       g : Gender = genderAgr np.a ;
       n : Number = numberAgr np.a ;
-      b = case <prep.t,n,np.w> of {
+      c : Case = case prep.ct of {SCase Nom => Nom ; _ => Obj (fromCaseOrPrep prep.ct).p1} ;
+      t : PrepType = case prep.ct of {SCase Nom => isCase ; _ => (fromCaseOrPrep prep.ct).p2} ;
+      b = case <t,n,np.w> of {
         <isPrep,Sg,WDefArt> => True ;  -- e.g. "zum Hof|zur Tür|zum Fenster herein"
         _ => False} ;                  -- e.g. "auf dem Hof|auf der Tür|auf dem Fenster"
       f = case b of {True => CSg g ; _ => CPl} ;
       in
-      prep.s ! f ++ np.s ! b ! prep.c ++ np.ext ++ prep.s2 ++ np.rc ;
-
+      prep.s ! f ++ np.s ! b ! c ++ np.ext ++ prep.s2 ++ np.rc ;
+{-
     appSPrepIP : SubjectPrep -> IP -> Str = \prep,np ->
     let
       g : Gender = genGenNum np.a ;
@@ -519,13 +534,15 @@ resource ResGer = ParamX ** open Prelude in {
       b = case <np.isPron,n,g> of {<True,Sg,Neutr> => True ; _ => False} ;
       f = case b of {True => CIPron ; _ => CPl} -- e.g. "zu was" => "wozu"
     in prep.s ! f ++ np.s ! b ! prep.c ++ prep.s2 ;
-
+-}
     appSPrepRP : SubjectPrep -> RP -> (RelGenNum => Str) = \prep,np ->
       let
+      c : Case = case prep.ct of {SCase Nom => Nom ; _ => Obj (fromCaseOrPrep prep.ct).p1} ;
+      t : PrepType = case prep.ct of {SCase Nom => isCase ; _ => (fromCaseOrPrep prep.ct).p2} ;
         uncontracted : RelGenNum => Str =
-          \\gn => prep.s ! CPl ++ np.s ! gn ! prep.c ++ prep.s2
+          \\gn => prep.s ! CPl ++ np.s ! gn ! c ++ prep.s2
       in
-      case <prep.t, np.a> of {
+      case <t, np.a> of {
         <isPrep, RNoAg> =>  table{RSentence => prep.s ! CIPron ;
                                   -- RGenNum (GSg Neutr) => prep.s ! CIPron ;
                                   gn => uncontracted ! gn} ;
@@ -536,25 +553,24 @@ resource ResGer = ParamX ** open Prelude in {
 
 -- To build a preposition from just a case.  -- HL 9/19: moved to mkPrep in ParadigmsGer
 
-  PrepNom : SubjectPrep = {s = \\_ => [] ; t = isCase ; c = Nom ; s2 = []} ;
+  PrepNom : SubjectPrep = {s = \\_ => [] ; ct = SCase Nom ; s2 = []} ;
 
   vonDat  : Preposition = {s=table{CPl => "von" ; CSg Fem => "von der" ; CSg _ => "vom" ;
                                    CAdvPron => "davon" ; CIPron => "wovon"};
                            s2=[]; c=Dat; t=isPrep} ;
 
-  toSPrep : Preposition -> SubjectPrep = \prep ->
-    {s = prep.s ; s2 = prep.s2 ; c = Obj prep.c ; t = prep.t} ;
-  fromSPrep : SubjectPrep -> Preposition = \prep ->  -- default Acc for Nom
-    {s = prep.s ; s2 = prep.s2 ; c = case prep.c of {Obj d => d ; Nom => Acc} ; t = prep.t} ;
-
 -- To build passive: accusative object -> nom subject; others -> same case or prep
 
   subjPrep : Preposition -> SubjectPrep = \prep ->
     let
-      d = case <prep.c,prep.t> of {
+      c : ObjCase = prep.c ;
+      t : PrepType = prep.t ;
+      d = case <c,t> of {
         <Acc,isCase> => Nom ;
-        <e,  _>      => Obj e}
-    in {s = prep.s ; s2 = prep.s2 ; c = d ; t = prep.t} ;
+        <e,  _>      => Obj e} ;
+      cp : CaseOrPrep = case d of {Nom => SCase Nom ; (Obj e) => toCaseOrPrep <e,t>}
+    in
+    {s = prep.s ; s2 = prep.s2 ; ct = cp} ;
 
 -- Pronouns and articles
 -- Here we define personal and relative pronouns.
@@ -1138,7 +1154,8 @@ resource ResGer = ParamX ** open Prelude in {
 -- Function that allows the construction of non-nominative subjects.
   mkSubject : NP -> SubjectPrep -> {s:Str ; a:Agr} = \np, prep ->
     let
-      agr = case prep.c of { Nom => np.a ; _ => AgSgP3 Masc } ;
+      c : Case = case prep.ct of {SCase Nom => Nom ; _ => Obj (fromCaseOrPrep prep.ct).p1} ;
+      agr = case c of { Nom => np.a ; _ => AgSgP3 Masc } ;
       subj = appSPrepNP prep np
     in {s = subj ; a = agr} ;
 
