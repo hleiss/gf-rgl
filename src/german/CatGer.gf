@@ -66,7 +66,7 @@ concrete CatGer of Cat =
     Pron = {s : NPForm => Str ; a : Agr ; sp : PossForm => Str} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
-    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
+    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf} ;
 
     Quant = {
       s : Bool => GenNum => Case => Str ; -- True if leading DefArtSg is dropped

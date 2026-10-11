@@ -489,14 +489,14 @@ resource ResGer = ParamX ** open Prelude in {
 
     -- apply a preposition to a table
     
-    appPrep0 : Preposition -> (ObjCase => Str) -> Str = \prep,arg ->
-      prep.s ! CPl ++ arg ! prep.c ++ prep.s2 ;
-    appPrep1 : Preposition -> (Case => Str) -> Str = \p,c ->
-      appSPrep (toSPrep p) c ;
+    appPrep0 : Preposition -> (ObjCase => Str) -> Str = \prep,tbl ->
+      prep.s ! CPl ++ tbl ! prep.c ++ prep.s2 ;
+    appPrep1 : Preposition -> (Case => Str) -> Str = \p,tbl ->
+      appSPrep (toSPrep p) tbl ;
 
-    appSPrep : SubjectPrep -> (Case => Str) -> Str = \prep,tab ->
+    appSPrep : SubjectPrep -> (Case => Str) -> Str = \prep,tbl ->
       let cs = case prep.ct of {SCase c => c ; SPrep d => Obj d} 
-      in prep.s ! CPl ++ tab ! cs ++ prep.s2 ;
+      in prep.s ! CPl ++ tbl ! cs ++ prep.s2 ;
 
   -- auxiliary type for interrogative and relative pronoun
 
@@ -562,15 +562,9 @@ resource ResGer = ParamX ** open Prelude in {
 -- To build passive: accusative object -> nom subject; others -> same case or prep
 
   subjPrep : Preposition -> SubjectPrep = \prep ->
-    let
-      c : ObjCase = prep.c ;
-      t : PrepType = prep.t ;
-      d = case <c,t> of {
-        <Acc,isCase> => Nom ;
-        <e,  _>      => Obj e} ;
-      cp : CaseOrPrep = case d of {Nom => SCase Nom ; (Obj e) => toCaseOrPrep <e,t>}
-    in
-    {s = prep.s ; s2 = prep.s2 ; ct = cp} ;
+    case <prep.c,prep.t> of {
+      <Acc,isCase> => {s = prep.s ; s2 = prep.s2 ; ct = SCase Nom} ;
+      _            => toSPrep prep} ;
 
 -- Pronouns and articles
 -- Here we define personal and relative pronouns.
@@ -1154,8 +1148,7 @@ resource ResGer = ParamX ** open Prelude in {
 -- Function that allows the construction of non-nominative subjects.
   mkSubject : NP -> SubjectPrep -> {s:Str ; a:Agr} = \np, prep ->
     let
-      c : Case = case prep.ct of {SCase Nom => Nom ; _ => Obj (fromCaseOrPrep prep.ct).p1} ;
-      agr = case c of { Nom => np.a ; _ => AgSgP3 Masc } ;
+      agr = case prep.ct of { SCase Nom => np.a ; _ => AgSgP3 Masc } ;
       subj = appSPrepNP prep np
     in {s = subj ; a = agr} ;
 

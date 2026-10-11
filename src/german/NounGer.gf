@@ -263,7 +263,7 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
                      -- det or numeral? np or rather (DefArt +) cn?  drei (einiger Kinder) ?
       let g : Gender = genderAgr np.a
       in {
-        s = \\b,c => det.s ! b ! g ! c ++ appPrep vonDat np ;
+        s = \\b,c => det.sp ! b ! g ! c ++ appPrep vonDat np ;
         a = agrgP3 g det.n ;
         w = case det.isDef of { True => WLight ; _ => WHeavy } ;
         rc = np.rc ;

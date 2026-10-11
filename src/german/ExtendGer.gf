@@ -464,7 +464,7 @@ concrete ExtendGer of Extend =
     UseDAP det = {
       s = \\b,c => det.sp ! Neutr ! c ;
       a = agrP3 det.n ;
-      w = case det.isDef of { True => WLight ; _ => WHeavy } ;
+      w = WLight ;
       rc, ext = []
       } ;
 
