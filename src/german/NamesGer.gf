@@ -59,22 +59,24 @@ lin PlainLN ln = {
       } ;
 
 -- InLN : LN -> Adv ;
-lin InLN ln = let d = ln.hasDefArt in {
-      s = appPrepNP P.inDat_Prep {
-             s = \\b,c => case d of {
-                            True  => case b of {
-                                       True  => [] ; -- defart dropped
-                                       False => artDef ! (gennum ln.g ln.n) ! c
-                                     } ++
-                                     ln.s ! (adjfCase Weak c) ! c ;
-                            False => ln.s ! Strong ! c
-                          } ;
-             a = agrgP3 ln.g ln.n ;
-             w = case d of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
-             rc, ext = []
+  lin InLN ln =
+        let prep : ResGer.Preposition = P.inDat_Prep ;
+            np : ResGer.NP = {
+              s = \\b,c => case ln.hasDefArt of {
+                True  => case b of {
+                  True  => [] ; -- defart dropped
+                  False => artDef ! (gennum ln.g ln.n) ! c
+                  } ++
+                  ln.s ! (adjfCase Weak c) ! c ;
+                False => ln.s ! Strong ! c
+                } ;
+              a = agrgP3 ln.g ln.n ;
+              w = case d of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
+              rc, ext = []
+              }
+        in { s = appPrep prep np ;
+             cp,cor = [] ; hasCor,t = False
         } ;
-      cp,cor = [] ; hasCor,t = False
-      } ;
 
 -- AdjLN : AP -> LN -> LN ;
 lin AdjLN ap ln = ln ** {

@@ -160,12 +160,12 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       } ;
     DefArt = {
       s = \\b,gn,c => case <b,gn> of {<True,GSg _> => [] ; _ => artDef ! gn ! c} ;
-      sp = \\gn,c  => case <gn,c> of { -- Duden 550                   -
-                            <GSg Masc,Gen> => "dessen" ;
-                            <GSg Fem, Gen> => "derer" ; -- poss: deren
-                            <GSg Neutr,Gen> => "dessen" ;
-                            <GPl,Dat> => "denen" ; -- HL 6/2019
-                            <GPl,Gen> => "derer" ; -- HL 6/2019
+      sp = \\gn,c  => case <gn,c> of {
+                            <GSg Masc,Obj Gen> => "dessen" ;
+                            <GSg Fem, Obj Gen> => "derer" ;
+                            <GSg Neutr,Obj Gen> => "dessen" ;
+                            <GPl,Obj Dat> => "denen" ; -- HL 6/2019
+                            <GPl,Obj Gen> => "derer" ; -- HL 6/2019
                              _ => artDef ! gn ! c } ;
       a = Weak ;
       isDefArt = True ;
@@ -198,28 +198,28 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       ext,adv = [] 
       } ;
 
-    ComplN2 f x = {
-      s = \\_,n,c => f.s ! n ! c ++ appPrep f.c2 x ;
-      g = f.g ;
+    ComplN2 n2 np = {
+      s = \\_,n,c => n2.s ! n ! c ++ appPrep n2.c2 np ;
+      g = n2.g ;
       rc = \\_ => [] ;
       ext,adv = []
       } ;
 
-    ComplN3 f x = {
-      s = \\n,c => f.s ! n ! c ++ appPrep f.c2 x ;
-      co = f.co ++ appPrep f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
+    ComplN3 n3 np = {
+      s = \\n,c => n3.s ! n ! c ++ appPrep n3.c2 np ;
+      co = n3.co ++ appPrep n3.c2 np ; ---- should not occur at all; the abstract syntax is problematic in giving N2
       uncap = {
-        s = \\n,c => f.uncap.s ! n ! c ++ appPrep f.c2 x ;
-        co = f.uncap.co ++ appPrep f.c2 x ; ---- should not occur at all; the abstract syntax is problematic in giving N2
+        s = \\n,c => n3.uncap.s ! n ! c ++ appPrep n3.c2 np ;
+        co = n3.uncap.co ++ appPrep n3.c2 np ; ---- should not occur at all; the abstract syntax is problematic in giving N2
        } ;
-      g = f.g ; 
-      c2 = f.c3 ;
+      g = n3.g ;
+      c2 = n3.c3 ;
       } ;
 
-    Use2N3 f = f ;
+    Use2N3 n3 = n3 ;
 
-    Use3N3 f = f ** {
-      c2 = f.c3;
+    Use3N3 n3 = n3 ** {
+      c2 = n3.c3;
       } ;
 
     AdjCN ap cn = 
@@ -252,11 +252,11 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! False ! c ++ bigNP np } ;
 
     PossNP cn np = cn ** {
-      s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep vonDat (np.s ! False) ++ bigNP np } ;
+      s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 vonDat (np.s ! False) ++ bigNP np } ;
 
     PartNP cn np = case np.w of {
-      WPron => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep vonDat (np.s ! False) ++ np.ext ++ np.rc} ;
-      _     => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! False ! Gen ++ np.ext ++ np.rc}
+      WPron => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 vonDat (np.s ! False) ++ np.ext ++ np.rc} ;
+      _     => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 genPrep (np.s ! False) ++ np.ext ++ np.rc}
         };         -- glass of wine
 
     CountNP det np = -- drei der Kinder | drei von den Kindern -- HL 7/22, ad-hoc TODO
@@ -295,4 +295,6 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
       ext = "" ;
       } ;
 
+  oper
+    genPrep : Prep = {s = \\_ => [] ; s2 = [] ; c = Gen ; t = isCase ; lock_Prep = <>} ;
 }

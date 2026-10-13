@@ -64,7 +64,7 @@ lin
                       adj = (ParadigmsGer.mkA "viel" "mehr" "meiste").s ! Superl
                    in
                       MorphoGer.artDef ! gn ! c ++ adj ! (agrAdj Weak gn c) ;
-    c = {p = [] ; k = PredCase Gen} ;
+    c = {p = [] ; k = PredCase (Obj Gen)} ;
     a = PAg Pl} ;
   much_Det = {
     s = \\_,g,c => "viel" ;

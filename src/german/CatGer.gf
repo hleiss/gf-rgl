@@ -67,7 +67,7 @@ concrete CatGer of Cat =
     Pron = {s : NPForm => Str ; a : Agr ; sp : PossForm => Str} ;
     Det = {s,sp : Bool => Gender => Case => Str ; -- True if DefArt is dropped, HL 8/22
            n : Number ; a : Adjf ; isDef, hasDefArt : Bool} ;
-    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf ; isDef,hasDefArt : Bool} ;
+    DAP = {s,sp : Gender => Case => Str ; n : Number ; a : Adjf} ;
 
     Quant = {
       s : Bool => GenNum => Case => Str ; -- True if leading DefArtSg is dropped
@@ -84,6 +84,7 @@ concrete CatGer of Cat =
 
     Num = {s,sp : AForm => Str ; n : Number ; isNum : Bool} ; -- Num,Card.s AForm HL 12/23
     Card = {s : AForm => Str ; n : Number} ; -- inflection mainly for: einer,eine,eines
+    ACard = {s : Str ; n : Number} ;
     Ord = {s : AForm => Str} ;
 
 -- Numeral
@@ -151,7 +152,8 @@ concrete CatGer of Cat =
     Conj = \c -> c.s1 ++ c.s2 ;
 
     Det = \det -> det.s ! False ! Masc ! Nom ;
-    Prep = \prep -> case prep.t of {isPrep => prep.s ! CSg Masc ++ "..." ++ prep.s2 ;
-                                    _ => prep.s ! CPl ++ "..." ++ prep.s2} ;
-
+    Prep = \prep -> case prep.t of {isPrep => prep.s ! CPl ++ "..." ++ prep.s2 ;
+                                    _ => case prep.c of {Acc => "(just accusative)" ;
+                                                         Dat => "(just dative)" ;
+                                                         Gen => "(just genitive)"}} ;
 }

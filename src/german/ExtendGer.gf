@@ -6,15 +6,17 @@ concrete ExtendGer of Extend =
       GenNP, GenRP, EmptyRelSlash, GenIP, GenModIP,
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
+      ListComp, BaseComp, ConsComp, ConjComp,
+      ListImp, BaseImp, ConsImp, ConjImp,
       ICompAP, IAdvAdv, CompIQuant, PrepCN,
-      PastPartAP, PastPartAgentAP,
+      PresPartAP, PastPartAP, PastPartAgentAP,
       PassVPSlash, PassAgentVPSlash,
-      AdvIsNP,
+      ProgrVPSlash, AdvIsNP, AdvRVP,
       RNP, RNPList, Base_rr_RNP, Base_nr_RNP, Base_rn_RNP, Cons_rr_RNP, Cons_nr_RNP, ConjRNP,
       ReflRNP, ReflPron, ReflPoss, PredetRNP, AdvRNP, ReflA2RNP, PossPronRNP,
       CompoundN, DetNPMasc, DetNPFem, UseDAP, UseDAPMasc, UseDAPFem,
-      CardCNCard,
-        InOrderToVP,
+      CardCNCard, CompoundAP, GerundCN, GerundNP, GerundAdv, ByVP, ApposNP,
+      InOrderToVP, PositAdVAdj
         -- to avoid spurious ambiguities, unimplement the default implementations of:
         iFem_Pron, UseComp_estar, UseComp_ser
     ]
@@ -30,7 +32,7 @@ concrete ExtendGer of Extend =
   lin
     GenNP np =
       let tab : GenNum => Case => Str =
-            \\gn,c => np.s ! False ! Gen ++ np.ext ++ np.rc
+            \\gn,c => np.s ! False ! (Obj Gen) ++ np.ext ++ np.rc
       in {s = \\_ => tab ;
           sp = tab ;
           a = Strong ;
@@ -39,17 +41,17 @@ concrete ExtendGer of Extend =
       } ;
 
     GenRP nu cn = {
-      s = \\gn,c => relPron ! gn ! Gen ++ cn.s ! Strong ! nu.n ! c ;
+      s = \\gn,c => relPron ! gn ! (Obj Gen) ++ cn.s ! Strong ! nu.n ! c ;
       a = RAg nu.n P3
       } ;
 
-    GenIP ip = {s = \\gn,c => ip.s!Gen ; a = Strong} ;
+    GenIP ip = {s = \\gn,c => ip.s ! (Obj Gen) ; a = Strong} ;
     GenModIP num ip cn = IdetCN (IdetQuant (GenIP ip) num) cn ;
 
     EmptyRelSlash slash = {
       s = \\m,t,a,p,gn =>
-        appPrep slash.c2 (relPron ! gn) ++ slash.s ! m ! t ! a ! p ! Sub ;
-      c = slash.c2.c
+        appPrep1 slash.c2 (relPron ! gn) ++ slash.s ! m ! t ! a ! p ! Sub ;
+      c = Obj slash.c2.c
       } ;
 
 
@@ -191,23 +193,37 @@ concrete ExtendGer of Extend =
 -- Conjunction of copula complements
 
   lincat
+{- from small-correlates:
     [Comp] = {s1,s2 : Agr => Str} ; --ListTable Agr ;
   lin
     BaseComp x y = {s1 = \\a => x.s ! a ++ x.ext ! (numberAgr a) ; s2 = \\a => y.s ! a ++ y.ext ! (numberAgr a)} ;
     ConsComp x xs = {s1 = \\a => x.s ! a ++ x.ext ! (numberAgr a) ++ comma ++ xs.s1 ! a ; s2 = xs.s2} ;
 
     ConjComp conj ss = {s = \\a => conj.s1 ++ ss.s1 ! a ++ conj.s2 ++ ss.s2 ! a ; ext = \\_ => []} ;
+-}
+      [Comp] = {s1,s2 : Agr => Str} ;
+
+  lin
+    BaseComp x y =
+      twoTable Agr
+        {s = \\a => x.s ! a ++ x.ext ! numberAgr a}
+        {s = \\a => y.s ! a ++ y.ext ! numberAgr a} ;
+    ConsComp x xs =
+      consrTable Agr comma
+        {s = \\a => x.s ! a ++ x.ext ! numberAgr a}
+        xs ;
+    ConjComp conj xs = (conjunctDistrTable Agr conj xs) ** {ext = \\_ => []} ;
 
 -- Conjunction of imperatives
 
   lincat
-    [Imp] = {s1,s2 : Polarity => ImpForm => Str} ;
-  lin
-    BaseImp x y = {s1 = \\p,f => x.s ! p ! f ; s2 = \\p,f => y.s!p!f} ;
-    ConsImp x xs = {s1 = \\p,f => x.s ! p ! f ++ comma ++ xs.s1 ! p ! f ; s2 = xs.s2} ;
-    ConjImp conj xs = {s = \\p,f => conj.s1 ++ xs.s1 ! p ! f ++ conj.s2 ++ xs.s2 ! p ! f} ;
+    ListImp = {s1,s2 : Polarity => ImpForm => Str} ;
 
   lin
+    BaseImp = twoTable2 Polarity ImpForm ;
+    ConsImp = consrTable2 Polarity ImpForm comma ;
+    ConjImp conj xs = conjunctDistrTable2 Polarity ImpForm conj xs ;
+
     ICompAP ap = {
       s = \\_ => "wie" ++ ap.s ! APred ;
       ext = ap.c.p1 ++ ap.c.p2 ++ ap.ext ++ ap.s2 ! Nom ;
@@ -221,11 +237,21 @@ concrete ExtendGer of Extend =
       } ;
 
     PrepCN prep cn = {
-      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! prep.c ++ cn.adv ++ cn.rc ! Sg ++ cn.ext} ;
+      s = prep.s ! CPl ++ cn.s ! Strong ! Sg ! (Obj prep.c) ++ cn.adv ++ cn.rc ! Sg ++ cn.ext} ;
 
   -- fronted/focal constructions, only for main clauses
 
   -- participle constructions
+
+    PresPartAP vp =
+      let a = agrP3 Sg in {
+        s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3 ++ vp.a2 ++ vp.adj
+                    ++ vp.inf.inpl.p2 ++ (vp.inf.extr ! a) ++ vp.s.s ! VPresPart af ;
+        s2 = \\_ => [] ;
+        isPre = True ;
+        c = <[],[]> ;
+        ext = vp.ext
+      } ;
 
     PastPartAP vp =
       let a = agrP3 Sg in {
@@ -239,7 +265,7 @@ concrete ExtendGer of Extend =
 
     PastPartAgentAP vp np =
       let a = agrP3 Sg ;
-          agent = appPrepNP P.von_Prep np
+          agent : Str = appPrep P.von_Prep np
       in {
       s = \\af => (vp.nn ! a).p1 ++ (vp.nn ! a).p2 ++ (vp.nn ! a).p3
                   ++ vp.a2 ++ agent ++ vp.adj ++ vp.inf.inpl.p2
@@ -264,7 +290,22 @@ concrete ExtendGer of Extend =
 
 -- publishing of the document
 
+    GerundCN vp = {
+      s = \\_,_,_ => useInfVP False vp ;
+      rc = \\_ => [] ;
+      ext, adv = [] ;
+      g = Neutr
+      } ;
+
+    GerundNP vp = MassNP (GerundCN vp) ;
+
+    GerundAdv vp = {s = useInfVP False vp} ;
+
+    ByVP vp = {s = "durch" ++ useInfVP False vp} ;
+
 -- counterpart to ProgrVP, for VPSlash
+
+    ProgrVPSlash vp = vp ;
 
 -- construct VPSlash from A2 and N2
 
@@ -298,14 +339,16 @@ concrete ExtendGer of Extend =
     RNPList = {s1,s2 : Agr => Case => Str} ;
 
   linref
-    RNP = \rnp -> rnp.s ! AgSgP3 Masc ! Acc ++ rnp.ext ++ rnp.rc ;
+    RNP = \rnp -> rnp.s ! AgSgP3 Masc ! (Obj Acc) ++ rnp.ext ++ rnp.rc ;
 
   lin
     ReflRNP vps rnp =
       insertObjReflNP (lin RNP rnp) vps ;
 
     ReflPron = { -- with personal pronoun nominative
-      s = ResGer.reflPron ; rc,ext = [] ; isPron = True } ;
+      s = \\a,c => case c of {Nom => ResGer.persPronNom ! a ;
+                              (Obj d) => ResGer.reflPron ! a ! d} ;
+      rc,ext = [] ; isPron = True } ;
 
     -- To distinguish personal pronoun from reflexive pronoun:
     --   du kennst mich vs. ich kenne mich selbst
@@ -340,24 +383,27 @@ concrete ExtendGer of Extend =
                        g : Gender = genderAgr a ;
                        d = case pred.c.k of {NoCase => c ; PredCase k => k} ;
         in case rnp.isPron of {
-          True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! Dat ;
+          True => pred.s ! Pl ! Masc ! c ++ "von" ++ rnp.s ! a ! (Obj Dat) ;
           _ => pred.s ! n ! genderAgr a ! c ++ pred.c.p ++ rnp.s ! a ! d} ;
       ext = rnp.ext ; rc = rnp.rc ;
       isPron = False} ;
       -- ok: alle von uns; die meisten von uns ; wrong: *nur von uns =/= nur wir
 
     AdvRNP np prep rnp = {s = \\a,c => np.s ! False ! c
-                            ++ appPrep prep (rnp.s ! a) ++ rnp.ext ++ rnp.rc ;
+                            ++ appPrep1 prep (rnp.s ! a) ++ rnp.ext ++ rnp.rc ;
                           ext = np.ext ; rc = np.rc ; isPron = False} ;
 
     AdvRAP ap prep rnp =
       let                                         -- ? adv ++ ap.s ! af
-        adv = appPrep prep (rnp.s ! agrP3 Sg) ;   -- bug: fixed agreement
+        adv = appPrep1 prep (rnp.s ! agrP3 Sg) ;  -- bug: fixed agreement
       in ap ** { s = \\af => ap.s ! af ++ adv } ; -- e.g. unknown in one's youth
+
+    AdvRVP vp prep rnp =
+      insertAdv (appPrep prep (table ObjCase {c => rnp.s ! agrP3 Sg ! Obj c}) ++ rnp.ext ++ rnp.rc) vp ;
 
     ReflA2RNP adj rnp = -- would need AP.c : Agr => Str*Str, not AP.c : Str*Str
       let                                            -- as we have no reflexive AP,
-        compl = appPrep adj.c2 (rnp.s ! agrP3 Sg) ; -- we use a fixed agreement
+        compl = appPrep1 adj.c2 (rnp.s ! agrP3 Sg) ; -- we use a fixed agreement
       in {
         s = adj.s ! Posit ;
         s2 = \\_ => [] ;
@@ -428,7 +474,7 @@ concrete ExtendGer of Extend =
     UseDAP det = {
       s = \\b,c => det.sp ! Neutr ! c ;
       a = agrP3 det.n ;
-      w = case det.isDef of { True => WLight ; _ => WHeavy } ;
+      w = WLight ;
       rc, ext = []
       } ;
 
@@ -453,8 +499,22 @@ concrete ExtendGer of Extend =
       n = Pl
       } ;
 
+    CompoundAP n a = {
+      s = \\af => n.co ++ Predef.BIND ++ a.s ! Posit ! af ;
+      s2 = \\_ => [] ;
+      isPre = True ;
+      c = <[],[]> ;
+      ext = []
+      } ;
+
+    ApposNP np app = np ** {
+      s = \\b,c => np.s ! b ! c ++ embedInCommas (app.s ! False ! c ++ bigNP app) ;
+      w = WHeavy
+      } ;
 
     InOrderToVP vp = {s = "um" ++ useInfVP False vp} ;
+
+    PositAdVAdj a = {s = a.s ! Posit ! APred} ;
 
   oper
     insertObjReflNP : RNP -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
@@ -463,7 +523,7 @@ concrete ExtendGer of Extend =
     insertObjRNP : RNP -> Preposition -> ResGer.VPSlash -> ResGer.VP = -- HL 5/2022
       \rnp,prep,vp ->                                           -- generalize ResGer.insertObjRefl
       let
-        obj : Agr => Str = \\a => prep.s ! CPl ++ rnp.s ! a ! prep.c ++ rnp.ext ++ rnp.rc
+        obj : Agr => Str = \\a => prep.s ! CPl ++ rnp.s ! a ! (Obj prep.c) ++ rnp.ext ++ rnp.rc
       in vp ** {
         nn = \\a =>
           let vpnn = vp.nn ! a in
