@@ -3,7 +3,7 @@
 concrete ExtendGer of Extend =
   CatGer ** ExtendFunctor
   - [ -- remove the default implementations of:
-      GenNP, GenRP, EmptyRelSlash, GenIP, GenModIP,
+      GenNP, GenModNP, GenRP, EmptyRelSlash, GenIP, GenModIP,
       VPS, ListVPS, MkVPS, BaseVPS, ConsVPS, ConjVPS, PredVPS,
       VPI, ListVPI, MkVPI, BaseVPI, ConsVPI, ConjVPI, ComplVPIVV,
       ListComp, BaseComp, ConsComp, ConjComp,
@@ -18,7 +18,10 @@ concrete ExtendGer of Extend =
       CardCNCard, CompoundAP, GerundCN, GerundNP, GerundAdv, ByVP, ApposNP,
       InOrderToVP, PositAdVAdj
         -- to avoid spurious ambiguities, unimplement the default implementations of:
-        iFem_Pron, UseComp_estar, UseComp_ser
+      , iFem_Pron, UseComp_estar, UseComp_ser   -- of common/ExtendFunctor.gf
+      , CompBareNP
+      , StrandQuestSlash, StrandRelSlash, PiedPipingQuestSlash, PiedPipingRelSlash, EmptyRelSlash
+      , SubjRelNP, SubjunctRelCN
     ]
   with
     (Grammar = GrammarGer) **
@@ -39,6 +42,8 @@ concrete ExtendGer of Extend =
           isDefArt = False ;
           delCardOne = False
       } ;
+    GenModNP num np cn =
+      DetCN (DetQuant (GenNP np) num) cn ;
 
     GenRP nu cn = {
       s = \\gn,c => relPron ! gn ! (Obj Gen) ++ cn.s ! Strong ! nu.n ! c ;

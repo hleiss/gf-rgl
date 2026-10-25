@@ -197,8 +197,8 @@ lin
   wegen_Prep = mkCPrep "wegen" dative ;
   wegen2_Prep = mkCPrep [] genitive "wegen" ;          -- postposition
   entlang_Prep  = mkCPrep "entlang" genitive ;
-  entlang2_Prep = mkCPrep accusative "entlang" ;
-  ueber3_Prep   = mkCPrep accusative "über" ;
+  entlang2_Prep = mkPrep accusative "entlang" ;
+  ueber3_Prep   = mkPrep accusative "über" ;
   um_herum_Prep = mkCPrep "um" accusative "herum" ;    -- circumposition
   von_aus_Prep  = mkCPrep "von" dative "aus" ;
 

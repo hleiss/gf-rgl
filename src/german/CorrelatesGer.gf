@@ -7,7 +7,7 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
   -- Sentential complement with correlate
 
   oper
-    demPron : Case => Str =
+    demPron : ObjCase => Str =
       table {Dat => "dem" ; Gen => "dessen" ; _ => "es"} ; -- | "das"} ;
     mkCor : Preposition -> Str = \p ->
       case p.t of {isPrep => p.s ! CAdvPron ; _ => demPron ! p.c} ;
@@ -16,8 +16,8 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
       let cor : Str = CorrelatesGer.mkCor p ;
           vnn = vp.nn
       in case p.t of {
-        isCase => vp ** {nn = \\a => <cor ++ (vnn!a).p1, (vnn!a).p2, (vnn!a).p3, (vnn!a).p4>} ;
-        _      => vp ** {nn = \\a => <(vnn!a).p1, (vnn!a).p2, cor ++ (vnn!a).p3, (vnn!a).p4>}
+        isCase => vp ** {nn = \\a => (vnn!a) ** {p1 = (vnn!a).p1 ++ cor}} ; -- refl < cor
+        _      => vp ** {nn = \\a => (vnn!a) ** {p3 = cor ++ (vnn!a).p3}}   -- cor < prep
       } ;
     insertCorc : Preposition -> ResGer.VPSlash -> ResGer.VPSlash = \p,vp -> vp ** insertCor p vp ;
     -- inCommas : Str -> Str = embedInCommas ;
@@ -28,7 +28,7 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
     -- CorSCVP vp = ImpersCl vp ;
 
     -- correlate for sentential|interrogative object is like a pronominal or prepositional object
-    CorVS v = insertCor v.c2 (predV v) ;
+    CorVS v = insertCor v.c2 (predV v) ;   -- glaube (es (nicht) | (nicht) daran)
     CorComplVS v s =                       -- glaube (nicht) daran , dass S
       insertExtrapos (comma ++ conjThat ++ s.s ! Sub) (insertCor v.c2 (predV v)) ;
 
@@ -61,15 +61,16 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
     UseVV v = v ;
 
     -- Ternary verbs with correlate for sentential object
+    -- ? observe v.objCtrl to exclude es-correlate: wir versprechen|lassen|helfen *es euch , infzu
     CorV2S v = insertCorc v.c3 (predVc v) ;
     CorSlashV2S v s = insertCorc v.c3 (predVc v) ** {ext = comma ++ conjThat ++ s.s ! Sub} ;
+
     CorV2Q v = insertCorc v.c3 (predVc v) ;
     CorSlashV2Q v q = insertCorc v.c3 (predVc v) ** {ext = comma ++ q.s ! QIndir} ;
 
     -- But:  wir versprechen (es) euch, vp.infzu ; -- set cor=[] for c2=accPrep
     CorV2V v =                     -- e.g. verspricht|bittet.isAux=False | läßt.isAux=True
       insertCorc v.c3 (predVGen v.isAux v ** {c2 = v.c2 ; objCtrl = v.objCtrl}) ;
-
     CorSlashV2V v vp =             -- bitte (jmdn) darum, zu kommen ; helfe *es euch, zu leben
       let                          -- lasse (jmdn) *es schlafen ; but: rate ?es euch , zu kommen
         inf = mkInf v.isAux Simul Pos vp ;
@@ -81,12 +82,12 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
         insertInf inf vps) ** {c2 = v.c2 ; objCtrl = v.objCtrl} ;
 
     UseV2S v = v ;  -- V2S with two nominal objects, e.g. glaube dir deine Versprechen
-    UseV2Q v = v ;
+    UseV2Q v = v ;  -- instead of object qs, use nominal object e.g. "the question , qs"
     UseV2V v = v ;
 
   -- Interrogatve (and relative) correlate for sentential complement
   oper
-    quPron : Case => Str =
+    quPron : ObjCase => Str =
       table {Dat => "wem" ; Gen => "wessen" ; _ => "was"} ;
     mkICor : Preposition -> Str = \p ->
       case p.t of {isPrep => p.s ! CIPron ; _ => quPron ! p.c } ;
@@ -121,12 +122,12 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
     RelSlashS, RelSlashQS, RelSlashVP = \cls ->
       let what = mkICor cls.c2 in {
       s = \\m,t,a,p,gn => what ++ cls.s ! m ! t ! a ! p ! Sub ;
-      c = cls.c2.c
+      c = Obj cls.c2.c
       } ;
 
   -- Leftextraction of sentential object and correlate
   oper
-    demPronLeft : Case => Str = table {Dat => "dem" ; Gen => "dessen" ; _ => "das"} ;
+    demPronLeft : ObjCase => Str = table {Dat => "dem" ; Gen => "dessen" ; _ => "das"} ;
     mkCorLeft : Preposition -> Str = \p ->
        case p.t of {isPrep => p.s ! CAdvPron ; _ => demPronLeft ! p.c} ;
 
@@ -179,15 +180,15 @@ concrete CorrelatesGer of Correlates = CatGer, ExtraGer[Foc, FocObj, UseFoc] **
       g = ns.g
       } ;
     CorComplNS ns s = {
-      s = \\_ => ns.s ;
+      s = \\a,n,c => ns.s ! n ! c ++ (mkNCor ns.c2) ; -- Glaube daran [verloren] , dass s
       rc = \\n => [] ;
-      ext = mkNCor ns.c2 ++ inCommas (conjThat ++ s.s ! Sub) ;
+      ext = inCommas (conjThat ++ s.s ! Sub) ;
       adv = [] ;
       g = ns.g
       } ;
     -- Compl2NQ, 
-    Compl2NS, Compl2NV = \ns,np -> {
-      s = \\_ => ns.s ;
+    Compl2NS, Compl2NV = \ns,np -> {  -- no UseNS, UseNV, but UseNQ
+      s = \\_ => ns.s ;        -- TODO: obj here, not in ext? Interesse [des Chefs] am Erfolg
       rc = \\n => [] ;
       ext = appPrep ns.c2 np ; -- nominal instead of sentential object
       adv = [] ;

@@ -240,7 +240,8 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
     ---- another layer of embedInCommas needed if there is a non-empty rc
     
     RelNP np rs = np ** {
-      rc = np.rc ++ embedInCommas (rs.s ! RGenNum (gennum (genderAgr np.a) (numberAgr np.a))) ;
+--      rc = np.rc ++ embedInCommas (rs.s ! RGenNum (gennum (genderAgr np.a) (numberAgr np.a))) ;
+      rc = np.rc ++ "," ++ Predef.BIND ++ (rs.s ! RGenNum (gennum (genderAgr np.a) (numberAgr np.a))) ;
       w = case isPron np of { True => WLight ; _ => np.w } 
       } ;
 
@@ -251,13 +252,11 @@ concrete NounGer of Noun = CatGer ** open ResGer, MorphoGer, Prelude in {
     ApposCN  cn np = let g = cn.g in cn ** {
       s = \\a,n,c => cn.s ! a ! n ! c ++ np.s ! False ! c ++ bigNP np } ;
 
-    PossNP cn np = cn ** {
-      s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 vonDat (np.s ! False) ++ bigNP np } ;
+    PossNP cn np = let prep : Prep = case np.w of {WDefArt => genPrep ; _ => vonDat}
+      in cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 prep (np.s ! False) ++ np.ext ++ np.rc} ;
 
-    PartNP cn np = case np.w of {
-      WPron => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 vonDat (np.s ! False) ++ np.ext ++ np.rc} ;
-      _     => cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 genPrep (np.s ! False) ++ np.ext ++ np.rc}
-        };         -- glass of wine
+    PartNP cn np = let prep = case np.w of {WPron => vonDat ; _ => genPrep}
+      in cn ** {s = \\a,n,c => cn.s ! a ! n ! c ++ appPrep1 prep (np.s ! False) ++ np.ext ++ np.rc} ;
 
     CountNP det np = -- drei der Kinder | drei von den Kindern -- HL 7/22, ad-hoc TODO
                      -- det or numeral? np or rather (DefArt +) cn?  drei (einiger Kinder) ?

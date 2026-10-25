@@ -60,9 +60,10 @@ lin PlainLN ln = {
 
 -- InLN : LN -> Adv ;
   lin InLN ln =
-        let prep : ResGer.Preposition = P.inDat_Prep ;
+        let hasDefArt = ln.hasDefArt ;
+            prep : ResGer.Preposition = P.inDat_Prep ;
             np : ResGer.NP = {
-              s = \\b,c => case ln.hasDefArt of {
+              s = \\b,c => case hasDefArt of {
                 True  => case b of {
                   True  => [] ; -- defart dropped
                   False => artDef ! (gennum ln.g ln.n) ! c
@@ -71,7 +72,7 @@ lin PlainLN ln = {
                 False => ln.s ! Strong ! c
                 } ;
               a = agrgP3 ln.g ln.n ;
-              w = case d of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
+              w = case hasDefArt of {True => WDefArt ; _ => WLight} ; -- e.g. in dem Iran => im Iran
               rc, ext = []
               }
         in { s = appPrep prep np ;
